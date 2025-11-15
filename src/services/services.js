@@ -20,6 +20,10 @@ export const getTaskStats = () => api.get("/task-proof/users/stats");
 export const getReferralStats = () => api.get("/users/me/referrals/stats");
 export const getReferralHistory = () => api.get("/users/me/referrals");
 
+/* ------------------- TRANSACTIONS ------------------- */
+export const getTransactions = (page = 1, limit = 10) => 
+  api.get(`/transactions/users?page=${page}&limit=${limit}`);
+
 /* -------------------- FILE UPLOAD ------------------- */
 export const uploadFile = (file) => {
   const formData = new FormData();

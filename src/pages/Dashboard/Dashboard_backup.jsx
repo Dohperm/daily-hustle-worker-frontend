@@ -271,6 +271,7 @@ export default function Dashboard() {
           onClick={go("/dashboard/notifications")}
           role="button"
           tabIndex={0}
+          onKeyDown={(e) => e.key === "Enter" && go("/dashboard/notifications")())
         >
           <div className="dh-bell">
             <i className="bi bi-bell" />

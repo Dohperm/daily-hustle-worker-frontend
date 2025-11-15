@@ -1,0 +1,2691 @@
+{
+	"info": {
+		"_postman_id": "5c6919ea-d3b7-4c5b-8202-1ff461f6f027",
+		"name": "User",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45007581"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "SendOTP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identifier\": \"miracle.johnson@yopmail.com\",\r\n    \"otp_type\": \"RESET_PASSWORD\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auths/users/send-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auths",
+								"users",
+								"send-otp"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "CREATE_ACCOUNT",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"identifier\": \"joseph.doe@yopmail.com\",\r\n    \"otp_type\": \"CREATE_ACCOUNT\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auths/users/send-otp",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auths",
+										"users",
+										"send-otp"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "38"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"26-4FUf/omAzlT0uDAo3uzF8/WAJZo\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 17 Oct 2025 16:02:03 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successful.\"\n}"
+						},
+						{
+							"name": "RESET_PASSWORD",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"identifier\": \"joseph.doe@yopmail.com\",\r\n    \"otp_type\": \"RESET_PASSWORD\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auths/users/send-otp",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auths",
+										"users",
+										"send-otp"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "38"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"26-4FUf/omAzlT0uDAo3uzF8/WAJZo\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 17 Oct 2025 16:44:36 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successful.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "VerifyOTP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identifier\": \"miracle.johnson@yopmail.com\",\r\n    \"otp_type\": \"RESET_PASSWORD\",\r\n    \"otp\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auths/users/verify-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auths",
+								"users",
+								"verify-otp"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "CREATE_ACCOUNT",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"identifier\": \"joseph.doe@yopmail.com\",\r\n    \"otp_type\": \"CREATE_ACCOUNT\",\r\n    \"otp\": \"397107\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auths/users/verify-otp",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auths",
+										"users",
+										"verify-otp"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "38"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"26-4FUf/omAzlT0uDAo3uzF8/WAJZo\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 17 Oct 2025 16:12:26 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successful.\"\n}"
+						},
+						{
+							"name": "RESET_PASSWORD",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"identifier\": \"joseph.doe@yopmail.com\",\r\n    \"otp_type\": \"RESET_PASSWORD\",\r\n    \"otp\": \"949497\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auths/users/verify-otp",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auths",
+										"users",
+										"verify-otp"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "38"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"26-4FUf/omAzlT0uDAo3uzF8/WAJZo\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 17 Oct 2025 16:45:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successful.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "UsernameExists",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"samueldoe1118\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auths/users/verify-username",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auths",
+								"users",
+								"verify-username"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"samueldoe1118\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auths/users/verify-username",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auths",
+										"users",
+										"verify-username"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "66"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"42-4i9YkZ/VzsIbrNWDpGMOTFOkCno\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 17 Oct 2025 16:22:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successful.\",\n    \"data\": {\n        \"isAvailable\": true\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"first_name\": \"Oba\",\r\n    \"last_name\": \"Nla\",\r\n    \"username\": \"oba_nla03\",\r\n    \"phone\": \"08076542258\",\r\n    \"email\": \"oba.nla@yopmail.com\",\r\n    \"password\": \"SecurePass123$$\",\r\n    \"referral_code\": \"1CC4B7B688\",\r\n    \"country\": \"Kenya\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auths/users/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auths",
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"first_name\": \"Miracle\",\r\n  \"last_name\": \"Johnson\",\r\n  \"username\": \"mirajohn01\",\r\n  \"phone\": \"08023456789\",\r\n  \"email\": \"miracle.johnson@yopmail.com\",\r\n  \"password\": \"Password123$$\",\r\n  \"referral_code\": \"REF90876\",\r\n  \"role\": \"User\",\r\n  \"country\": \"Ghana\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auths/users/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auths",
+										"users",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "38"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"26-DLiNYkJhD+50wg0Aor+/7JI+DfU\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 20 Oct 2025 00:45:37 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 201,\n    \"message\": \"Successful.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "ValidateRegistrationToken",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"verification_code\": \"781942\",\r\n    \"email\": \"oba.nla@yopmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auths/users/register/validate-token",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auths",
+								"users",
+								"register",
+								"validate-token"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"verification_code\": \"223821\",\r\n    \"email\": \"miracle.johnson@yopmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auths/users/register/validate-token",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auths",
+										"users",
+										"register",
+										"validate-token"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "391"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"187-ETRZrByfdeZ7KfZQzmwtrTnfOh8\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 20 Oct 2025 00:46:26 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successful.\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXJyZW50VXNlciI6eyJfaWQiOiI2OGY1ODY2MjJkMWY5YmVkOWYyMGJlM2EiLCJlbWFpbCI6Im1pcmFjbGUuam9obnNvbkB5b3BtYWlsLmNvbSIsInBob25lIjoiKzIzNDgwMjM0NTY3ODkiLCJzdGF0dXMiOnRydWUsInR5cGUiOiJVc2VyIiwicm9sZSI6IlVzZXIifSwiaWF0IjoxNzYwOTIxMTg2LCJleHAiOjE3NjM1MTMxODZ9.QY1ntQSteC6IGiJqatXwOappv8Vj4TuGl34ZHtVcEEQ\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Extract token from response and set as collection variable 'jwt'",
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData && jsonData.data && jsonData.data.token) {",
+									"        pm.collectionVariables.set('jwt', jsonData.data.token);",
+									"        pm.test('Token extracted and set as collection variable', function () {",
+									"            pm.expect(jsonData.data.token).to.be.a('string').and.not.empty;",
+									"        });",
+									"    } else {",
+									"        pm.test('Token not found in response', function () {",
+									"            pm.expect.fail('Token property missing in response data');",
+									"        });",
+									"    }",
+									"} else {",
+									"    pm.test('Login failed - status code not 200', function () {",
+									"        pm.expect(pm.response.code).to.eql(200);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identifier\": \"chiemenagodson532@gmail.com\", // email or username would login\r\n    \"password\": \"@Jeremiah2001\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auths/users/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auths",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"identifier\": \"johndoe123\", // email or username would login\r\n    \"password\": \"Password123$\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auths/users/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auths",
+										"users",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "390"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"186-mf0LDlyE4EzfpL0UFHy5qXJWoUY\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 17 Oct 2025 16:56:29 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Login successful\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXJyZW50VXNlciI6eyJfaWQiOiI2OGYyNjljM2I2NTE1ZmZmYmNlMDAzNTgiLCJlbWFpbCI6Impvc2VwaC5kb2VAeW9wbWFpbC5jb20iLCJwaG9uZSI6IisyMzQ5MDg3NTkwOTc4Iiwic3RhdHVzIjp0cnVlLCJ0eXBlIjoiVXNlciIsInJvbGUiOiJVc2VyIn0sImlhdCI6MTc2MDcyMDE4OSwiZXhwIjoxNzYzMzEyMTg5fQ.yXT9Yx5Lgq4dfxZ4MwsODtkVtJ4fTLLhJtTgcxWKbPs\"\n    }\n}"
+						},
+						{
+							"name": "failed",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"identifier\": \"johndoe123\", // email or username would login\r\n    \"password\": \"Password123$#\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auths/users/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auths",
+										"users",
+										"login"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "83"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"53-eq3C2uw4xGdHHfPeYby3JgrsHq4\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 17 Oct 2025 16:57:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 400,\n    \"message\": \"Incorrect login credentials. Please check and try again.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "ResetPassword",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"miracle.johnson@yopmail.com\",\r\n    \"otp\": \"123456\",\r\n    \"new_password\": \"Password123$\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auths/users/reset-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auths",
+								"users",
+								"reset-password"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"joseph.doe@yopmail.com\",\r\n    \"otp\": \"308658\",\r\n    \"new_password\": \"Password123$\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auths/users/reset-password",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auths",
+										"users",
+										"reset-password"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "54"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"36-j4dl/c8hzosnbuJ8551bqpt3Eeg\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 17 Oct 2025 16:54:05 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Password reset successfully\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Task",
+			"item": [
+				{
+					"name": "Available Tasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tasks",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/tasks",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"tasks"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"5a6-5MwudSgzkO2LNNd1UT0BDbzxv30\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "br"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 26 Oct 2025 23:40:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully.\",\n    \"data\": {\n        \"metadata\": {\n            \"total\": 4,\n            \"page\": 1,\n            \"limit\": 10,\n            \"pages\": 1\n        },\n        \"data\": [\n            {\n                \"_id\": \"68feac0be3d7f9f769385b1c\",\n                \"title\": \"Retweet Our Campaign Tweet\",\n                \"description\": \"Share the official campaign tweet on your Twitter/X profile.\",\n                \"status\": true,\n                \"category\": \"SOCIAL MEDIA\",\n                \"slots\": {\n                    \"max\": 20,\n                    \"used\": 0\n                },\n                \"task_site\": \"https://twitter.com/YourCampaign\",\n                \"reward\": {\n                    \"currency\": \"NGN\",\n                    \"amount\": 250\n                },\n                \"date\": \"2025-10-26T23:17:31.337Z\"\n            },\n            {\n                \"_id\": \"68feace7e3d7f9f769385b1f\",\n                \"title\": \"Join Telegram Community\",\n                \"description\": \"Join our Telegram community and stay active in discussions.\",\n                \"status\": true,\n                \"category\": \"COMMUNITY\",\n                \"slots\": {\n                    \"max\": 15,\n                    \"used\": 0\n                },\n                \"task_site\": \"https://t.me/ourCommunity\",\n                \"reward\": {\n                    \"currency\": \"NGN\",\n                    \"amount\": 500\n                },\n                \"date\": \"2025-10-26T23:21:11.042Z\"\n            },\n            {\n                \"_id\": \"68feaf4ffc4c1ac245487cf1\",\n                \"title\": \"TikTok Post Task\",\n                \"description\": \"Create and upload a short promotional TikTok video.\",\n                \"status\": true,\n                \"category\": \"ENGAGEMENT\",\n                \"reward\": {\n                    \"amount\": 1200,\n                    \"currency\": \"NGN\"\n                },\n                \"slots\": {\n                    \"max\": 50,\n                    \"used\": 0\n                },\n                \"task_site\": \"https://tiktok.com\",\n                \"date\": \"2025-10-26T23:31:27.903Z\"\n            },\n            {\n                \"_id\": \"68feb15323c8688423b7e0e2\",\n                \"title\": \"Share Product Promo on Facebook\",\n                \"description\": \"Share our promotional banner on your Facebook feed and keep it live for 48 hours.\",\n                \"status\": true,\n                \"category\": \"PROMOTION\",\n                \"reward\": {\n                    \"currency\": \"NGN\",\n                    \"amount\": 100\n                },\n                \"slots\": {\n                    \"max\": 25,\n                    \"used\": 0\n                },\n                \"task_site\": \"https://facebook.com/ourOfficialPage\",\n                \"date\": \"2025-10-26T23:40:03.565Z\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Start  a Task",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"task_id\": \"6917513f2dd044b1f399ed69\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/task-proof",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"task-proof"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"task_id\": \"68feac0be3d7f9f769385b1c\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/task-proof",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"task-proof"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "39"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"27-7NyufZLB0A+7xtbM0+vAw0MDOso\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 27 Oct 2025 12:40:10 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 201,\n    \"message\": \"Successfully\"\n}"
+						},
+						{
+							"name": "new success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"task_id\": \"68feb15323c8688423b7e0e2\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/task-proof",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"task-proof"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "341"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"155-Gu8VKA0loxZ1x9DOhQvuJAXIOVs\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 04 Nov 2025 02:43:32 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 201,\n    \"message\": \"Successfully\",\n    \"data\": {\n        \"is_archived\": false,\n        \"task_id\": \"68feb15323c8688423b7e0e2\",\n        \"user_id\": \"68feaaea36524d672e4443e3\",\n        \"approval_status\": \"pending\",\n        \"is_approved\": false,\n        \"submission_progress\": \"STARTED\",\n        \"_id\": \"69096854513f6e31aae6f60b\",\n        \"createdAt\": \"2025-11-04T02:43:32.083Z\",\n        \"updatedAt\": \"2025-11-04T02:43:32.083Z\",\n        \"__v\": 0\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "View Single Task",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tasks/{{task_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"{{task_id}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/tasks/{{task_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"tasks",
+										"{{task_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "458"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1ca-LgY2tqG7nC3MUPQOiwQFZycHnoM\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 27 Oct 2025 17:45:34 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully.\",\n    \"data\": {\n        \"_id\": \"68feac0be3d7f9f769385b1c\",\n        \"is_archived\": false,\n        \"title\": \"Retweet Our Campaign Tweet\",\n        \"description\": \"Share the official campaign tweet on your Twitter/X profile.\",\n        \"status\": true,\n        \"category\": \"SOCIAL MEDIA\",\n        \"slots\": {\n            \"max\": 20,\n            \"used\": 1\n        },\n        \"task_site\": \"https://twitter.com/YourCampaign\",\n        \"createdAt\": \"2025-10-26T23:17:31.337Z\",\n        \"updatedAt\": \"2025-10-27T12:40:10.411Z\",\n        \"__v\": 0,\n        \"reward\": {\n            \"currency\": \"NGN\",\n            \"amount\": 250\n        }\n    }\n}"
+						},
+						{
+							"name": "new success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/tasks/{{task_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"tasks",
+										"{{task_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "458"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1ca-I9q4YCGJkpaOMmO8gAkjIJleYlo\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 04 Nov 2025 04:04:30 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully.\",\n    \"data\": {\n        \"_id\": \"68feb15323c8688423b7e0e2\",\n        \"title\": \"Share Product Promo on Facebook\",\n        \"description\": \"Share our promotional banner on your Facebook feed and keep it live for 48 hours.\",\n        \"status\": true,\n        \"category\": \"PROMOTION\",\n        \"reward\": {\n            \"currency\": \"NGN\",\n            \"amount\": 100\n        },\n        \"slots\": {\n            \"max\": 25,\n            \"used\": 23\n        },\n        \"task_site\": \"https://facebook.com/ourOfficialPage\",\n        \"createdAt\": \"2025-10-26T23:40:03.565Z\",\n        \"updatedAt\": \"2025-11-04T04:03:00.032Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "My Tasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/task-proof/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"task-proof",
+								"users"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/task-proof/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"task-proof",
+										"users"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "633"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"279-5BqnZYcZ5LwKKTGQVguCf5zLCsk\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 27 Oct 2025 18:49:00 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successful.\",\n    \"data\": {\n        \"metadata\": {\n            \"total\": 1,\n            \"page\": 1,\n            \"limit\": 10,\n            \"pages\": 1\n        },\n        \"data\": [\n            {\n                \"_id\": \"68ff682a8234a4594dd2149c\",\n                \"user_id\": \"68feaaea36524d672e4443e3\",\n                \"task\": {\n                    \"_id\": \"68feac0be3d7f9f769385b1c\",\n                    \"is_archived\": false,\n                    \"title\": \"Retweet Our Campaign Tweet\",\n                    \"description\": \"Share the official campaign tweet on your Twitter/X profile.\",\n                    \"status\": true,\n                    \"category\": \"SOCIAL MEDIA\",\n                    \"slots\": {\n                        \"max\": 20,\n                        \"used\": 1\n                    },\n                    \"task_site\": \"https://twitter.com/YourCampaign\",\n                    \"createdAt\": \"2025-10-26T23:17:31.337Z\",\n                    \"updatedAt\": \"2025-10-27T12:40:10.411Z\",\n                    \"__v\": 0,\n                    \"reward\": {\n                        \"currency\": \"NGN\",\n                        \"amount\": 250\n                    }\n                },\n                \"date\": \"2025-10-27T12:40:10.169Z\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Submit Task Proof",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"src\": \"https://res.cloudinary.com/dlk3pswf9/image/upload/v1761597697/uploads/d5e2ee2ca661e607685d2ebb385fb998_driver%27s%20license.jpg\",\r\n    \"title\": \"This is the best I can do, please help me advertiser.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/task-proof/users/{{task_proof_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"task-proof",
+								"users",
+								"{{task_proof_id}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"src\": \"https://res.cloudinary.com/dlk3pswf9/image/upload/v1761597697/uploads/d5e2ee2ca661e607685d2ebb385fb998_driver%27s%20license.jpg\",\r\n    \"title\": \"I uploaded all was needed of me\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/task-proof/users/{{task_proof_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"task-proof",
+										"users",
+										"{{task_proof_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "39"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"27-I1w2/HTyBOrDpbtaWS4mgQgWhls\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 27 Oct 2025 20:58:48 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Sucessfully.\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Dashboard",
+			"item": [
+				{
+					"name": "Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/task-proof/users/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"task-proof",
+								"users",
+								"stats"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/task-proof/users/stats",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"task-proof",
+										"users",
+										"stats"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "86"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"56-YBWFzPMYictIGZMP/8PFgqkW+SU\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 27 Oct 2025 20:06:12 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"taskProof retrieved successfully\",\n    \"data\": {\n        \"completedJobs\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Referrals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/me/referrals/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"me",
+								"referrals",
+								"stats"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/me/referrals/stats",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"me",
+										"referrals",
+										"stats"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "99"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"63-YsRnEyXPOT0/xcKoIZ2ZmyHp/28\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 28 Oct 2025 04:49:45 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully\",\n    \"data\": {\n        \"total_referrals\": 2,\n        \"total_referral_earnings\": 1000\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Wallet Balance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/me/wallet-balance",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"me",
+								"wallet-balance"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/me/wallet-balance",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"me",
+										"wallet-balance"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "79"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"4f-jLuPqtTQHquvg3+ZOx7oVfxzlTA\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 28 Oct 2025 04:59:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully\",\n    \"data\": {\n        \"balance\": 500,\n        \"currency\": \"NGN\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Available Tasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tasks",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/tasks",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"tasks"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"5a6-5MwudSgzkO2LNNd1UT0BDbzxv30\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "br"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 26 Oct 2025 23:40:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully.\",\n    \"data\": {\n        \"metadata\": {\n            \"total\": 4,\n            \"page\": 1,\n            \"limit\": 10,\n            \"pages\": 1\n        },\n        \"data\": [\n            {\n                \"_id\": \"68feac0be3d7f9f769385b1c\",\n                \"title\": \"Retweet Our Campaign Tweet\",\n                \"description\": \"Share the official campaign tweet on your Twitter/X profile.\",\n                \"status\": true,\n                \"category\": \"SOCIAL MEDIA\",\n                \"slots\": {\n                    \"max\": 20,\n                    \"used\": 0\n                },\n                \"task_site\": \"https://twitter.com/YourCampaign\",\n                \"reward\": {\n                    \"currency\": \"NGN\",\n                    \"amount\": 250\n                },\n                \"date\": \"2025-10-26T23:17:31.337Z\"\n            },\n            {\n                \"_id\": \"68feace7e3d7f9f769385b1f\",\n                \"title\": \"Join Telegram Community\",\n                \"description\": \"Join our Telegram community and stay active in discussions.\",\n                \"status\": true,\n                \"category\": \"COMMUNITY\",\n                \"slots\": {\n                    \"max\": 15,\n                    \"used\": 0\n                },\n                \"task_site\": \"https://t.me/ourCommunity\",\n                \"reward\": {\n                    \"currency\": \"NGN\",\n                    \"amount\": 500\n                },\n                \"date\": \"2025-10-26T23:21:11.042Z\"\n            },\n            {\n                \"_id\": \"68feaf4ffc4c1ac245487cf1\",\n                \"title\": \"TikTok Post Task\",\n                \"description\": \"Create and upload a short promotional TikTok video.\",\n                \"status\": true,\n                \"category\": \"ENGAGEMENT\",\n                \"reward\": {\n                    \"amount\": 1200,\n                    \"currency\": \"NGN\"\n                },\n                \"slots\": {\n                    \"max\": 50,\n                    \"used\": 0\n                },\n                \"task_site\": \"https://tiktok.com\",\n                \"date\": \"2025-10-26T23:31:27.903Z\"\n            },\n            {\n                \"_id\": \"68feb15323c8688423b7e0e2\",\n                \"title\": \"Share Product Promo on Facebook\",\n                \"description\": \"Share our promotional banner on your Facebook feed and keep it live for 48 hours.\",\n                \"status\": true,\n                \"category\": \"PROMOTION\",\n                \"reward\": {\n                    \"currency\": \"NGN\",\n                    \"amount\": 100\n                },\n                \"slots\": {\n                    \"max\": 25,\n                    \"used\": 0\n                },\n                \"task_site\": \"https://facebook.com/ourOfficialPage\",\n                \"date\": \"2025-10-26T23:40:03.565Z\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Referrals",
+			"item": [
+				{
+					"name": "ReferralHistory",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/me/referrals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"me",
+								"referrals"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/me/referrals",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"me",
+										"referrals"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "486"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1e6-K5qGhMV135BEWXi7LExXi2QXB/w\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 28 Oct 2025 04:34:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully\",\n    \"data\": {\n        \"metadata\": {\n            \"total\": 2,\n            \"page\": 1,\n            \"limit\": 10,\n            \"pages\": 1\n        },\n        \"data\": [\n            {\n                \"_id\": \"6900440d073514b830898de7\",\n                \"first_name\": \"David\",\n                \"last_name\": \"Mensah\",\n                \"email\": \"david.mensah@yopmail.com\",\n                \"date\": \"2025-10-28T04:18:21.517Z\",\n                \"earnings\": {\n                    \"amount\": 500,\n                    \"currency\": \"NGN\"\n                }\n            },\n            {\n                \"_id\": \"69003d367ae4973b49e4feb8\",\n                \"first_name\": \"David\",\n                \"last_name\": \"Okoro\",\n                \"email\": \"david.okoro@yopmail.com\",\n                \"date\": \"2025-10-28T03:49:10.962Z\",\n                \"earnings\": {\n                    \"amount\": 500,\n                    \"currency\": \"NGN\"\n                }\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "ReferralStats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/me/referrals/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"me",
+								"referrals",
+								"stats"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/me/referrals/stats",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"me",
+										"referrals",
+										"stats"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "99"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"63-YsRnEyXPOT0/xcKoIZ2ZmyHp/28\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 28 Oct 2025 04:49:45 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully\",\n    \"data\": {\n        \"total_referrals\": 2,\n        \"total_referral_earnings\": 1000\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/me",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"me"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "521"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"209-6ONkIc7f0OVTCkRsyuxUcG+5u0E\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 29 Oct 2025 00:54:50 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully\",\n    \"data\": {\n        \"_id\": \"68feaaea36524d672e4443e3\",\n        \"status\": true,\n        \"is_deleted\": false,\n        \"is_archived\": false,\n        \"photo\": \"https://uatdrive.s3.us-west-002.backblazeb2.com/587228_profile_photo.png\",\n        \"first_name\": \"Miracle\",\n        \"last_name\": \"Johnson\",\n        \"email\": \"miracle.johnson@yopmail.com\",\n        \"username\": \"mirajohn01\",\n        \"phone\": \"+2348023456789\",\n        \"type\": \"User\",\n        \"role\": \"User\",\n        \"my_referral_code\": \"1CC4B7B688\",\n        \"country\": \"Ghana\",\n        \"createdAt\": \"2025-10-26T23:12:42.175Z\",\n        \"updatedAt\": \"2025-10-26T23:12:42.175Z\",\n        \"num\": 4,\n        \"__v\": 0\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"kyc\": {\r\n        \"full_name\": \"Jane Doe\",\r\n        \"DOB\": \"1990-05-15T00:00:00.000Z\",\r\n        \"identification_number\": \"ID123456789\",\r\n        \"residential_address\": \"123 Main St, Lagos, Nigeria\",\r\n        \"id_src\": \"https://example.com/id_document.jpg\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"first_name\": \"Mirabel\",\r\n    \"last_name\": \"Johnston\",\r\n    // \"email\": \"mir.jojsn@yopmail.com\"\r\n    \"phone\": \"08178900071\",\r\n    \"photo\": \"https://res.cloudinary.com/dlk3pswf9/image/upload/v1761699536/uploads/2639260b14705efda1833cee737a0bf0_jerry-photo.jpg\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/users/me",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"me"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "568"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"238-SRCaiabgdvq0igGdRvinaJSru8M\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 29 Oct 2025 01:04:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully\",\n    \"data\": {\n        \"_id\": \"68feaaea36524d672e4443e3\",\n        \"status\": true,\n        \"is_deleted\": false,\n        \"is_archived\": false,\n        \"photo\": \"https://res.cloudinary.com/dlk3pswf9/image/upload/v1761699536/uploads/2639260b14705efda1833cee737a0bf0_jerry-photo.jpg\",\n        \"first_name\": \"Mirabel\",\n        \"last_name\": \"Johnston\",\n        \"email\": \"miracle.johnson@yopmail.com\",\n        \"username\": \"mirajohn01\",\n        \"phone\": \"+2348178900071\",\n        \"type\": \"User\",\n        \"role\": \"User\",\n        \"my_referral_code\": \"1CC4B7B688\",\n        \"country\": \"Ghana\",\n        \"createdAt\": \"2025-10-26T23:12:42.175Z\",\n        \"updatedAt\": \"2025-10-29T01:04:24.802Z\",\n        \"num\": 4,\n        \"__v\": 0\n    }\n}"
+						},
+						{
+							"name": "KYC",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"kyc\": {\r\n        \"full_name\": \"Jane Doe\",\r\n        \"DOB\": \"1990-05-15T00:00:00.000Z\",\r\n        \"identification_number\": \"ID123456789\",\r\n        \"residential_address\": \"123 Main St, Lagos, Nigeria\",\r\n        \"id_src\": \"https://example.com/id_document.jpg\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/users/me",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"me"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "789"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"315-Acikgwvy7Fmtcq4okfaA5DI8JbM\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 01 Nov 2025 12:15:34 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully\",\n    \"data\": {\n        \"kyc\": {\n            \"is_approved\": false,\n            \"full_name\": \"Jane Doe\",\n            \"DOB\": \"1990-05-15T00:00:00.000Z\",\n            \"identification_number\": \"ID123456789\",\n            \"residential_address\": \"123 Main St, Lagos, Nigeria\",\n            \"id_src\": \"https://example.com/id_document.jpg\"\n        },\n        \"_id\": \"68feaaea36524d672e4443e3\",\n        \"status\": true,\n        \"is_deleted\": false,\n        \"is_archived\": false,\n        \"photo\": \"https://res.cloudinary.com/dlk3pswf9/image/upload/v1761699536/uploads/2639260b14705efda1833cee737a0bf0_jerry-photo.jpg\",\n        \"first_name\": \"Mirabel\",\n        \"last_name\": \"Johnston\",\n        \"email\": \"miracle.johnson@yopmail.com\",\n        \"username\": \"mirajohn01\",\n        \"phone\": \"+2348178900071\",\n        \"type\": \"User\",\n        \"role\": \"User\",\n        \"my_referral_code\": \"1CC4B7B688\",\n        \"country\": \"Ghana\",\n        \"createdAt\": \"2025-10-26T23:12:42.175Z\",\n        \"updatedAt\": \"2025-11-01T12:15:33.771Z\",\n        \"num\": 4,\n        \"__v\": 0\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Submit KYC",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"kyc\": {\r\n        \"full_name\": \"Jane Doe\",\r\n        \"DOB\": \"1990-05-15T00:00:00.000Z\",\r\n        \"identification_number\": \"ID123456789\",\r\n        \"residential_address\": \"123 Main St, Lagos, Nigeria\",\r\n        \"id_src\": \"https://example.com/id_document.jpg\" // the id card file\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"kyc\": {\r\n        \"full_name\": \"Jane Doe\",\r\n        \"DOB\": \"1990-05-15T00:00:00.000Z\",\r\n        \"identification_number\": \"ID123456789\",\r\n        \"residential_address\": \"123 Main St, Lagos, Nigeria\",\r\n        \"id_src\": \"https://example.com/id_document.jpg\" // the id card file\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/users/me",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"users",
+										"me"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "789"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"315-ThW2uChFl90Kt+q8qQ5lbstARNY\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 01 Nov 2025 12:19:36 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully\",\n    \"data\": {\n        \"kyc\": {\n            \"is_approved\": false,\n            \"full_name\": \"Jane Doe\",\n            \"DOB\": \"1990-05-15T00:00:00.000Z\",\n            \"identification_number\": \"ID123456789\",\n            \"residential_address\": \"123 Main St, Lagos, Nigeria\",\n            \"id_src\": \"https://example.com/id_document.jpg\"\n        },\n        \"_id\": \"68feaaea36524d672e4443e3\",\n        \"status\": true,\n        \"is_deleted\": false,\n        \"is_archived\": false,\n        \"photo\": \"https://res.cloudinary.com/dlk3pswf9/image/upload/v1761699536/uploads/2639260b14705efda1833cee737a0bf0_jerry-photo.jpg\",\n        \"first_name\": \"Mirabel\",\n        \"last_name\": \"Johnston\",\n        \"email\": \"miracle.johnson@yopmail.com\",\n        \"username\": \"mirajohn01\",\n        \"phone\": \"+2348178900071\",\n        \"type\": \"User\",\n        \"role\": \"User\",\n        \"my_referral_code\": \"1CC4B7B688\",\n        \"country\": \"Ghana\",\n        \"createdAt\": \"2025-10-26T23:12:42.175Z\",\n        \"updatedAt\": \"2025-11-01T12:19:36.643Z\",\n        \"num\": 4,\n        \"__v\": 0\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "ListTransactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/transactions/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transactions",
+								"users"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/transactions/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"transactions",
+										"users"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "367"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"16f-WySNOVK9cR5BOryt5cMMr5BP5pE\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 15 Nov 2025 03:32:07 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully\",\n    \"data\": {\n        \"metadata\": {\n            \"total\": 1,\n            \"page\": 1,\n            \"limit\": 10,\n            \"pages\": 1\n        },\n        \"data\": [\n            {\n                \"_id\": \"6917dc4b4a8e4bb4db53e7dc\",\n                \"reference\": \"REWARD_1763171403914_6917588b2dd044b1f399ed82\",\n                \"amount\": 50,\n                \"currency\": \"NGN\",\n                \"status\": \"success\",\n                \"type\": \"Credit\",\n                \"description\": \"task_reward_received\",\n                \"metadata\": {\n                    \"fees\": 0\n                },\n                \"createdAt\": \"2025-11-15T01:50:03.916Z\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "ViewTransaction",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/transactions/users/{{transaction_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transactions",
+								"users",
+								"{{transaction_id}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/transactions/users/{{transaction_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"transactions",
+										"users",
+										"{{transaction_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "424"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1a8-QE66XMWBLT5UxBrUBDCS99grcCA\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 15 Nov 2025 03:32:57 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Successfully\",\n    \"data\": {\n        \"_id\": \"6917dc4b4a8e4bb4db53e7dc\",\n        \"reference\": \"REWARD_1763171403914_6917588b2dd044b1f399ed82\",\n        \"amount\": 50,\n        \"currency\": \"NGN\",\n        \"status\": \"success\",\n        \"type\": \"Credit\",\n        \"description\": \"task_reward_received\",\n        \"user_id\": \"6917588b2dd044b1f399ed82\",\n        \"task_id\": \"6917513f2dd044b1f399ed69\",\n        \"metadata\": {\n            \"fees\": 0\n        },\n        \"createdAt\": \"2025-11-15T01:50:03.916Z\",\n        \"updatedAt\": \"2025-11-15T01:50:03.916Z\",\n        \"__v\": 0\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Upload File",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "files",
+							"type": "file",
+							"src": "/C:/Users/Jerry/Pictures/p72/gallery_2.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/files",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"files"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/C:/Users/Jerry/Pictures/p70/driver's license.jpeg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/files",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"files"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "Content-Length",
+							"value": "321"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"141-hL4Ltf0DzHCoEaZmZNYmU+Z9vvU\""
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 27 Oct 2025 20:41:38 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"Successful.\",\n    \"data\": [\n        {\n            \"src\": \"https://res.cloudinary.com/dlk3pswf9/image/upload/v1761597697/uploads/d5e2ee2ca661e607685d2ebb385fb998_driver%27s%20license.jpg\",\n            \"public_id\": \"uploads/d5e2ee2ca661e607685d2ebb385fb998_driver's license\",\n            \"title\": \"driver's license.jpeg\",\n            \"type\": \"image\",\n            \"size\": \"0.01 MB\"\n        }\n    ]\n}"
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "",
+			"disabled": true,
+			"description": "Localhost"
+		},
+		{
+			"key": "jwt",
+			"value": ""
+		},
+		{
+			"key": "base_url",
+			"value": "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1"
+		}
+	]
+}

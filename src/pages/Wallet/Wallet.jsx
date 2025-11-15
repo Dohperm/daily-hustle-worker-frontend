@@ -1,9 +1,10 @@
 // src/pages/Wallet/Wallet.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { getTransactions } from "../../services/services";
 
 export default function Wallet() {
   const { theme } = useTheme();
@@ -15,6 +16,8 @@ export default function Wallet() {
   const [method, setMethod] = useState("bank");
   const [loading, setLoading] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
+  const [transactions, setTransactions] = useState([]);
+  const [transactionsLoading, setTransactionsLoading] = useState(true);
 
   const isDark = theme === "dark";
   const card = isDark ? "#1c1c1e" : "#ffffff";
@@ -28,6 +31,26 @@ export default function Wallet() {
   const kycVerified = kyc.status === "verified";
   const minWithdraw = 1000;
   const canWithdraw = balance >= minWithdraw && kycVerified;
+
+  // Fetch recent transactions
+  const fetchTransactions = async () => {
+    try {
+      setTransactionsLoading(true);
+      const response = await getTransactions(1, 5);
+      const responseData = response.data?.data;
+      if (responseData) {
+        setTransactions(responseData.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    } finally {
+      setTransactionsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
 
   const handleWithdraw = (e) => {
     e.preventDefault();
@@ -96,6 +119,80 @@ export default function Wallet() {
             <i className="bi bi-list-ul me-1"></i>Transactions
           </button>
         </div>
+      </div>
+
+      {/* Recent Transactions */}
+      <div
+        className="p-4 rounded-4 shadow-sm mb-4"
+        style={{ background: card, border: `1px solid ${border}` }}
+      >
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5 style={{ color: text }}>Recent Transactions</h5>
+          <button
+            className="btn btn-sm"
+            style={{ color: primary }}
+            onClick={() => navigate("/dashboard/transactions")}
+          >
+            View All
+          </button>
+        </div>
+        
+        {transactionsLoading ? (
+          <div className="text-center py-3">
+            <div className="spinner-border spinner-border-sm" style={{ color: primary }}>
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        ) : transactions.length > 0 ? (
+          <div className="table-responsive">
+            <table className="table table-borderless mb-0">
+              <tbody>
+                {transactions.map((t) => (
+                  <tr key={t._id}>
+                    <td style={{ border: "none", padding: "0.5rem 0" }}>
+                      <div className="d-flex align-items-center">
+                        <div
+                          className="rounded-circle me-3 d-flex align-items-center justify-content-center"
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            background: t.type === "Credit" ? "rgba(255, 69, 0, 0.1)" : "rgba(220, 53, 69, 0.1)"
+                          }}
+                        >
+                          <i
+                            className={`bi ${t.type === "Credit" ? "bi-arrow-down" : "bi-arrow-up"}`}
+                            style={{ color: t.type === "Credit" ? primary : "#dc3545" }}
+                          ></i>
+                        </div>
+                        <div className="flex-grow-1">
+                          <div style={{ color: text, fontWeight: "500" }}>
+                            {t.type === "Credit" ? "Task Payment" : "Withdrawal"}
+                          </div>
+                          <small style={{ color: label }}>
+                            {new Date(t.createdAt).toLocaleDateString()}
+                          </small>
+                        </div>
+                        <div
+                          style={{
+                            color: t.type === "Credit" ? primary : "#dc3545",
+                            fontWeight: "bold"
+                          }}
+                        >
+                          {t.type === "Credit" ? "+" : "-"}{t.currency} {t.amount.toLocaleString()}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center py-4" style={{ color: label }}>
+            <i className="bi bi-inbox fs-4 mb-2 d-block"></i>
+            No transactions yet
+          </div>
+        )}
       </div>
 
       {/* Modal */}

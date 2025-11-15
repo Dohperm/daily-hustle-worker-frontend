@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
-import logo from "../../../public/assets/logo.png";
+import logo from "../../assets/logo.png";
 // Logo image – replace with your actual logo if desired
 const LOGO = logo;
 
@@ -16,7 +16,7 @@ export default function Sidebar() {
   const user = userData || {};
   const isDark = theme === "dark";
 
-  const handleWalletClick = useCallback(() => navigate("/wallet"), [navigate]);
+  const handleWalletClick = useCallback(() => navigate("/dashboard/wallet"), [navigate]);
   const handleLogout = useCallback(() => {
     logout();
   }, [logout]);
@@ -27,13 +27,13 @@ export default function Sidebar() {
   const navLinks = useMemo(
     () => [
       { name: "Dashboard", path: "/dashboard", icon: "bi-house-door-fill" },
-      { name: "Tasks", path: "/tasks", icon: "bi-briefcase-fill" },
-      { name: "Wallet", path: "/wallet", icon: "bi-wallet2" },
-      { name: "Notifications", path: "/notifications", icon: "bi-bell-fill" },
-      { name: "Transactions", path: "/transactions", icon: "bi-list-ul" },
-      { name: "Referrals", path: "/referrals", icon: "bi-people-fill" },
-      { name: "Support", path: "/support", icon: "bi-headset" },
-      { name: "Settings", path: "/settings", icon: "bi-gear-fill" },
+      { name: "Tasks", path: "/dashboard/tasks", icon: "bi-briefcase-fill" },
+      { name: "Wallet", path: "/dashboard/wallet", icon: "bi-wallet2" },
+      { name: "Notifications", path: "/dashboard/notifications", icon: "bi-bell-fill" },
+      { name: "Transactions", path: "/dashboard/transactions", icon: "bi-list-ul" },
+      { name: "Referrals", path: "/dashboard/referrals", icon: "bi-people-fill" },
+      { name: "Support", path: "/dashboard/support", icon: "bi-headset" },
+      { name: "Settings", path: "/dashboard/settings", icon: "bi-gear-fill" },
     ],
     []
   );
