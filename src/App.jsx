@@ -16,6 +16,7 @@ import Login from "./pages/auth/Login/login";
 import Signup from "./pages/auth/Signup/signup";
 import KYCForm from "./pages/auth/Kyc/kyc";
 import ForgotPassword from "./pages/auth/ForgotPassword/forgotPassword";
+import Landing from "./pages/Landing/Landing";
 import { useAppData } from "./hooks/AppDataContext";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -30,13 +31,18 @@ export default function App() {
   return (
     <>
       <Routes>
-        {/* Dashboard Layout Routes - Protected */}
+        {/* Landing Page */}
         <Route path="/" element={
+          userLoggedIn ? <Navigate to="/dashboard" replace /> : <Landing />
+        } />
+
+        {/* Dashboard Layout Routes - Protected */}
+        <Route path="/dashboard" element={
           <ProtectedRoute>
             <Layout />
           </ProtectedRoute>
         }>
-          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="tasks" element={<Tasks />} />
           <Route path="wallet" element={<Wallet />} />

@@ -240,10 +240,42 @@ const Login = () => {
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
+
+        .dh-home-btn {
+          position: absolute;
+          top: 2rem;
+          left: 2rem;
+          background: var(--card);
+          border: 2px solid var(--border);
+          color: var(--text);
+          padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.9rem;
+        }
+
+        .dh-home-btn:hover {
+          border-color: var(--dh-red);
+          color: var(--dh-red);
+          transform: translateY(-2px);
+        }
       `}</style>
 
       <div className="dh-login">
         <ToastContainer position="top-center" theme={isDark ? "dark" : "light"} autoClose={2400} />
+        
+        <button 
+          className="dh-home-btn"
+          onClick={() => navigate('/')}
+        >
+          <i className="bi bi-house" />
+          Back to Home
+        </button>
         
         <div className="dh-login-card">
           <h1 className="dh-title">Welcome Back</h1>
