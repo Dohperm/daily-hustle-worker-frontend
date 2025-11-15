@@ -215,43 +215,43 @@ const Landing = () => {
               <i className="bi bi-briefcase-fill" />
               DailyHustle
             </div>
-            <h1 className="dh-tagline">Earn Money Completing Simple Tasks</h1>
+            <h1 className="dh-tagline">For Workers: Earn Money Completing Simple Tasks</h1>
             <p className="dh-description">
-              Join thousands of users earning real money by completing reviews, surveys, and micro-tasks. 
-              Start your hustle today and get paid for your time.
+              Join thousands of workers earning real money by completing reviews, surveys, and micro-tasks. 
+              Perfect for freelancers, students, and anyone looking for flexible income opportunities.
             </p>
           </div>
 
           <div className="dh-features">
             <div className="dh-feature">
               <i className="bi bi-cash-coin dh-feature-icon" />
-              <h3 className="dh-feature-title">Instant Earnings</h3>
+              <h3 className="dh-feature-title">Worker-Friendly Payments</h3>
               <p className="dh-feature-text">
-                Get paid immediately after completing tasks. No waiting periods or complicated withdrawal processes.
+                Get paid immediately after task completion. Fair rates for workers with transparent payment system.
               </p>
             </div>
             
             <div className="dh-feature">
               <i className="bi bi-star-fill dh-feature-icon" />
-              <h3 className="dh-feature-title">Quality Tasks</h3>
+              <h3 className="dh-feature-title">Flexible Work</h3>
               <p className="dh-feature-text">
-                Complete reviews, surveys, and simple online tasks from verified businesses and platforms.
+                Work on your schedule. Choose from reviews, surveys, and micro-tasks that fit your availability.
               </p>
             </div>
             
             <div className="dh-feature">
               <i className="bi bi-people-fill dh-feature-icon" />
-              <h3 className="dh-feature-title">Referral Rewards</h3>
+              <h3 className="dh-feature-title">Build Your Network</h3>
               <p className="dh-feature-text">
-                Earn extra income by referring friends. Get bonuses for every successful referral you make.
+                Earn extra by referring other workers. Build your network and increase your earning potential.
               </p>
             </div>
           </div>
 
           <div className="dh-cta">
-            <h2 className="dh-cta-title">Ready to Start Earning?</h2>
+            <h2 className="dh-cta-title">Ready to Start Working?</h2>
             <p className="dh-cta-text">
-              Join our community and start making money with simple tasks today.
+              Join our worker community and start earning money on your own terms today.
             </p>
             <div className="dh-buttons">
               <button 
@@ -259,7 +259,7 @@ const Landing = () => {
                 onClick={() => navigate('/signup')}
               >
                 <i className="bi bi-person-plus" />
-                Get Started
+Join as Worker
               </button>
               <button 
                 className="dh-btn dh-btn-secondary"

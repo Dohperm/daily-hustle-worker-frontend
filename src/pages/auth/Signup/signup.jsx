@@ -3,7 +3,9 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useAppData } from "../../../hooks/AppDataContext";
+import { useTheme } from "../../../hooks/useThemeContext";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
 
 const getPasswordStrength = (pw) => {
@@ -23,7 +25,9 @@ const API_BASE = "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1
 
 export default function QuickSignup() {
   const navigate = useNavigate();
+  const { theme } = useTheme();
   const { setUserLoggedIn } = useAppData();
+  const isDark = theme === "dark";
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -133,54 +137,286 @@ export default function QuickSignup() {
 
   return (
     <>
-      <ToastContainer position="top-center" theme="colored" autoClose={3000} />
-      <div className="min-vh-100 d-flex align-items-center justify-content-center bg-gradient py-4 px-3">
-        <div
-          className="bg-white rounded-4 shadow-xl p-4 p-md-5 w-100"
-          style={{ maxWidth: "430px" }}
-        >
-          <div className="mb-4 text-center">
-            <span className="badge rounded-pill bg-light fs-6 mb-1">
+      <style jsx>{`
+        .dh-signup {
+          --bg: ${isDark ? "#0a0a0a" : "#f9fafb"};
+          --card: ${isDark ? "#141414" : "#fff"};
+          --text: ${isDark ? "#f0f0f0" : "#111"};
+          --muted: ${isDark ? "#aaa" : "#666"};
+          --border: ${isDark ? "#2a2a2a" : "#e5e7eb"};
+          --shadow: 0 8px 24px rgba(0, 0, 0, ${isDark ? "0.4" : "0.08"});
+          --dh-red: #ff4500;
+          --dh-red-hov: #e03e00;
+          --dh-red-light: #ff6a33;
+
+          background: var(--bg);
+          color: var(--text);
+          min-height: 100vh;
+          font-family: "Inter", system-ui, sans-serif;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 1rem;
+        }
+
+        .dh-signup-card {
+          background: var(--card);
+          border-radius: 1.2rem;
+          padding: 2rem;
+          width: 100%;
+          max-width: 430px;
+          border: 1px solid var(--border);
+          box-shadow: var(--shadow);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .dh-signup-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, var(--dh-red), var(--dh-red-light));
+        }
+
+        .dh-step-badge {
+          background: ${isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)"};
+          color: var(--muted);
+          padding: 0.5rem 1rem;
+          border-radius: 2rem;
+          font-size: 0.85rem;
+          font-weight: 600;
+          display: inline-block;
+          margin-bottom: 1rem;
+        }
+
+        .dh-title {
+          font-size: 1.8rem;
+          font-weight: 700;
+          text-align: center;
+          margin-bottom: 2rem;
+          color: var(--dh-red);
+        }
+
+        .dh-input {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 2px solid var(--border);
+          border-radius: 0.75rem;
+          background: var(--card);
+          color: var(--text);
+          font-size: 1rem;
+          transition: all 0.2s;
+          outline: none;
+          margin-bottom: 1rem;
+        }
+
+        .dh-input:focus {
+          border-color: var(--dh-red);
+          box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+        }
+
+        .dh-input::placeholder {
+          color: var(--muted);
+        }
+
+        .dh-input-wrapper {
+          position: relative;
+          margin-bottom: 1rem;
+        }
+
+        .dh-eye-btn {
+          position: absolute;
+          right: 1rem;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          color: var(--muted);
+          font-size: 1.2rem;
+          cursor: pointer;
+          padding: 0.25rem;
+          border-radius: 0.5rem;
+          transition: all 0.2s;
+        }
+
+        .dh-eye-btn:hover {
+          color: var(--dh-red);
+          background: rgba(255, 69, 0, 0.1);
+        }
+
+        .dh-progress {
+          height: 6px;
+          background: var(--border);
+          border-radius: 3px;
+          overflow: hidden;
+          margin-top: 0.5rem;
+        }
+
+        .dh-progress-bar {
+          height: 100%;
+          transition: width 0.3s ease;
+        }
+
+        .dh-strength-label {
+          font-size: 0.85rem;
+          font-weight: 600;
+          text-align: right;
+          margin-top: 0.25rem;
+        }
+
+        .dh-submit-btn {
+          width: 100%;
+          padding: 0.875rem;
+          background: linear-gradient(135deg, var(--dh-red), var(--dh-red-light));
+          color: #fff;
+          border: none;
+          border-radius: 0.75rem;
+          font-weight: 600;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          margin-top: 1.5rem;
+        }
+
+        .dh-submit-btn:hover:not(:disabled) {
+          background: linear-gradient(135deg, var(--dh-red-hov), var(--dh-red));
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(255, 69, 0, 0.3);
+        }
+
+        .dh-submit-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .dh-login-link {
+          text-align: center;
+          margin-top: 1.5rem;
+          color: var(--muted);
+        }
+
+        .dh-login-btn {
+          background: none;
+          border: none;
+          color: var(--dh-red);
+          font-weight: 600;
+          cursor: pointer;
+          text-decoration: none;
+          transition: color 0.2s;
+        }
+
+        .dh-login-btn:hover {
+          color: var(--dh-red-hov);
+          text-decoration: underline;
+        }
+
+        .dh-spinner {
+          width: 1rem;
+          height: 1rem;
+          border: 2px solid transparent;
+          border-top: 2px solid currentColor;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        .dh-otp-container {
+          display: flex;
+          justify-content: center;
+          gap: 0.5rem;
+          margin: 1.5rem 0;
+        }
+
+        .dh-otp-input {
+          width: 48px;
+          height: 54px;
+          text-align: center;
+          font-size: 1.6rem;
+          font-weight: bold;
+          border: 2px solid var(--border);
+          border-radius: 0.75rem;
+          background: var(--card);
+          color: var(--text);
+          outline: none;
+          transition: all 0.2s;
+        }
+
+        .dh-otp-input:focus {
+          border-color: var(--dh-red);
+          box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+        }
+
+        .dh-otp-text {
+          text-align: center;
+          color: var(--muted);
+          font-size: 0.9rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .dh-success-alert {
+          background: rgba(40, 199, 111, 0.1);
+          color: #28c76f;
+          padding: 0.75rem;
+          border-radius: 0.75rem;
+          text-align: center;
+          margin-top: 1rem;
+          border: 1px solid rgba(40, 199, 111, 0.2);
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+
+      <ToastContainer position="top-center" theme={isDark ? "dark" : "light"} autoClose={3000} />
+      <div className="dh-signup">
+        <div className="dh-signup-card">
+          <div className="text-center">
+            <span className="dh-step-badge">
               {step === 0 ? "Step 1 of 2" : "Step 2 of 2"}
             </span>
-            <h3 className="fw-bold mt-2 mb-0">
-              {step === 0 ? "Sign Up" : "Verify OTP"}
-            </h3>
+            <h1 className="dh-title">
+              {step === 0 ? "Create Account" : "Verify OTP"}
+            </h1>
           </div>
-          {/* Registration Step */}
           {step === 0 && (
             <form onSubmit={handleRegister}>
-              <div className="row g-3">
-                <div className="col-6">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="First Name"
-                    value={formData.first_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, first_name: e.target.value })
-                    }
-                    required
-                    disabled={loading}
-                  />
-                </div>
-                <div className="col-6">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Last Name"
-                    value={formData.last_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, last_name: e.target.value })
-                    }
-                    required
-                    disabled={loading}
-                  />
-                </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+                <input
+                  type="text"
+                  className="dh-input"
+                  placeholder="First Name"
+                  value={formData.first_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, first_name: e.target.value })
+                  }
+                  required
+                  disabled={loading}
+                  style={{ marginBottom: 0 }}
+                />
+                <input
+                  type="text"
+                  className="dh-input"
+                  placeholder="Last Name"
+                  value={formData.last_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, last_name: e.target.value })
+                  }
+                  required
+                  disabled={loading}
+                  style={{ marginBottom: 0 }}
+                />
               </div>
               <input
                 type="text"
-                className="form-control mt-3"
+                className="dh-input"
                 placeholder="Username"
                 value={formData.username}
                 onChange={(e) =>
@@ -195,7 +431,7 @@ export default function QuickSignup() {
               />
               <input
                 type="tel"
-                className="form-control mt-3"
+                className="dh-input"
                 placeholder="Phone Number"
                 value={formData.phone}
                 onChange={(e) =>
@@ -206,7 +442,7 @@ export default function QuickSignup() {
               />
               <input
                 type="email"
-                className="form-control mt-3"
+                className="dh-input"
                 placeholder="Email Address"
                 value={formData.email}
                 onChange={(e) =>
@@ -215,10 +451,10 @@ export default function QuickSignup() {
                 required
                 disabled={loading}
               />
-              <div className="position-relative mt-3">
+              <div className="dh-input-wrapper">
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="form-control pe-5"
+                  className="dh-input"
                   placeholder="Create Password"
                   value={formData.password}
                   onChange={(e) =>
@@ -226,31 +462,30 @@ export default function QuickSignup() {
                   }
                   required
                   disabled={loading}
+                  style={{ paddingRight: "3rem", marginBottom: 0 }}
                 />
                 <button
                   type="button"
-                  className="btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"
+                  className="dh-eye-btn"
                   onClick={() => setShowPassword((v) => !v)}
                   tabIndex={-1}
                   aria-label={showPassword ? "Hide Password" : "Show Password"}
                 >
-                  <i
-                    className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
-                  ></i>
+                  <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} />
                 </button>
               </div>
-              <div className="mt-2">
-                <div className="progress" style={{ height: "6px" }}>
+              <div>
+                <div className="dh-progress">
                   <div
-                    className="progress-bar"
+                    className="dh-progress-bar"
                     style={{
                       background: strengthColors[passwordStrength],
                       width: `${(passwordStrength / 5) * 100}%`,
                     }}
-                  ></div>
+                  />
                 </div>
                 <div
-                  className="small mt-1 mb-0 text-end fw-semibold"
+                  className="dh-strength-label"
                   style={{ color: strengthColors[passwordStrength] }}
                 >
                   {strengthLabels[passwordStrength]}
@@ -258,7 +493,7 @@ export default function QuickSignup() {
               </div>
               <input
                 type="text"
-                className="form-control mt-3"
+                className="dh-input"
                 placeholder="Referral Code (Optional)"
                 value={formData.referral_code}
                 onChange={(e) =>
@@ -267,12 +502,13 @@ export default function QuickSignup() {
                 disabled={loading}
               />
               <select
-                className="form-select mt-3"
+                className="dh-input"
                 value={formData.country}
                 onChange={(e) =>
                   setFormData({ ...formData, country: e.target.value })
                 }
                 disabled={loading}
+                style={{ marginBottom: 0 }}
               >
                 <option value="Ghana">Ghana</option>
                 <option value="Nigeria">Nigeria</option>
@@ -281,31 +517,23 @@ export default function QuickSignup() {
               </select>
               <button
                 type="submit"
-                className="btn w-100 mt-4 py-2 fw-bold text-white"
-                style={{
-                  backgroundColor: '#ff4500',
-                  border: 'none',
-                  borderRadius: '12px'
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#e03e00'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#ff4500'}
+                className="dh-submit-btn"
                 disabled={loading || passwordStrength < 4}
               >
                 {loading ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    <div className="dh-spinner" />
                     Processing...
                   </>
                 ) : (
-                  "Register"
+                  "Create Account"
                 )}
               </button>
-              <div className="text-center mt-3">
-                <span className="text-muted small">Already have an account? </span>
+              <div className="dh-login-link">
+                Already have an account?{" "}
                 <button
                   type="button"
-                  className="btn btn-link p-0 text-decoration-none fw-semibold"
-                  style={{ color: '#ff4500' }}
+                  className="dh-login-btn"
                   onClick={() => navigate('/login')}
                 >
                   Sign In
@@ -313,14 +541,13 @@ export default function QuickSignup() {
               </div>
             </form>
           )}
-          {/* OTP Verification Step */}
           {step === 1 && (
             <div>
-              <p className="text-center text-muted small mb-3">
+              <p className="dh-otp-text">
                 Enter the 6-digit code sent to:{" "}
                 <strong>{formData.email}</strong>
               </p>
-              <div className="d-flex justify-content-center gap-2 mb-4">
+              <div className="dh-otp-container">
                 {otp.map((digit, idx) => (
                   <input
                     key={idx}
@@ -330,25 +557,20 @@ export default function QuickSignup() {
                     value={digit}
                     onChange={(e) => handleOtpChange(e.target.value, idx)}
                     onKeyDown={(e) => handleOtpKeyDown(e, idx)}
-                    className="form-control text-center fs-4 fw-bold"
-                    style={{
-                      width: "48px",
-                      height: "54px",
-                      fontSize: "1.6rem",
-                      borderRadius: "12px",
-                    }}
+                    className="dh-otp-input"
                     disabled={loading}
                   />
                 ))}
               </div>
               <button
-                className="btn btn-success w-100 py-2 fw-bold"
+                className="dh-submit-btn"
                 onClick={handleVerifyOtp}
                 disabled={loading || otp.join("").length !== 6}
+                style={{ marginTop: 0 }}
               >
                 {loading ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    <div className="dh-spinner" />
                     Verifying...
                   </>
                 ) : (
@@ -356,9 +578,8 @@ export default function QuickSignup() {
                 )}
               </button>
               {otpVerified && (
-                <div className="alert alert-success mt-3 text-center">
-                  <i className="bi bi-check-circle"></i> Account created
-                  successfully!
+                <div className="dh-success-alert">
+                  <i className="bi bi-check-circle" /> Account created successfully!
                 </div>
               )}
             </div>
