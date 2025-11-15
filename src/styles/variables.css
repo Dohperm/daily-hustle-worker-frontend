@@ -1,0 +1,17 @@
+:root {
+    --dh-blue: #1e6fff;
+    --dh-red: #ff4500;
+    --dh-green: #28c76f;
+    --dh-yellow: #ffc107;
+    --dh-muted: #6c757d;
+    --dh-card-bg: #ffffff;
+    --dh-soft-bg: #f6f8ff;
+    --dh-sidebar-bg: linear-gradient(180deg, #0f254f, #16386b);
+    --dh-sidebar-width: 240px;
+}
+
+[data-theme="dark"] {
+    --dh-card-bg: #0b1220;
+    --dh-soft-bg: #071224;
+    --dh-muted: #a6b0c3;
+}

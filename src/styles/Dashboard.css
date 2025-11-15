@@ -1,0 +1,225 @@
+.fintech-ui.dash-ui {
+  background: var(--dh-bg-gradient);
+  min-height: 100vh;
+  padding: 2rem 1rem 2rem 1rem;
+}
+
+.dash-notification-bar {
+  display: flex;
+  align-items: center;
+  background: var(--dh-card-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 14px rgba(44, 62, 80, 0.06);
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+  gap: 1.2rem;
+}
+.noti-bell {
+  font-size: 1.4rem;
+  color: var(--dh-red);
+  padding-right: 0.15rem;
+}
+.noti-text {
+  font-weight: 600;
+  font-size: 1.16rem;
+  color: var(--dh-text);
+}
+.user-name {
+  color: var(--dh-green);
+  font-weight: 700;
+}
+
+.dash-balance-card {
+  background: var(--dh-card-bg);
+  box-shadow: 0 4px 24px 0 rgba(44, 62, 80, 0.08);
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.7rem 1.2rem;
+  max-width: 430px;
+  margin: 0 auto 2.3rem auto;
+  gap: 1.2rem;
+}
+.balance-label {
+  font-size: 1rem;
+  color: var(--dh-muted);
+  margin-bottom: 0.18rem;
+  display: block;
+}
+.balance-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--dh-green);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.eye-btn {
+  border: none;
+  background: transparent;
+  color: var(--dh-muted);
+  margin-left: 0.2rem;
+  font-size: 1.18rem;
+  cursor: pointer;
+  outline: none;
+  transition: color 0.2s;
+}
+.eye-btn:focus,
+.eye-btn:hover {
+  color: var(--dh-blue);
+}
+
+.primary-btn {
+  border: none;
+  outline: none;
+  border-radius: 22px;
+  background: var(--dh-red);
+  color: #fff;
+  font-size: 1.02rem;
+  font-weight: 600;
+  padding: 0.5rem 1.6rem;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.primary-btn:hover {
+  background: #cf2230;
+}
+
+/* Task summary grid */
+.dash-summary-grid {
+  margin: 2.1rem auto 0 auto;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  max-width: 500px;
+}
+.summary-card {
+  background: var(--dh-card-bg);
+  box-shadow: 0 2px 11px rgba(44, 62, 80, 0.1);
+  border-radius: 13px;
+  padding: 1.11rem 1.21rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 145px;
+  position: relative;
+}
+.summary-label {
+  color: var(--dh-muted);
+  font-size: 0.99rem;
+  margin-bottom: 0.03rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+.summary-icon {
+  font-size: 1.14rem;
+  color: var(--dh-yellow);
+  vertical-align: middle;
+  margin-right: 0.23rem;
+}
+.summary-value {
+  color: var(--dh-red);
+  font-size: 1.37rem;
+  font-weight: 700;
+  margin-top: 0.25rem;
+}
+
+/* Quick navigation cards */
+.dash-nav-shortcuts {
+  margin: 2.1rem auto 0 auto;
+  display: flex;
+  gap: 1.15rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 660px;
+}
+.nav-shortcut-card {
+  background: var(--dh-card-bg);
+  border-radius: 16px;
+  box-shadow: 0 1px 9px rgba(44, 62, 80, 0.09);
+  padding: 1.08rem 1.21rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 105px;
+  border: none;
+  cursor: pointer;
+  color: var(--dh-text);
+  font-size: 1.07rem;
+  font-weight: 600;
+  transition: box-shadow 0.16s, background 0.16s;
+}
+.nav-shortcut-card:hover {
+  background: rgba(230, 57, 70, 0.08);
+  box-shadow: 0 4px 18px rgba(44, 62, 80, 0.15);
+}
+.nav-shortcut-icon {
+  font-size: 1.33rem;
+  color: var(--dh-blue);
+  margin-bottom: 0.3rem;
+}
+@media (max-width: 600px) {
+  .dash-notification-bar,
+  .dash-balance-card {
+    padding: 1rem 0.4rem;
+  }
+  .dash-summary-grid {
+    flex-direction: column;
+    gap: 0.6rem;
+    max-width: 100vw;
+  }
+  .dash-nav-shortcuts {
+    gap: 0.6rem;
+    flex-direction: column;
+    align-items: stretch;
+    padding-bottom: 1rem;
+  }
+  .summary-card,
+  .nav-shortcut-card {
+    min-width: 0;
+    width: 100%;
+  }
+}
+.noti-bell {
+  position: relative;
+}
+.noti-badge {
+  position: absolute;
+  top: -2px;
+  right: -12px;
+  background: var(--dh-red);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  padding: 3px 7px;
+  font-weight: 700;
+}
+.noti-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: 0.8rem;
+  margin-top: 8px;
+}
+.noti-preview-item {
+  font-size: 0.98rem;
+  color: var(--dh-blue);
+  background: rgba(0,123,255,0.05);
+  border-radius: 6px;
+  padding: 2px 9px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.noti-preview-item:hover {
+  background: rgba(0,123,255,0.09);
+}
+.noti-dot {
+  color: var(--dh-red);
+  font-size: 1.1rem;
+  margin-right: 3px;
+}

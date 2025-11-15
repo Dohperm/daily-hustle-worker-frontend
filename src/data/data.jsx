@@ -1,0 +1,313 @@
+import { useUserData } from "../hooks/useUserDataContext";
+
+export const DEFAULT_TASKS = [
+  {
+    id: "t1",
+    title: "Follow Instagram",
+    category: "Social Media",
+    payout: 200,
+    slots: 50,
+    completedSlots: 12,
+    color: "#ffc107",
+    status: "Open",
+    closed: false,
+    description:
+      "Follow our official Instagram account to stay updated with daily earning opportunities and exclusive tips.",
+    instructions: [
+      "1. Click the Instagram link provided",
+      '2. Tap "Follow" button',
+      "3. Stay following for 24 hours",
+      "4. Screenshot your profile showing our account followed",
+      "5. Submit screenshot for instant approval",
+    ],
+    reviewText: null,
+    link: "https://www.instagram.com/dailyhustleapp",
+  },
+  {
+    id: "t2",
+    title: "Review Mobile App",
+    category: "App Review",
+    payout: 500,
+    slots: 30,
+    completedSlots: 8,
+    color: "#198754",
+    status: "Open",
+    closed: true,
+    description:
+      "Share your honest review of our mobile app on Google Play Store to help others discover earning opportunities.",
+    instructions: [
+      "1. Download Daily Hustle app from Play Store",
+      "2. Use app for 5 minutes",
+      "3. Go to Play Store > Our App > Reviews",
+      "4. Copy-paste EXACT review text below",
+      "5. Take screenshot of posted review",
+      "6. Submit screenshot",
+    ],
+    reviewText:
+      "Excellent app! Daily Hustle changed my life - earning ₦500 daily is real! ⭐⭐⭐⭐⭐",
+    link: "https://play.google.com/store/apps/details?id=com.dailyhustle.app",
+  },
+  {
+    id: "t3",
+    title: "Share YouTube",
+    category: "Promotion",
+    payout: 300,
+    slots: 100,
+    completedSlots: 45,
+    color: "#ff4500",
+    status: "Open",
+    closed: false,
+    description:
+      "Share our latest YouTube tutorial video on your social media to help others learn earning strategies.",
+    instructions: [
+      "1. Click our YouTube video link",
+      "2. Watch first 30 seconds",
+      "3. Click Share button",
+      "4. Post to Facebook OR Twitter",
+      "5. Leave post public for 24 hours",
+      "6. Submit screenshot of shared post",
+    ],
+    reviewText: null,
+    link: "https://www.youtube.com/watch?v=dailyhustle_tutorial",
+  },
+  {
+    id: "t4",
+    title: "Join Telegram",
+    category: "Social Media",
+    payout: 150,
+    slots: 30,
+    completedSlots: 8,
+    color: "#6f42c1",
+    status: "Open",
+    closed: false,
+    description:
+      "Join our official Telegram channel to receive instant notifications about new tasks and bonus offers.",
+    instructions: [
+      "1. Click the Telegram invite link",
+      '2. Tap "Join Channel" button',
+      "3. Remain in channel for 24 hours",
+      "4. Take screenshot of channel membership",
+      "5. Submit screenshot for payment",
+    ],
+    reviewText: null,
+    link: "https://t.me/dailyhustleapp",
+  },
+  {
+    id: "t5",
+    title: "Like Facebook",
+    category: "Facebook",
+    payout: 100,
+    slots: 80,
+    completedSlots: 35,
+    color: "#fd7e14",
+    status: "Open",
+    closed: false,
+    description:
+      "Like our Facebook page to join our community of successful daily earners.",
+    instructions: [
+      "1. Click our Facebook page link",
+      '2. Click "Like" button',
+      "3. Stay liked for 24 hours",
+      '4. Screenshot page showing "Liked"',
+      "5. Submit screenshot for payment",
+    ],
+    reviewText: null,
+    link: "https://www.facebook.com/dailyhustleapp",
+  },
+  {
+    id: "t6",
+    title: "Twitter Retweet",
+    category: "Twitter",
+    payout: 250,
+    slots: 60,
+    completedSlots: 22,
+    color: "#0dcaf0",
+    status: "Open",
+    closed: false,
+    description:
+      "Retweet our latest tweet to spread the word about Daily Hustle earning opportunities.",
+    instructions: [
+      "1. Visit our Twitter profile",
+      "2. Find our latest tweet",
+      "3. Click Retweet button",
+      "4. Keep tweet public for 24 hours",
+      "5. Take screenshot of retweet",
+      "6. Submit screenshot with tweet URL",
+    ],
+    reviewText: null,
+    link: "https://twitter.com/dailyhustleapp/status/latest",
+  },
+  {
+    id: "t7",
+    title: "WhatsApp Status",
+    category: "Promotion",
+    payout: 400,
+    slots: 40,
+    completedSlots: 15,
+    color: "#25D366",
+    status: "Open",
+    closed: false,
+    description:
+      "Update your WhatsApp status with our promo to reach all your contacts instantly.",
+    instructions: [
+      "1. Save our promo image",
+      "2. Open WhatsApp > Status",
+      "3. Upload our promo image",
+      '4. Add caption: "Join me earning daily!"',
+      "5. Keep status for 24 hours",
+      "6. Submit screenshot of your status",
+    ],
+    reviewText: null,
+    link: "https://awodaily.com/promo-image.jpg",
+  },
+  {
+    id: "t8",
+    title: "Review Website",
+    category: "Website Review",
+    payout: 300,
+    slots: 25,
+    completedSlots: 5,
+    color: "#fd7e14",
+    status: "Open",
+    closed: true,
+    description:
+      "Write a review about our website on Trustpilot to build credibility and attract more users.",
+    instructions: [
+      "1. Visit awodaily.com",
+      "2. Browse for 3 minutes",
+      "3. Go to Trustpilot.com",
+      '4. Search "Awodaily" and click Review',
+      "5. Copy-paste EXACT review text below",
+      "6. Submit screenshot of published review",
+    ],
+    reviewText:
+      "Amazing website! Super fast and user-friendly! Daily Hustle is the best! ⭐⭐⭐⭐⭐",
+    link: "https://www.trustpilot.com/review/awodaily.com",
+  },
+  {
+    id: "t9",
+    title: "Product Review",
+    category: "Product Review",
+    payout: 400,
+    slots: 20,
+    completedSlots: 3,
+    color: "#ff4500",
+    status: "Open",
+    closed: true,
+    description:
+      "Review one of our digital products on your social media to help others make informed purchase decisions.",
+    instructions: [
+      "1. Choose any product from our store",
+      "2. Post on Facebook/Twitter/Instagram",
+      "3. Copy-paste EXACT review text below",
+      "4. Include product link in post",
+      "5. Take screenshot of complete post",
+      "6. Submit screenshot with post URL",
+    ],
+    reviewText:
+      "Best product ever! High quality and delivered fast! Daily Hustle products are amazing! ⭐⭐⭐⭐⭐",
+    link: "https://awodaily.com/store",
+  },
+  {
+    id: "t10",
+    title: "Twitter Follow",
+    category: "Twitter",
+    payout: 180,
+    slots: 35,
+    completedSlots: 10,
+    color: "#1DA1F2",
+    status: "Open",
+    closed: false,
+    description:
+      "Follow our Twitter account to get daily earning tips and never miss new tasks.",
+    instructions: [
+      "1. Click our Twitter profile link",
+      '2. Click "Follow" button',
+      "3. Stay following for 24 hours",
+      "4. Screenshot your following list showing us",
+      "5. Submit screenshot for instant credit",
+    ],
+    reviewText: null,
+    link: "https://twitter.com/dailyhustleapp",
+  },
+];
+
+
+
+
+
+
+
+export function DEFAULT_NOTIFICATIONS(){
+
+const {userData}=useUserData();
+return(
+   [
+      {
+        id: "n1",
+        title: "Task Approved",
+        description: "Instagram Follow approved! ₦200 earned",
+        type: "success",
+        read: false,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: "n2",
+        title: "Task Rejected",
+        description: "YouTube Share needs better proof",
+        type: "error",
+        read: false,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: "n3",
+        title: "Referral Bonus",
+        description: "Friend joined! ₦500 earned",
+        type: "success",
+        read: false,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: "n4",
+        title: "New Tasks",
+        description: "5 fresh tasks added today!",
+        type: "info",
+        read: false,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: "n5",
+        title: "KYC Verified",
+        description: "Account fully verified!",
+        type: "success",
+        read: true,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: "n6",
+        title: "Withdrawal Processed",
+        description: "₦2,000 sent to bank",
+        type: "info",
+        read: false,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: "n7",
+        title: "Leaderboard #5",
+        description: "You're now #5 this week!",
+        type: "info",
+        read: false,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: "n8",
+        title: "Welcome Back",
+        description: `Ready to earn ₦500 today, ${
+          userData.username || "John Doe"
+        }?`,
+        type: "info",
+        read: true,
+        timestamp: new Date().toISOString(),
+      },
+    ])}
+   
