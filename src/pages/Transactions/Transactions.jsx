@@ -1,19 +1,23 @@
 // src/pages/Transactions/Transactions.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
-// eslint-disable-next-line no-unused-vars
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { getTransactions } from "../../services/services";
 
 export default function Transactions() {
   const { theme } = useTheme();
-  const { userData, recordTaskHistory } = useAppData();
+  const { recordTaskHistory } = useAppData();
   const navigate = useNavigate();
 
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [metadata, setMetadata] = useState({});
   const [filter, setFilter] = useState("all");
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
   const itemsPerPage = 10;
 
   const isDark = theme === "dark";
@@ -23,28 +27,48 @@ export default function Transactions() {
   const muted = isDark ? "#adb5bd" : "#6c757d";
   const primary = "var(--dh-red)";
 
-  const { transactions = [] } = userData || {};
+  useEffect(() => {
+    fetchTransactions();
+  }, [currentPage, search]);
 
-  // Filter transactions
-  const filteredTransactions = transactions
-    .filter((t) => filter === "all" || t.type === filter)
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const fetchTransactions = async () => {
+    try {
+      setLoading(true);
+      const response = await getTransactions(currentPage, itemsPerPage, '-1', search);
+      setTransactions(response.data.data.data);
+      setMetadata(response.data.data.metadata);
+    } catch (error) {
+      toast.error("Failed to load transactions");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentTransactions = filteredTransactions.slice(
-    startIndex,
-    startIndex + itemsPerPage
+  const filteredTransactions = transactions.filter(t => 
+    filter === "all" || t.type.toLowerCase() === filter.toLowerCase()
   );
 
-  const getTypeColor = (type) => (type === "Task Payment" ? primary : "#6c757d");
+  const getTypeColor = (type) => (type === "Credit" ? primary : "#6c757d");
 
   const openModal = (tx) => {
     setSelectedTransaction(tx);
-    recordTaskHistory("transactions", "opened_details", `Viewed transaction #${tx.id}`);
+    recordTaskHistory("transactions", "opened_details", `Viewed transaction ${tx.reference}`);
   };
 
   const closeModal = () => setSelectedTransaction(null);
+
+  if (loading) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center min-vh-100"
+        style={{ backgroundColor: containerBg, color: textColor }}
+      >
+        <div className="spinner-border" style={{ color: primary }} role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   if (!transactions?.length)
     return (
@@ -73,38 +97,50 @@ export default function Transactions() {
               <i className="bi bi-list-ul me-2"></i>Transactions
             </h2>
             <small style={{ color: muted }}>
-              Page {currentPage}/{totalPages} • {filteredTransactions.length}{" "}
-              total
+              Page {metadata.page || 1}/{metadata.pages || 1} • {metadata.total || 0} total
             </small>
           </div>
           <button
             className="btn btn-outline-light rounded-pill"
-            onClick={() => navigate("/wallet")}
+            onClick={() => navigate("/dashboard/wallet")}
             style={{ borderColor: primary, color: textColor }}
           >
             <i className="bi bi-arrow-left me-2"></i>Back to Wallet
           </button>
         </div>
 
-        {/* Filter */}
-        <div className="mb-3">
-          {["all", "Task Payment"].map((type) => (
-            <button
-              key={type}
-              onClick={() => {
-                setFilter(type);
-                setCurrentPage(1);
-              }}
-              className="btn rounded-pill px-3 fw-semibold me-2"
+        {/* Search and Filter */}
+        <div className="row mb-3">
+          <div className="col-md-6">
+            <input
+              type="text"
+              className="form-control rounded-pill"
+              placeholder="Search transactions..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               style={{
-                border: `1px solid ${primary}`,
-                color: filter === type ? "#fff" : textColor,
-                backgroundColor: filter === type ? primary : "transparent",
+                backgroundColor: cardBg,
+                border: `1px solid ${isDark ? '#444' : '#ddd'}`,
+                color: textColor
               }}
-            >
-              {type === "all" ? "All" : "Task Payments"}
-            </button>
-          ))}
+            />
+          </div>
+          <div className="col-md-6">
+            {["all", "Credit", "Debit"].map((type) => (
+              <button
+                key={type}
+                onClick={() => setFilter(type)}
+                className="btn rounded-pill px-3 fw-semibold me-2"
+                style={{
+                  border: `1px solid ${primary}`,
+                  color: filter === type ? "#fff" : textColor,
+                  backgroundColor: filter === type ? primary : "transparent",
+                }}
+              >
+                {type === "all" ? "All" : type}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Data Table */}
@@ -118,7 +154,7 @@ export default function Transactions() {
                 style={{ backgroundColor: isDark ? "#2a2a2d" : "#f8f9fa" }}
               >
                 <tr>
-                  {["ID", "Date", "Type", "Amount", "Task"].map((h, i) => (
+                  {["Reference", "Date", "Type", "Amount", "Description"].map((h, i) => (
                     <th key={i} style={{ border: "none", color: textColor }}>
                       {h}
                     </th>
@@ -126,13 +162,15 @@ export default function Transactions() {
                 </tr>
               </thead>
               <tbody>
-                {currentTransactions.map((t) => (
+                {filteredTransactions.map((t) => (
                   <tr
-                    key={t.id}
+                    key={t._id}
                     style={{ cursor: "pointer" }}
                     onClick={() => openModal(t)}
                   >
-                    <td style={{ color: primary, border: "none" }}>#{t.id}</td>
+                    <td style={{ color: primary, border: "none" }}>
+                      {t.reference.slice(-8)}
+                    </td>
                     <td style={{ color: muted, border: "none" }}>
                       {new Date(t.createdAt).toLocaleDateString()}
                     </td>
@@ -150,14 +188,14 @@ export default function Transactions() {
                     <td
                       style={{
                         border: "none",
-                        color: primary,
+                        color: t.type === "Credit" ? "#28a745" : "#dc3545",
                         fontWeight: "bold",
                       }}
                     >
-                      ₦{t.amount.toLocaleString()}
+                      {t.type === "Credit" ? "+" : "-"}₦{t.amount.toLocaleString()}
                     </td>
                     <td style={{ border: "none", color: textColor }}>
-                      {t.title}
+                      {t.description.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
                     </td>
                   </tr>
                 ))}
@@ -167,23 +205,39 @@ export default function Transactions() {
         </div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="d-flex justify-content-center gap-2 mt-4 flex-wrap">
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i + 1)}
-                className="btn rounded-pill px-3 py-1"
-                style={{
-                  backgroundColor:
-                    currentPage === i + 1 ? primary : "transparent",
-                  color: currentPage === i + 1 ? "#fff" : textColor,
-                  border: `1px solid ${primary}`,
-                }}
-              >
-                {i + 1}
-              </button>
-            ))}
+        {metadata.pages > 1 && (
+          <div className="d-flex justify-content-center align-items-center gap-2 mt-4">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="btn rounded-pill px-3"
+              style={{
+                backgroundColor: "transparent",
+                color: textColor,
+                border: `1px solid ${primary}`,
+                opacity: currentPage === 1 ? 0.5 : 1
+              }}
+            >
+              Previous
+            </button>
+            
+            <span style={{ color: textColor, margin: "0 15px" }}>
+              {currentPage} of {metadata.pages}
+            </span>
+            
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(metadata.pages, prev + 1))}
+              disabled={currentPage === metadata.pages}
+              className="btn rounded-pill px-3"
+              style={{
+                backgroundColor: "transparent",
+                color: textColor,
+                border: `1px solid ${primary}`,
+                opacity: currentPage === metadata.pages ? 0.5 : 1
+              }}
+            >
+              Next
+            </button>
           </div>
         )}
       </div>
@@ -216,7 +270,7 @@ export default function Transactions() {
                 style={{ backgroundColor: primary }}
               >
                 <h5 className="text-white m-0">
-                  Transaction #{selectedTransaction.id}
+                  Transaction Details
                 </h5>
                 <button
                   className="btn-close btn-close-white"
@@ -225,19 +279,31 @@ export default function Transactions() {
               </div>
               <div className="modal-body">
                 <p>
+                  <strong>Reference:</strong> {selectedTransaction.reference}
+                </p>
+                <p>
                   <strong>Type:</strong> {selectedTransaction.type}
                 </p>
                 <p>
-                  <strong>Amount:</strong> ₦
-                  {selectedTransaction.amount.toLocaleString()}
+                  <strong>Amount:</strong> ₦{selectedTransaction.amount.toLocaleString()}
                 </p>
                 <p>
-                  <strong>Date:</strong>{" "}
-                  {new Date(selectedTransaction.createdAt).toLocaleString()}
+                  <strong>Status:</strong> 
+                  <span className={`badge ms-2 ${selectedTransaction.status === 'success' ? 'bg-success' : 'bg-warning'}`}>
+                    {selectedTransaction.status}
+                  </span>
                 </p>
                 <p>
-                  <strong>Task:</strong> {selectedTransaction.title}
+                  <strong>Date:</strong> {new Date(selectedTransaction.createdAt).toLocaleString()}
                 </p>
+                <p>
+                  <strong>Description:</strong> {selectedTransaction.description.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                </p>
+                {selectedTransaction.metadata?.fees !== undefined && (
+                  <p>
+                    <strong>Fees:</strong> ₦{selectedTransaction.metadata.fees}
+                  </p>
+                )}
               </div>
               <div className="modal-footer border-0">
                 <button

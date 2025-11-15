@@ -30,7 +30,7 @@ export default function Sidebar() {
       { name: "Tasks", path: "/dashboard/tasks", icon: "bi-briefcase-fill" },
       { name: "Wallet", path: "/dashboard/wallet", icon: "bi-wallet2" },
       { name: "Notifications", path: "/dashboard/notifications", icon: "bi-bell-fill" },
-      { name: "Transactions", path: "/dashboard/transactions", icon: "bi-list-ul" },
+      // { name: "Transactions", path: "/dashboard/transactions", icon: "bi-list-ul" },
       { name: "Referrals", path: "/dashboard/referrals", icon: "bi-people-fill" },
       { name: "Support", path: "/dashboard/support", icon: "bi-headset" },
       { name: "Settings", path: "/dashboard/settings", icon: "bi-gear-fill" },
@@ -129,6 +129,7 @@ export default function Sidebar() {
             to={link.path}
             className="nav-link-item"
             key={link.name}
+            end={link.path === "/dashboard"}
             style={({ isActive }) => ({
               backgroundColor: isActive ? "#ff4500" : "transparent",
               color: isActive ? "#fff" : isDark ? "#f8f9fa" : "#212529",

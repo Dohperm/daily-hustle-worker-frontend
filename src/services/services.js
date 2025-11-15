@@ -21,8 +21,11 @@ export const getReferralStats = () => api.get("/users/me/referrals/stats");
 export const getReferralHistory = () => api.get("/users/me/referrals");
 
 /* ------------------- TRANSACTIONS ------------------- */
-export const getTransactions = (page = 1, limit = 10) => 
-  api.get(`/transactions/users?page=${page}&limit=${limit}`);
+export const getTransactions = (pageNo = 1, limitNo = 10, order = '-1', search = '') => {
+  const params = new URLSearchParams({ pageNo, limitNo, order });
+  if (search) params.append('search', search);
+  return api.get(`/transactions/users?${params}`);
+};
 
 /* -------------------- FILE UPLOAD ------------------- */
 export const uploadFile = (file) => {

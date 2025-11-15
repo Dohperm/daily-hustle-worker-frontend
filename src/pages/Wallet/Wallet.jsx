@@ -114,7 +114,7 @@ export default function Wallet() {
           </button>
           <button
             className="btn btn-outline-light rounded-pill fw-bold px-4"
-            onClick={() => navigate("/transactions")}
+            onClick={() => navigate("/dashboard/transactions")}
           >
             <i className="bi bi-list-ul me-1"></i>Transactions
           </button>
