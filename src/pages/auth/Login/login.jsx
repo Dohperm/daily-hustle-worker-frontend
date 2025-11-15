@@ -6,11 +6,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
 import { useAppData } from "../../../hooks/AppDataContext";
+import { useTheme } from "../../../hooks/useThemeContext";
 
 const API_BASE = "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     identifier: "", // email or username
     password: "",
@@ -20,6 +22,8 @@ const Login = () => {
   const [loginError, setLoginError] = useState("");
   const idRef = useRef();
   const { setUserLoggedIn } = useAppData();
+
+  const isDark = theme === "dark";
 
   useEffect(() => {
     if (idRef.current) idRef.current.focus();
@@ -57,92 +61,269 @@ const Login = () => {
   };
 
   return (
-    <div
-      className="d-flex justify-content-center align-items-center vh-100"
-      style={{
-        background: "linear-gradient(135deg, #fff, #ffe5e5)",
-        fontFamily: "Poppins, sans-serif",
-      }}
-    >
-      <ToastContainer position="top-center" theme="colored" autoClose={2400} />
-      <div
-        className="card shadow-lg p-4"
-        style={{
-          maxWidth: "400px",
-          borderRadius: "16px",
-          borderTop: "5px solid #ff4500",
-        }}
-      >
-        <h2 className="fw-bold text-center mb-3 text-danger">Welcome Back</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Email or Username</label>
-            <input
-              type="text"
-              ref={idRef}
-              name="identifier"
-              className="form-control rounded-3 py-2"
-              value={formData.identifier}
-              onChange={handleChange}
-              required
-              autoComplete="username"
-            />
-          </div>
-          <div className="mb-2 position-relative">
-            <label className="form-label fw-semibold">Password</label>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              className="form-control rounded-3 py-2 pe-5"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              autoComplete="current-password"
-            />
-            <button
-              type="button"
-              tabIndex={-1}
-              className="btn btn-link p-0 position-absolute top-50 end-0 pe-3 translate-middle-y text-muted"
-              onClick={() => setShowPassword((v) => !v)}
-              style={{ fontSize: "1.3rem" }}
-            >
-              <i
-                className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
-              ></i>
-            </button>
-          </div>
-          {loginError && (
-            <div className="alert alert-danger small py-2 mb-2 mt-2 text-center">
-              {loginError}
+    <>
+      <style jsx>{`
+        .dh-login {
+          --bg: ${isDark ? "#0a0a0a" : "#f9fafb"};
+          --card: ${isDark ? "#141414" : "#fff"};
+          --text: ${isDark ? "#f0f0f0" : "#111"};
+          --muted: ${isDark ? "#aaa" : "#666"};
+          --border: ${isDark ? "#2a2a2a" : "#e5e7eb"};
+          --shadow: 0 8px 24px rgba(0, 0, 0, ${isDark ? "0.4" : "0.08"});
+          --dh-red: #ff4500;
+          --dh-red-hov: #e03e00;
+          --dh-red-light: #ff6a33;
+
+          background: var(--bg);
+          color: var(--text);
+          min-height: 100vh;
+          font-family: "Inter", system-ui, sans-serif;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 1rem;
+        }
+
+        .dh-login-card {
+          background: var(--card);
+          border-radius: 1.2rem;
+          padding: 2rem;
+          width: 100%;
+          max-width: 400px;
+          border: 1px solid var(--border);
+          box-shadow: var(--shadow);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .dh-login-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, var(--dh-red), var(--dh-red-light));
+        }
+
+        .dh-title {
+          font-size: 1.8rem;
+          font-weight: 700;
+          text-align: center;
+          margin-bottom: 2rem;
+          color: var(--dh-red);
+        }
+
+        .dh-form-group {
+          margin-bottom: 1.5rem;
+        }
+
+        .dh-label {
+          display: block;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          color: var(--text);
+          font-size: 0.9rem;
+        }
+
+        .dh-input {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 2px solid var(--border);
+          border-radius: 0.75rem;
+          background: var(--card);
+          color: var(--text);
+          font-size: 1rem;
+          transition: all 0.2s;
+          outline: none;
+        }
+
+        .dh-input:focus {
+          border-color: var(--dh-red);
+          box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+        }
+
+        .dh-input-wrapper {
+          position: relative;
+        }
+
+        .dh-eye-btn {
+          position: absolute;
+          right: 1rem;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          color: var(--muted);
+          font-size: 1.2rem;
+          cursor: pointer;
+          padding: 0.25rem;
+          border-radius: 0.5rem;
+          transition: all 0.2s;
+        }
+
+        .dh-eye-btn:hover {
+          color: var(--dh-red);
+          background: rgba(255, 69, 0, 0.1);
+        }
+
+        .dh-error {
+          background: rgba(220, 53, 69, 0.1);
+          color: #dc3545;
+          padding: 0.75rem;
+          border-radius: 0.5rem;
+          text-align: center;
+          font-size: 0.9rem;
+          margin-bottom: 1rem;
+          border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+
+        .dh-submit-btn {
+          width: 100%;
+          padding: 0.875rem;
+          background: linear-gradient(135deg, var(--dh-red), var(--dh-red-light));
+          color: #fff;
+          border: none;
+          border-radius: 0.75rem;
+          font-weight: 600;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        .dh-submit-btn:hover:not(:disabled) {
+          background: linear-gradient(135deg, var(--dh-red-hov), var(--dh-red));
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(255, 69, 0, 0.3);
+        }
+
+        .dh-submit-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .dh-signup-link {
+          text-align: center;
+          margin-top: 1.5rem;
+          color: var(--muted);
+        }
+
+        .dh-signup-btn {
+          background: none;
+          border: none;
+          color: var(--dh-red);
+          font-weight: 600;
+          cursor: pointer;
+          text-decoration: none;
+          transition: color 0.2s;
+        }
+
+        .dh-signup-btn:hover {
+          color: var(--dh-red-hov);
+          text-decoration: underline;
+        }
+
+        .dh-spinner {
+          width: 1rem;
+          height: 1rem;
+          border: 2px solid transparent;
+          border-top: 2px solid currentColor;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+
+      <div className="dh-login">
+        <ToastContainer position="top-center" theme={isDark ? "dark" : "light"} autoClose={2400} />
+        
+        <div className="dh-login-card">
+          <h1 className="dh-title">Welcome Back</h1>
+          
+          <form onSubmit={handleSubmit}>
+            <div className="dh-form-group">
+              <label className="dh-label">Email or Username</label>
+              <input
+                type="text"
+                ref={idRef}
+                name="identifier"
+                className="dh-input"
+                value={formData.identifier}
+                onChange={handleChange}
+                required
+                autoComplete="username"
+                placeholder="Enter your email or username"
+              />
             </div>
-          )}
-          <button
-            type="submit"
-            className="btn btn-danger w-100 py-2 rounded-3 fw-semibold"
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2"></span>
-                Logging in...
-              </>
-            ) : (
-              "Login"
+            
+            <div className="dh-form-group">
+              <label className="dh-label">Password</label>
+              <div className="dh-input-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  className="dh-input"
+                  style={{ paddingRight: "3rem" }}
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  autoComplete="current-password"
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  className="dh-eye-btn"
+                  onClick={() => setShowPassword((v) => !v)}
+                  tabIndex={-1}
+                >
+                  <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} />
+                </button>
+              </div>
+            </div>
+            
+            {loginError && (
+              <div className="dh-error">
+                {loginError}
+              </div>
             )}
-          </button>
-          <p className="text-center mt-3 mb-0">
-            Don’t have an account?{" "}
+            
             <button
-              type="button"
-              className="btn btn-link p-0 text-danger text-decoration-none fw-semibold"
-              onClick={() => navigate('/signup')}
+              type="submit"
+              className="dh-submit-btn"
+              disabled={loading}
             >
-              Sign up
+              {loading ? (
+                <>
+                  <div className="dh-spinner" />
+                  Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
             </button>
-          </p>
-        </form>
+            
+            <div className="dh-signup-link">
+              Don't have an account?{" "}
+              <button
+                type="button"
+                className="dh-signup-btn"
+                onClick={() => navigate('/signup')}
+              >
+                Sign up
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
