@@ -73,8 +73,13 @@ export default function Sidebar() {
 
       {/* Collapse Toggle */}
       <button
-        className="btn btn-sm btn-outline-light mb-3"
+        className="btn btn-sm mb-3"
         onClick={() => setCollapsed(!collapsed)}
+        style={{
+          border: `1px solid ${isDark ? '#f8f9fa' : '#ff4500'}`,
+          color: isDark ? '#f8f9fa' : '#ff4500',
+          backgroundColor: 'transparent'
+        }}
       >
         <i
           className={`bi ${
@@ -145,7 +150,26 @@ export default function Sidebar() {
         ))}
 
         {/* Logout */}
-        <button className="btn btn-outline-light mt-3" onClick={handleLogout}>
+        <button 
+          className="btn mt-3" 
+          onClick={handleLogout}
+          style={{
+            border: `1px solid ${isDark ? '#f8f9fa' : '#ff4500'}`,
+            color: isDark ? '#f8f9fa' : '#ff4500',
+            backgroundColor: 'transparent',
+            borderRadius: '8px',
+            padding: '8px 12px',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = isDark ? '#f8f9fa' : '#ff4500';
+            e.target.style.color = isDark ? '#212529' : '#fff';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = 'transparent';
+            e.target.style.color = isDark ? '#f8f9fa' : '#ff4500';
+          }}
+        >
           <i className="bi bi-box-arrow-left" />
           {!collapsed && <span className="ms-2">Logout</span>}
         </button>

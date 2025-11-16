@@ -72,12 +72,12 @@ export default function Dashboard() {
         }
 
         .dh-dash {
-          --bg: ${isDark ? "#0a0a0a" : "#f9fafb"};
-          --card: ${isDark ? "#141414" : "#fff"};
-          --text: ${isDark ? "#f0f0f0" : "#111"};
-          --muted: ${isDark ? "#aaa" : "#666"};
-          --border: ${isDark ? "#2a2a2a" : "#e5e7eb"};
-          --shadow: 0 8px 24px rgba(0, 0, 0, ${isDark ? "0.4" : "0.08"});
+          --bg: ${isDark ? "#121212" : "#f8f9fa"};
+          --card: ${isDark ? "#1c1c1e" : "#ffffff"};
+          --text: ${isDark ? "#f8f9fa" : "#212529"};
+          --muted: ${isDark ? "#adb5bd" : "#6c757d"};
+          --border: ${isDark ? "#343a40" : "#dee2e6"};
+          --shadow: 0 8px 24px rgba(0, 0, 0, ${isDark ? "0.3" : "0.1"});
 
           background: var(--bg);
           color: var(--text);

@@ -17,15 +17,15 @@
   --dh-yellow: #fbc531;
   --dh-muted: #6c757d;
 
-  --dh-bg-gradient: linear-gradient(180deg, #f4f7fb, #e9f0ff);
+  --dh-bg-gradient: linear-gradient(180deg, #f8f9fa, #ffffff);
   --dh-bg-dark: #121212;
   --dh-sidebar-bg: #0d1b2a;
   --dh-card-bg: #ffffff;
   --dh-card-dark: #1e1e29;
-  --dh-text: #2c3e50;
+  --dh-text: #212529;
   --dh-text-light: #e6eef8;
   --dh-muted-dark: #aab3c6;
-  --dh-border: #e9ecef;
+  --dh-border: #dee2e6;
   --dh-border-dark: #333;
   --primary-color: #007bff;
 
@@ -36,12 +36,12 @@
  * DARK MODE
  * ============================================================================ */
 body.dh-dark, .dark-mode {
-  --dh-bg-gradient: linear-gradient(180deg, #05080f, #0a1426);
+  --dh-bg-gradient: linear-gradient(180deg, #121212, #1a1a1a);
   --dh-sidebar-bg: #0b1220;
-  --dh-card-bg: #1e1e29;
-  --dh-text: #e6eef8;
-  --dh-muted: #aab3c6;
-  --dh-border: #333;
+  --dh-card-bg: #1c1c1e;
+  --dh-text: #f8f9fa;
+  --dh-muted: #adb5bd;
+  --dh-border: #343a40;
 }
 
 /* ============================================================================ 
@@ -283,7 +283,8 @@ background: var(--dh-card-bg);
 .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
 .stat-item {
   display: flex; align-items: center; gap: .75rem; padding: .75rem;
-  border-radius: 12px; background: #f8f9fa;
+  border-radius: 12px; background: var(--dh-card-bg);
+  border: 1px solid var(--dh-border);
 }
 .stat-item.pending { border-left: 4px solid #ffc107; }
 .stat-item.available { border-left: 4px solid #0dcaf0; }
@@ -342,7 +343,7 @@ background: var(--dh-card-bg);
   transition: background 0.2s, transform 0.2s;
   border: 1px solid var(--dh-bg-gradient);
 }
-.earning-item:hover { background: #f3f7fa; transform: scale(1.01); }
+.earning-item:hover { background: #f8f9fa; transform: scale(1.01); }
 .earning-item.highlight {
   background:  var(--dh-red);
   color: #fff; border: none;
@@ -398,8 +399,8 @@ body.dh-dark .earning-item.highlight .earning-value,
 .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .68rem; }
 .nav-btn {
   display: flex; flex-direction: column; align-items: center; gap: .4rem;
-  padding: 0.97rem; border: none; border-radius: 11px;
-  background: #f8f9fa; font-size: .95rem; transition: background 0.2s, color 0.2s;
+  padding: 0.97rem; border: 1px solid var(--dh-border); border-radius: 11px;
+  background: var(--dh-card-bg); font-size: .95rem; transition: background 0.2s, color 0.2s;
   color: var(--dh-text); font-weight: 500;
 }
 .nav-btn:hover { background: var(--dh-red); color: #fff; }
