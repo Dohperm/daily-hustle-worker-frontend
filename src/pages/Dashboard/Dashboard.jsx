@@ -43,8 +43,8 @@ export default function Dashboard() {
     const safeUserTasks = Array.isArray(userTasks) ? userTasks : [];
     return {
       totalEarned: balance,
-      thisMonth: Math.floor(balance * 0.7),
-      referralBonus: 3200,
+      thisMonth: 0,
+      referralBonus: 0,
       tasksCompleted: safeUserTasks.filter((t) =>
         ["verified", "completed", "approved"].includes(t.status)
       ).length,
