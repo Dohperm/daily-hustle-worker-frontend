@@ -2,16 +2,10 @@ import React, { useState, useMemo, useCallback } from "react";
 import { useAppData } from "../../hooks/AppDataContext";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useNavigate } from "react-router-dom";
-import EarningsOverview from "../../components/subcomponents/EarningsOverview";
+
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-const NAV_SHORTCUTS = [
-  { name: "Tasks", path: "/dashboard/tasks", icon: "bi-briefcase-fill" },
-  { name: "Wallet", path: "/dashboard/wallet", icon: "bi-wallet2" },
-  { name: "Notifications", path: "/dashboard/notifications", icon: "bi-bell-fill" },
-  { name: "Transactions", path: "/dashboard/transactions", icon: "bi-list-ul" },
-  { name: "Referrals", path: "/dashboard/referrals", icon: "bi-people-fill" },
-];
+
 
 export default function Dashboard() {
   const { userData, tasks = [], notifications = [] } = useAppData();
@@ -43,6 +37,19 @@ export default function Dashboard() {
       ).length,
     };
   }, [tasks, userTasks]);
+
+  // Calculate earnings data
+  const earningsData = useMemo(() => {
+    const safeUserTasks = Array.isArray(userTasks) ? userTasks : [];
+    return {
+      totalEarned: balance,
+      thisMonth: Math.floor(balance * 0.7),
+      referralBonus: 3200,
+      tasksCompleted: safeUserTasks.filter((t) =>
+        ["verified", "completed", "approved"].includes(t.status)
+      ).length,
+    };
+  }, [balance, userTasks]);
 
   const unreadCount = useMemo(
     () => notifications.filter((n) => !n.read).length,
@@ -220,44 +227,65 @@ export default function Dashboard() {
           font-weight: 700;
         }
 
-        /* Quick Nav */
-        .dh-quick {
+        /* Earnings Cards */
+        .dh-earnings {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-          gap: 0.8rem;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1rem;
         }
-        .dh-quick-btn {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.4rem;
-          padding: 1rem;
+        .dh-earning-card {
           background: var(--card);
-          border: 1.5px solid var(--border);
           border-radius: 1rem;
-          color: var(--text);
-          font-weight: 600;
-          font-size: 0.9rem;
-          cursor: pointer;
-          transition: 0.25s;
-        }
-        .dh-quick-btn:hover {
-          background: var(--dh-red);
-          color: #fff;
-          border-color: var(--dh-red);
-          transform: translateY(-3px);
-        }
-        .dh-quick-btn i {
-          font-size: 1.5rem;
+          padding: 1.2rem;
+          border: 1px solid var(--border);
+          box-shadow: var(--shadow);
           transition: transform 0.2s;
         }
-        .dh-quick-btn:hover i {
-          transform: scale(1.2);
+        .dh-earning-card:hover {
+          transform: translateY(-2px);
+        }
+        .dh-earning-header {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          margin-bottom: 0.5rem;
+        }
+        .dh-earning-icon {
+          width: 2.2rem;
+          height: 2.2rem;
+          border-radius: 0.7rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.1rem;
+          color: #fff;
+        }
+        .dh-earning-icon.total {
+          background: var(--dh-red);
+        }
+        .dh-earning-icon.month {
+          background: #4caf50;
+        }
+        .dh-earning-icon.referral {
+          background: #2196f3;
+        }
+        .dh-earning-icon.tasks {
+          background: #9c27b0;
+        }
+        .dh-earning-label {
+          font-size: 0.85rem;
+          color: var(--muted);
+          font-weight: 500;
+        }
+        .dh-earning-value {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--text);
         }
 
         @media (max-width: 640px) {
           .dh-stats,
-          .dh-quick {
+          .dh-earnings {
             grid-template-columns: 1fr;
           }
         }
@@ -311,40 +339,99 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Task Stats */}
-        <div className="dh-stats">
-          <div className="dh-stat pending">
-            <i className="bi bi-clock-history" />
-            <div className="dh-stat-label">Pending</div>
-            <div className="dh-stat-value">{stats.pending}</div>
+
+
+
+
+        {/* Tasks Overview Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+          <i className="bi bi-briefcase-fill" style={{ color: 'var(--dh-red)', fontSize: '1.2rem' }}></i>
+          <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Tasks Overview</h3>
+        </div>
+
+        {/* Task Cards */}
+        <div className="dh-earnings" style={{ marginBottom: '2rem' }}>
+          <div className="dh-earning-card">
+            <div className="dh-earning-header">
+              <div className="dh-earning-icon tasks">
+                <i className="bi bi-check2-all" />
+              </div>
+              <div className="dh-earning-label">Tasks Completed</div>
+            </div>
+            <div className="dh-earning-value">
+              {earningsData.tasksCompleted}
+            </div>
           </div>
-          <div className="dh-stat available">
-            <i className="bi bi-check2-circle" />
-            <div className="dh-stat-label">Available</div>
-            <div className="dh-stat-value">{stats.available}</div>
+
+          <div className="dh-earning-card">
+            <div className="dh-earning-header">
+              <div className="dh-earning-icon" style={{ background: '#ffa726' }}>
+                <i className="bi bi-clock-history" />
+              </div>
+              <div className="dh-earning-label">Tasks Pending</div>
+            </div>
+            <div className="dh-earning-value">
+              {stats.pending}
+            </div>
           </div>
-          <div className="dh-stat completed">
-            <i className="bi bi-check2-all" />
-            <div className="dh-stat-label">Completed</div>
-            <div className="dh-stat-value">{stats.completed}</div>
+
+          <div className="dh-earning-card">
+            <div className="dh-earning-header">
+              <div className="dh-earning-icon" style={{ background: '#4caf50' }}>
+                <i className="bi bi-check2-circle" />
+              </div>
+              <div className="dh-earning-label">Tasks Available</div>
+            </div>
+            <div className="dh-earning-value">
+              {stats.available}
+            </div>
           </div>
         </div>
 
-        {/* Earnings Overview */}
-        <EarningsOverview />
+        {/* Earnings Overview Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+          <i className="bi bi-graph-up-arrow" style={{ color: 'var(--dh-red)', fontSize: '1.2rem' }}></i>
+          <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Earnings Overview</h3>
+          <span style={{ background: 'var(--dh-red)', color: '#fff', fontSize: '0.75rem', fontWeight: 600, padding: '0.25rem 0.6rem', borderRadius: '0.8rem', marginLeft: 'auto' }}>This Month</span>
+        </div>
 
-        {/* Quick Access */}
-        <div className="dh-quick">
-          {NAV_SHORTCUTS.map((item) => (
-            <button
-              key={item.name}
-              className="dh-quick-btn"
-              onClick={go(item.path)}
-            >
-              <i className={`bi ${item.icon}`} />
-              <span>{item.name}</span>
-            </button>
-          ))}
+        {/* Earnings Cards */}
+        <div className="dh-earnings">
+          <div className="dh-earning-card">
+            <div className="dh-earning-header">
+              <div className="dh-earning-icon total">
+                <i className="bi bi-wallet2" />
+              </div>
+              <div className="dh-earning-label">Total Earned</div>
+            </div>
+            <div className="dh-earning-value">
+              ₦{earningsData.totalEarned.toLocaleString()}
+            </div>
+          </div>
+
+          <div className="dh-earning-card">
+            <div className="dh-earning-header">
+              <div className="dh-earning-icon month">
+                <i className="bi bi-calendar3" />
+              </div>
+              <div className="dh-earning-label">This Month</div>
+            </div>
+            <div className="dh-earning-value">
+              ₦{earningsData.thisMonth.toLocaleString()}
+            </div>
+          </div>
+
+          <div className="dh-earning-card">
+            <div className="dh-earning-header">
+              <div className="dh-earning-icon referral">
+                <i className="bi bi-people" />
+              </div>
+              <div className="dh-earning-label">Referral Bonus</div>
+            </div>
+            <div className="dh-earning-value">
+              ₦{earningsData.referralBonus.toLocaleString()}
+            </div>
+          </div>
         </div>
       </section>
     </>
