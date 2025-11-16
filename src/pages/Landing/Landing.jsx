@@ -182,6 +182,116 @@ const Landing = () => {
           transform: translateY(-2px);
         }
 
+        .dh-plans {
+          margin: 4rem 0;
+        }
+
+        .dh-plans-title {
+          text-align: center;
+          font-size: 2rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          color: var(--text);
+        }
+
+        .dh-plans-subtitle {
+          text-align: center;
+          color: var(--dh-red);
+          font-size: 1.2rem;
+          font-weight: 600;
+          margin-bottom: 3rem;
+        }
+
+        .dh-plans-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 2rem;
+          margin-bottom: 2rem;
+        }
+
+        .dh-plan-card {
+          background: var(--card);
+          border-radius: 1rem;
+          padding: 2rem;
+          border: 1px solid var(--border);
+          box-shadow: var(--shadow);
+          position: relative;
+          transition: transform 0.2s;
+        }
+
+        .dh-plan-card:hover {
+          transform: translateY(-4px);
+        }
+
+        .dh-plan-badge {
+          position: absolute;
+          top: -10px;
+          left: 20px;
+          padding: 0.3rem 0.8rem;
+          border-radius: 1rem;
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: #fff;
+        }
+
+        .dh-plan-badge.free {
+          background: #6c757d;
+        }
+
+        .dh-plan-badge.pro {
+          background: #ffa726;
+        }
+
+        .dh-plan-badge.vip {
+          background: #9c27b0;
+        }
+
+        .dh-plan-badge.enterprise {
+          background: #2196f3;
+        }
+
+        .dh-plan-title {
+          font-size: 1.3rem;
+          font-weight: 700;
+          margin: 1rem 0 0.5rem;
+          color: var(--text);
+        }
+
+        .dh-plan-price {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--dh-red);
+          margin-bottom: 1.5rem;
+        }
+
+        .dh-plan-features {
+          list-style: none;
+          padding: 0;
+        }
+
+        .dh-plan-features li {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 0.8rem;
+          color: var(--text);
+        }
+
+        .dh-plan-features i {
+          color: #4caf50;
+          font-size: 0.9rem;
+        }
+
+        .dh-coming-soon {
+          text-align: center;
+          background: linear-gradient(135deg, var(--dh-red), var(--dh-red-light));
+          color: #fff;
+          padding: 1.5rem;
+          border-radius: 1rem;
+          font-weight: 600;
+          margin-top: 2rem;
+        }
+
         @media (max-width: 768px) {
           .dh-logo {
             font-size: 2.5rem;
@@ -245,6 +355,56 @@ const Landing = () => {
               <p className="dh-feature-text">
                 Earn extra by referring other workers. Build your network and increase your earning potential.
               </p>
+            </div>
+          </div>
+
+          <div className="dh-plans">
+            <h2 className="dh-plans-title">Choose Your Plan</h2>
+            <p className="dh-plans-subtitle">📱 Worker Plans</p>
+            
+            <div className="dh-plans-grid">
+              <div className="dh-plan-card">
+                <div className="dh-plan-badge free">FREE</div>
+                <h3 className="dh-plan-title">Casual Earner</h3>
+                <div className="dh-plan-price">₦0/annum</div>
+                <ul className="dh-plan-features">
+                  <li><i className="bi bi-check"></i> Low-paying jobs only</li>
+                  <li><i className="bi bi-check"></i> 10 tasks/day limit</li>
+                  <li><i className="bi bi-check"></i> Standard approval queue</li>
+                  <li><i className="bi bi-check"></i> 2 HP per task</li>
+                </ul>
+              </div>
+
+              <div className="dh-plan-card">
+                <div className="dh-plan-badge pro">PRO</div>
+                <h3 className="dh-plan-title">⚡ PRO Consistent Earner</h3>
+                <div className="dh-plan-price">₦5,000/annum</div>
+                <ul className="dh-plan-features">
+                  <li><i className="bi bi-check"></i> Medium + Low-paying jobs</li>
+                  <li><i className="bi bi-check"></i> 25 tasks/day limit</li>
+                  <li><i className="bi bi-check"></i> Faster approval queue</li>
+                  <li><i className="bi bi-check"></i> 3 HP per task (1.5x boost)</li>
+                  <li><i className="bi bi-check"></i> HP for withdrawal fee reduction</li>
+                </ul>
+              </div>
+
+              <div className="dh-plan-card">
+                <div className="dh-plan-badge vip">VIP</div>
+                <h3 className="dh-plan-title">⭐ VIP Full-Time Hustler</h3>
+                <div className="dh-plan-price">₦10,000/annum</div>
+                <ul className="dh-plan-features">
+                  <li><i className="bi bi-check"></i> ALL job types access</li>
+                  <li><i className="bi bi-check"></i> Unlimited tasks/day</li>
+                  <li><i className="bi bi-check"></i> VIP approval (fastest)</li>
+                  <li><i className="bi bi-check"></i> 4 HP per task (2x boost)</li>
+                  <li><i className="bi bi-check"></i> Free withdrawals (₦0 fee)</li>
+                  <li><i className="bi bi-check"></i> Instant HP to cash conversion</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="dh-coming-soon">
+              Coming Soon: All subscription plans will be available in the next 30 days. Sign up now to get notified!
             </div>
           </div>
 
