@@ -1,7 +1,8 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { useAppData } from "../../hooks/AppDataContext";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useNavigate } from "react-router-dom";
+import { getTaskStats } from "../../services/services";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -12,8 +13,28 @@ export default function Dashboard() {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const [showBalance, setShowBalance] = useState(false);
+  const [taskStats, setTaskStats] = useState({
+    completedJobs: 0,
+    pendingJobs: 0,
+    availableJobs: 0
+  });
 
   const isDark = theme === "dark";
+
+  // Fetch task stats
+  useEffect(() => {
+    const fetchTaskStats = async () => {
+      try {
+        const response = await getTaskStats();
+        if (response.data?.data) {
+          setTaskStats(response.data.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch task stats:', error);
+      }
+    };
+    fetchTaskStats();
+  }, []);
 
   const {
     username = "User",
@@ -369,7 +390,7 @@ export default function Dashboard() {
               <div className="dh-earning-label">Tasks Completed</div>
             </div>
             <div className="dh-earning-value">
-              {earningsData.tasksCompleted}
+              {taskStats.completedJobs}
             </div>
           </div>
 
@@ -381,7 +402,7 @@ export default function Dashboard() {
               <div className="dh-earning-label">Tasks Pending</div>
             </div>
             <div className="dh-earning-value">
-              {stats.pending}
+              {taskStats.pendingJobs}
             </div>
           </div>
 
@@ -393,7 +414,7 @@ export default function Dashboard() {
               <div className="dh-earning-label">Tasks Available</div>
             </div>
             <div className="dh-earning-value">
-              {stats.available}
+              {taskStats.availableJobs}
             </div>
           </div>
         </div>
