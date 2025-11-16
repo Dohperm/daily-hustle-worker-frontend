@@ -237,8 +237,7 @@ export default function ModalTask({ task, show, onClose }) {
         <h5 className="fw-bold m-0">{task.title}</h5>
         <button
           className="btn-close btn-close-white"
-          onClick={showProofForm ? undefined : onClose}
-          style={{ visibility: showProofForm ? "hidden" : "visible" }}
+          onClick={onClose}
         />
       </div>
       {/* BODY */}
@@ -323,21 +322,19 @@ export default function ModalTask({ task, show, onClose }) {
           </div>
         )}
         {/* Instructions (HTML) */}
-        {task.instructions && (
-          <div className="mb-2">
-            <b>Instructions:</b>
-            <div
-              dangerouslySetInnerHTML={{ __html: task.instructions }}
-              style={{
-                fontSize: "1rem",
-                marginTop: 3,
-                padding: "0.3em 0",
-                background: isDark ? "#222226" : "#f7faff",
-                borderRadius: "6px",
-              }}
-            />
-          </div>
-        )}
+        <div className="mb-2">
+          <b>Instructions:</b>
+          <div
+            dangerouslySetInnerHTML={{ __html: task.instructions || 'No instructions provided' }}
+            style={{
+              fontSize: "1rem",
+              marginTop: 3,
+              padding: "0.3em 0",
+              background: isDark ? "#222226" : "#f7faff",
+              borderRadius: "6px",
+            }}
+          />
+        </div>
         <div className="mb-2">
           <span>
             <b>Reward:</b> {task.reward?.currency}{" "}
@@ -349,6 +346,14 @@ export default function ModalTask({ task, show, onClose }) {
           </span>
           <span className="ms-3">
             <b>Slots:</b> {task.slots?.used ?? 0}/{task.slots?.max ?? 0}
+          </span>
+        </div>
+        <div className="mb-2">
+          <span>
+            <b>Review Type:</b> {task.review_type || 'N/A'}
+          </span>
+          <span className="ms-3">
+            <b>Approval:</b> {task.approval?.mode || 'Self'}
           </span>
         </div>
         {/* Closed-review block with safe string check */}
