@@ -293,6 +293,16 @@ export default function Dashboard() {
 
       {/* Dashboard Content */}
       <section className="dh-dash">
+        {/* Dashboard Title */}
+        <h1 style={{ 
+          fontSize: '1.8rem', 
+          fontWeight: 700, 
+          marginBottom: '1.5rem', 
+          color: 'var(--text)' 
+        }}>
+          Worker Dashboard
+        </h1>
+
         {/* Welcome Header */}
         <header
           className="dh-header"

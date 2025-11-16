@@ -3,6 +3,7 @@ import { Pagination, Badge } from "react-bootstrap";
 import { useAppData } from "../../hooks/AppDataContext";
 import { useTheme } from "../../hooks/useThemeContext";
 import ModalTask from "../../components/Modal/ModalTask";
+import EditProofModal from "../../components/Modal/EditProofModal";
 
 export default function Tasks() {
   const { theme } = useTheme();
@@ -12,6 +13,7 @@ export default function Tasks() {
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [page, setPage] = useState(1);
   const perPage = 6;
 
@@ -174,28 +176,56 @@ export default function Tasks() {
                     )}
                   </div>
                 </div>
-                <button
-                  className="btn fw-bold rounded-pill text-white"
-                  style={{
-                    backgroundColor: isDisabled ? "#6c757d" : palette.red,
-                    minWidth: "130px",
-                    border: "none",
-                    cursor: isDisabled ? "not-allowed" : "pointer",
-                  }}
-                  onClick={() => {
-                    if (!isDisabled) {
-                      setSelectedTask(task);
-                      setShowModal(true);
-                    }
-                  }}
-                  disabled={isDisabled}
-                >
-                  {activeTab === "available"
-                    ? isFull
-                      ? "Full"
-                      : "View Details"
-                    : "View Proof"}
-                </button>
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn fw-bold rounded-pill text-white"
+                    style={{
+                      backgroundColor: isDisabled ? "#6c757d" : palette.red,
+                      minWidth: "130px",
+                      border: "none",
+                      cursor: isDisabled ? "not-allowed" : "pointer",
+                    }}
+                    onClick={() => {
+                      if (!isDisabled) {
+                        if (activeTab === "available") {
+                          setSelectedTask(task);
+                        } else {
+                          // For My Tasks, pass the full task proof object
+                          setSelectedTask({ ...task, proofData: t });
+                        }
+                        setShowModal(true);
+                      }
+                    }}
+                    disabled={isDisabled}
+                  >
+                    {activeTab === "available"
+                      ? isFull
+                        ? "Full"
+                        : "View Details"
+                      : "View Proof"}
+                  </button>
+                  {activeTab === "myTasks" && (
+                    <button
+                      className="btn fw-bold rounded-pill"
+                      style={{
+                        backgroundColor: "transparent",
+                        color: userStatus === "APPROVED" ? "#6c757d" : palette.red,
+                        border: `1px solid ${userStatus === "APPROVED" ? "#6c757d" : palette.red}`,
+                        minWidth: "100px",
+                        cursor: userStatus === "APPROVED" ? "not-allowed" : "pointer",
+                      }}
+                      onClick={() => {
+                        if (userStatus !== "APPROVED") {
+                          setSelectedTask(t);
+                          setShowEditModal(true);
+                        }
+                      }}
+                      disabled={userStatus === "APPROVED"}
+                    >
+                      Edit Proof
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           );
@@ -238,6 +268,14 @@ export default function Tasks() {
           show={showModal}
           onClose={() => setShowModal(false)}
           isReview={selectedTask.review_type?.toUpperCase() === "OPEN"}
+        />
+      )}
+      {/* Edit Proof Modal */}
+      {selectedTask && (
+        <EditProofModal
+          taskProof={selectedTask}
+          show={showEditModal}
+          onClose={() => setShowEditModal(false)}
         />
       )}
     </div>

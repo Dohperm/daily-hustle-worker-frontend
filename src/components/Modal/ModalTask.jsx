@@ -25,10 +25,12 @@ export default function ModalTask({ task, show, onClose }) {
 
   const proofRecord =
     localProofRecord ||
+    task.proofData ||
     userData?.tasks?.find((t) => (t.task?._id || t.task_id) === task._id) ||
     null;
 
   const userStatus = (
+    proofRecord?.approval_status ||
     proofRecord?.status ||
     proofRecord?.submission_progress ||
     ""
@@ -308,19 +310,19 @@ export default function ModalTask({ task, show, onClose }) {
           <div className="mb-2 text-muted small">{task.sub_category}</div>
         )}
         {/* Description (HTML) */}
-        {task.description && (
-          <div className="mb-2">
-            <div
-              dangerouslySetInnerHTML={{ __html: task.description }}
-              style={{
-                fontSize: "1rem",
-                padding: "0.3em 0",
-                background: isDark ? "#222226" : "#f5f5f7",
-                borderRadius: "6px",
-              }}
-            />
-          </div>
-        )}
+        <div className="mb-2">
+          <b>Description:</b>
+          <div
+            dangerouslySetInnerHTML={{ __html: task.description || 'No description provided' }}
+            style={{
+              fontSize: "1rem",
+              marginTop: 3,
+              padding: "0.3em 0",
+              background: isDark ? "#222226" : "#f5f5f7",
+              borderRadius: "6px",
+            }}
+          />
+        </div>
         {/* Instructions (HTML) */}
         <div className="mb-2">
           <b>Instructions:</b>
@@ -358,8 +360,7 @@ export default function ModalTask({ task, show, onClose }) {
         </div>
         {/* Closed-review block with safe string check */}
         {String(task.review_type).toUpperCase() === "CLOSED" &&
-          typeof task.review_text === "string" &&
-          task.review_text.trim() && (
+          (task.review_text?.trim() || proofRecord?.closed_review_option?.trim()) && (
             <div
               className="p-3 mb-3 rounded"
               style={{
@@ -374,13 +375,19 @@ export default function ModalTask({ task, show, onClose }) {
                 className="form-control mb-2"
                 readOnly
                 rows={3}
-                value={task.review_text}
+                value={proofRecord?.closed_review_option || task.review_text || ''}
                 style={{ backgroundColor: bg, color: text }}
               />
               <Button
                 className="rounded-pill text-white fw-semibold"
                 style={{ backgroundColor: primary, border: "none" }}
-                onClick={handleCopy}
+                onClick={() => {
+                  const textToCopy = proofRecord?.closed_review_option || task.review_text;
+                  if (textToCopy?.trim()) {
+                    navigator.clipboard.writeText(textToCopy);
+                    showNotification?.("Review text copied!", "success");
+                  }
+                }}
               >
                 Copy Review Text
               </Button>
