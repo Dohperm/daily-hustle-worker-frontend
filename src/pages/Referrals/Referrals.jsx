@@ -353,7 +353,7 @@ export default function Referrals() {
           )}
 
           {/* Pagination */}
-          {!loading && totalPages > 1 && (
+          {!loading && (
             <div
               className="p-3 border-top d-flex justify-content-between align-items-center"
               style={{ borderTopColor: borderColor }}
