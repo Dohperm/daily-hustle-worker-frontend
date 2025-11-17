@@ -18,7 +18,13 @@ export const submitTask = (taskId, data) =>
 
 export const getTaskStats = () => api.get("/task-proof/users/stats");
 export const getReferralStats = () => api.get("/users/me/referrals/stats");
-export const getReferralHistory = () => api.get("/users/me/referrals");
+export const getReferralHistory = (pageNo = 1, limitNo = 10, fromDate = '', toDate = '', search = '') => {
+  const params = new URLSearchParams({ pageNo, limitNo });
+  if (fromDate) params.append('fromDate', fromDate);
+  if (toDate) params.append('toDate', toDate);
+  if (search) params.append('search', search);
+  return api.get(`/users/me/referrals?${params}`);
+};
 
 /* ------------------- TRANSACTIONS ------------------- */
 export const getTransactions = (pageNo = 1, limitNo = 10, order = '-1', search = '') => {

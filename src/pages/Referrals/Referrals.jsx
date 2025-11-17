@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { getReferralHistory, getReferralStats, getUser } from "../../services/services";
 
 export default function Referrals() {
   const { theme } = useTheme();
@@ -10,7 +11,13 @@ export default function Referrals() {
   const navigate = useNavigate();
 
   const [copied, setCopied] = useState(false);
+  const [copying, setCopying] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [referralData, setReferralData] = useState({ data: [], metadata: {} });
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [stats, setStats] = useState({ total_referrals: 0, total_referral_earnings: 0 });
+  const [userInfo, setUserInfo] = useState({});
 
   const isDark = theme === "dark";
   const cardBg = isDark ? "#1c1c1e" : "#ffffff";
@@ -24,111 +31,115 @@ export default function Referrals() {
     : "linear-gradient(135deg, var(--dh-red), #ff4d4d)";
 
   const {
-    username = "User",
-    referralCode = "HUSTLE123",
-    referralIncome = 0,
-    referrals = 0,
-    kyc = {},
+    username = userInfo.username || "User",
   } = userData || {};
-  const kycVerified = kyc.status === "verified";
-
-  const referralLink = `https://dailyhustle.com/ref/${referralCode}`;
+  const referralCode = userInfo.my_referral_code || "HUSTLE123";
+  const referralLink = `https://workers.dailyhustle.fun/signup?referral_code=${referralCode}`;
   const earningsPerReferral = 500;
 
-  // Example data (mock)
-  const referralHistory = [
-    { friend: "John D.", date: "Oct 17", amount: 500 },
-    { friend: "Sarah K.", date: "Oct 17", amount: 500 },
-    { friend: "Mike B.", date: "Oct 16", amount: 500 },
-    { friend: "Lisa M.", date: "Oct 15", amount: 500 },
-    { friend: "Emma W.", date: "Oct 14", amount: 500 },
-    { friend: "David S.", date: "Oct 13", amount: 500 },
-  ];
+  const itemsPerPage = 10;
+  const { data: referralHistory = [], metadata = {} } = referralData;
+  const totalPages = metadata.pages || 1;
 
-  const itemsPerPage = 5;
-  const totalPages = Math.ceil(referralHistory.length / itemsPerPage);
-  const start = (currentPage - 1) * itemsPerPage;
-  const currentReferrals = referralHistory.slice(start, start + itemsPerPage);
+  // Fetch referral data
+  const fetchReferrals = async (page = 1) => {
+    setLoading(true);
+    try {
+      const response = await getReferralHistory(page, itemsPerPage, '', '', searchTerm);
+      setReferralData(response.data.data);
+    } catch (error) {
+      toast.error("Failed to load referral history");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch stats and user info
+  const fetchStats = async () => {
+    try {
+      const [statsResponse, userResponse] = await Promise.all([
+        getReferralStats(),
+        getUser()
+      ]);
+      setStats(statsResponse.data.data);
+      setUserInfo(userResponse.data.data);
+    } catch (error) {
+      console.error("Failed to load stats:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  useEffect(() => {
+    fetchReferrals(currentPage);
+  }, [currentPage, searchTerm]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   // ----------------------------
   // Copy link handler
   // ----------------------------
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(referralLink);
-      setCopied(true);
-      toast.success("✅ Referral link copied!");
-      setTimeout(() => setCopied(false), 2000);
+  const copyToClipboard = () => {
+    if (copying) return;
+    setCopying(true);
+    
+    navigator.clipboard.writeText(referralLink)
+      .then(() => {
+        setCopied(true);
+        toast.success("✅ Referral link copied!");
+        setTimeout(() => setCopied(false), 2000);
 
-      addNotification({
-        title: "Referral Link Copied!",
-        message: "Share with friends to earn ₦500 per referral!",
-        type: "success",
-        category: "referral",
+        addNotification({
+          title: "Referral Link Copied!",
+          message: "Share with friends to earn ₦500 per referral!",
+          type: "success",
+          category: "referral",
+        });
+
+        recordTaskHistory(
+          "referral",
+          "link_copied",
+          `Referral link copied: ${referralCode}`
+        );
+      })
+      .catch(() => {
+        toast.error("❌ Failed to copy referral link!");
+      })
+      .finally(() => {
+        setCopying(false);
       });
-
-      recordTaskHistory(
-        "referral",
-        "link_copied",
-        `Referral link copied: ${referralCode}`
-      );
-    } catch {
-      toast.error("❌ Failed to copy referral link!");
-    }
   };
 
   // ----------------------------
   // Share handler
   // ----------------------------
-  const shareReferral = () => {
+  const shareReferral = async () => {
     recordTaskHistory(
       "referral",
       "shared",
       `Referral link shared via device options`
     );
     if (navigator.share) {
-      navigator.share({
-        title: `Join ${username}'s Daily Hustle!`,
-        text: `Earn ₦500 daily with me on Daily Hustle!`,
-        url: referralLink,
-      });
+      try {
+        await navigator.share({
+          title: `Join ${username}'s Daily Hustle!`,
+          text: `Earn ₦500 daily with me on Daily Hustle!`,
+          url: referralLink,
+        });
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          copyToClipboard();
+        }
+      }
     } else {
       copyToClipboard();
     }
   };
-
-  if (!kycVerified) {
-    return (
-      <div
-        className="p-4 text-center d-flex flex-column align-items-center justify-content-center"
-        style={{
-          backgroundColor: containerBg,
-          color: textColor,
-          minHeight: "100vh",
-        }}
-      >
-        <div
-          className="rounded-4 p-5 mb-4"
-          style={{
-            background: gradientBg,
-            color: "#fff",
-            maxWidth: "480px",
-            margin: "auto",
-          }}
-        >
-          <i className="bi bi-shield-slash fs-1 mb-3"></i>
-          <h1 className="fw-bold mb-3">KYC Required</h1>
-          <p className="mb-4">Complete verification to activate referrals</p>
-          <button
-            className="btn btn-light fw-bold px-5 py-3 rounded-pill shadow-lg"
-            onClick={() => navigate("/kyc")}
-          >
-            Verify KYC Now
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   // ----------------------------
   // Render Referrals page
@@ -185,15 +196,15 @@ export default function Referrals() {
       >
         <div className="row">
           <div className="col-md-4 mb-3">
-            <h2 className="fw-bold">{referrals}</h2>
+            <h2 className="fw-bold">{stats.total_referrals}</h2>
             <small>Friends Referred</small>
           </div>
           <div className="col-md-4 mb-3">
-            <h2 className="fw-bold">₦{referralIncome.toLocaleString()}</h2>
+            <h2 className="fw-bold">₦{stats.total_referral_earnings.toLocaleString()}</h2>
             <small>Total Earned</small>
           </div>
           <div className="col-md-4 mb-3">
-            <h2 className="fw-bold">{Math.round(referrals * 100)}%</h2>
+            <h2 className="fw-bold">0%</h2>
             <small>Referral Growth</small>
           </div>
         </div>
@@ -223,6 +234,7 @@ export default function Referrals() {
               <button
                 className="btn btn-outline-secondary"
                 onClick={copyToClipboard}
+                disabled={copying}
               >
                 {copied ? (
                   <i className="bi bi-check-lg text-success"></i>
@@ -270,80 +282,104 @@ export default function Referrals() {
           <h5 className="fw-bold" style={{ color: primary }}>
             Referral History
           </h5>
-          <small style={{ color: labelColor }}>{referrals} referrals</small>
+          <small style={{ color: labelColor }}>{metadata.total || 0} referrals</small>
+        </div>
+
+        {/* Search Filter */}
+        <div className="row g-3 mb-4">
+          <div className="col-md-6">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by name or email"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                backgroundColor: isDark ? "#2a2a2d" : "#f8f9fa",
+                color: textColor,
+                border: `1px solid ${borderColor}`,
+              }}
+            />
+          </div>
         </div>
 
         <div
           className="rounded-4 shadow-sm"
           style={{ backgroundColor: cardBg }}
         >
-          <div className="table-responsive">
-            <table className="table table-hover mb-0">
-              <thead>
-                <tr>
-                  <th style={{ color: textColor }}>Friend</th>
-                  <th style={{ color: textColor }}>Date</th>
-                  <th style={{ color: textColor }}>Earnings</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentReferrals.map((r, i) => (
-                  <tr key={i}>
-                    <td style={{ color: textColor }}>
-                      <i className="bi bi-person-circle me-2"></i>
-                      {r.friend}
-                    </td>
-                    <td style={{ color: labelColor }}>{r.date}</td>
-                    <td className="fw-bold" style={{ color: primary }}>
-                      +₦{r.amount.toLocaleString()}
-                    </td>
+          {loading ? (
+            <div className="text-center p-4">
+              <div className="spinner-border" style={{ color: primary }}></div>
+              <p className="mt-2" style={{ color: labelColor }}>Loading referrals...</p>
+            </div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th style={{ color: textColor }}>Name</th>
+                    <th style={{ color: textColor }}>Email</th>
+                    <th style={{ color: textColor }}>Date</th>
+                    <th style={{ color: textColor }}>Earnings</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {referralHistory.length > 0 ? (
+                    referralHistory.map((referral) => (
+                      <tr key={referral._id}>
+                        <td style={{ color: textColor }}>
+                          <i className="bi bi-person-circle me-2"></i>
+                          {referral.first_name} {referral.last_name}
+                        </td>
+                        <td style={{ color: labelColor }}>{referral.email}</td>
+                        <td style={{ color: labelColor }}>
+                          {new Date(referral.date).toLocaleDateString()}
+                        </td>
+                        <td className="fw-bold" style={{ color: primary }}>
+                          +{referral.earnings.currency}{referral.earnings.amount.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="text-center p-4" style={{ color: labelColor }}>
+                        No referrals found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {!loading && totalPages > 1 && (
             <div
               className="p-3 border-top d-flex justify-content-between align-items-center"
               style={{ borderTopColor: borderColor }}
             >
-              <div className="d-flex gap-1">
-                {Array.from({ length: totalPages }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(i + 1)}
-                    className={`rounded-pill px-3 py-1 border-0 fw-semibold ${
-                      currentPage === i + 1 ? "text-white" : ""
-                    }`}
-                    style={{
-                      backgroundColor:
-                        currentPage === i + 1 ? primary : "transparent",
-                      color: currentPage === i + 1 ? "#fff" : labelColor,
-                      border: `1px solid ${borderColor}`,
-                    }}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
               <div>
+                <span style={{ color: labelColor, fontSize: '0.9rem' }}>
+                  Page {currentPage} of {totalPages} ({metadata.total} total)
+                </span>
+              </div>
+              <div className="d-flex gap-2">
                 <button
-                  className="btn btn-outline-light rounded-pill me-1"
+                  className="btn btn-outline-secondary btn-sm"
                   disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
+                  onClick={() => handlePageChange(currentPage - 1)}
                 >
-                  <i className="bi bi-chevron-left"></i>
+                  Previous
                 </button>
+                <span className="btn btn-sm" style={{ backgroundColor: primary, color: 'white' }}>
+                  {currentPage}
+                </span>
                 <button
-                  className="btn btn-outline-light rounded-pill"
+                  className="btn btn-outline-secondary btn-sm"
                   disabled={currentPage === totalPages}
-                  onClick={() =>
-                    setCurrentPage(Math.min(currentPage + 1, totalPages))
-                  }
+                  onClick={() => handlePageChange(currentPage + 1)}
                 >
-                  <i className="bi bi-chevron-right"></i>
+                  Next
                 </button>
               </div>
             </div>
