@@ -53,6 +53,14 @@ export default function QuickSignup() {
     }
   }, [step]);
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralCode = urlParams.get('referral_code');
+    if (referralCode) {
+      setFormData(prev => ({ ...prev, referral_code: referralCode }));
+    }
+  }, []);
+
   // Registration Step
   const handleRegister = async (e) => {
     e.preventDefault();
