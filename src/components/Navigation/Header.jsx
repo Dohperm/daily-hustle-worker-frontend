@@ -6,15 +6,13 @@ import { useAppData } from "../../hooks/AppDataContext";
 import logo from "../../../public/assets/logo.png";
 const NAV = [
   { name: "Dashboard", path: "/dashboard", icon: "bi-house-door-fill" },
-  { name: "Tasks", path: "/tasks", icon: "bi-briefcase-fill" },
-  { name: "Wallet", path: "/wallet", icon: "bi-wallet2" },
-  { name: "Notifications", path: "/notifications", icon: "bi-bell-fill" },
-  { name: "Transactions", path: "/transactions", icon: "bi-list-ul" },
-  { name: "Referrals", path: "/referrals", icon: "bi-people-fill" },
-  { name: "Support", path: "/support", icon: "bi-headset" },
-  { name: "Settings", path: "/settings", icon: "bi-gear" },
-  { name: "Login", path: "/login", icon: "bi-box-arrow-in-right" },
-  { name: "Signup", path: "/signup", icon: "bi-box-arrow-in-right" },
+  { name: "Tasks", path: "/dashboard/tasks", icon: "bi-briefcase-fill" },
+  { name: "Wallet", path: "/dashboard/wallet", icon: "bi-wallet2" },
+  { name: "Notifications", path: "/dashboard/notifications", icon: "bi-bell-fill" },
+  { name: "Transactions", path: "/dashboard/transactions", icon: "bi-list-ul" },
+  { name: "Referrals", path: "/dashboard/referrals", icon: "bi-people-fill" },
+  { name: "Support", path: "/dashboard/support", icon: "bi-headset" },
+  { name: "Settings", path: "/dashboard/settings", icon: "bi-gear" },
 ];
 
 // Provide a logo image; you can replace the src below with your actual logo url
