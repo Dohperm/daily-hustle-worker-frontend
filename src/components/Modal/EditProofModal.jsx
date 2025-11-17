@@ -14,7 +14,6 @@ export default function EditProofModal({ taskProof, show, onClose }) {
   const text = isDark ? "#f8f9fa" : "#212529";
   const primary = "var(--dh-red)";
   
-  const [proofText, setProofText] = useState("");
   const [proofFile, setProofFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,7 +22,6 @@ export default function EditProofModal({ taskProof, show, onClose }) {
 
   useEffect(() => {
     if (show && taskProof) {
-      setProofText(taskProof.title || "");
       setPreviewURL(taskProof.src || null);
       setProofFile(null);
       setError("");
@@ -62,10 +60,6 @@ export default function EditProofModal({ taskProof, show, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!proofText.trim()) {
-      setError("Text proof required");
-      return;
-    }
     if (!previewURL && !proofFile) {
       setError("Image proof required");
       return;
@@ -83,7 +77,6 @@ export default function EditProofModal({ taskProof, show, onClose }) {
       }
 
       await api.patch(`/task-proof/users/${taskProof._id}`, {
-        title: proofText.trim(),
         src: src
       });
 
@@ -112,19 +105,6 @@ export default function EditProofModal({ taskProof, show, onClose }) {
       <div className="p-4" style={{ backgroundColor: bg, color: text }}>
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Text Proof</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              value={proofText}
-              onChange={(e) => setProofText(e.target.value)}
-              placeholder="Describe your completion..."
-              disabled={isSubmitting}
-              required
-            />
-          </Form.Group>
-          
-          <Form.Group className="mb-3">
             <Form.Label>Image Proof</Form.Label>
             <Form.Control
               ref={fileInputRef}
@@ -132,6 +112,7 @@ export default function EditProofModal({ taskProof, show, onClose }) {
               accept="image/*"
               onChange={handleFileChange}
               disabled={isSubmitting}
+              required={!previewURL}
             />
             {previewURL && (
               <div className="mt-2 text-center">

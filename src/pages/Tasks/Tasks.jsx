@@ -30,21 +30,10 @@ export default function Tasks() {
     [isDark]
   );
 
-  // FILTER TASKS — show only never attempted for "Available"
+  // FILTER TASKS
   useEffect(() => {
     if (activeTab === "available") {
-      const attemptedTaskIds = new Set(
-        (userData.tasks || []).map(
-          (my) => my.task_id || (my.task && my.task._id)
-        )
-      );
-      const available = tasks.filter((task) => {
-        const used = task.slots?.used ?? 0;
-        const max = task.slots?.max ?? 0;
-        const isFull = used >= max;
-        return !isFull && !attemptedTaskIds.has(task._id);
-      });
-      setFilteredTasks(available);
+      setFilteredTasks(tasks || []);
     } else {
       setFilteredTasks(userData.tasks || []);
     }
@@ -267,7 +256,7 @@ export default function Tasks() {
           task={selectedTask}
           show={showModal}
           onClose={() => setShowModal(false)}
-          isReview={selectedTask.review_type?.toUpperCase() === "OPEN"}
+          isAvailableTask={activeTab === "available"}
         />
       )}
       {/* Edit Proof Modal */}

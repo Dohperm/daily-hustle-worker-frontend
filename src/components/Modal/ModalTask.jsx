@@ -5,7 +5,7 @@ import { useAppData } from "../../hooks/AppDataContext";
 import { uploadFile } from "../../services/services";
 import logo from "../../../public/assets/logo.png";
 
-export default function ModalTask({ task, show, onClose }) {
+export default function ModalTask({ task, show, onClose, isAvailableTask = false }) {
   const { theme } = useTheme();
   const {
     userData,
@@ -42,17 +42,16 @@ export default function ModalTask({ task, show, onClose }) {
   const hasStarted = !!proofRecord;
 
   const [showProofForm, setShowProofForm] = useState(false);
-  const [proofText, setProofText] = useState("");
   const [proofFile, setProofFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [isStarting, setIsStarting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [taskStarted, setTaskStarted] = useState(false);
   const fileInputRef = useRef();
 
   useEffect(() => {
     if (!show) {
-      setProofText("");
       setProofFile(null);
       setPreviewURL(null);
       setError("");
@@ -60,24 +59,20 @@ export default function ModalTask({ task, show, onClose }) {
       setLocalProofRecord(null);
       setIsStarting(false);
       setIsSubmitting(false);
+      setTaskStarted(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
-    if (proofRecord) {
-      setProofText(proofRecord.title || "");
+    if (isAvailableTask) {
+      setShowProofForm(false);
+      setTaskStarted(false);
+    } else if (proofRecord) {
       setPreviewURL(proofRecord.src || null);
       setProofFile(null);
       setShowProofForm(!(isPending || isApproved || isBlacklisted));
-    } else {
-      setProofText("");
-      setPreviewURL(null);
-      setProofFile(null);
-      setShowProofForm(false);
-      setError("");
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
-  }, [show, proofRecord, isPending, isApproved, isBlacklisted]);
+  }, [show, proofRecord, isPending, isApproved, isBlacklisted, isAvailableTask]);
 
   useEffect(() => {
     if (proofFile) {
@@ -116,31 +111,20 @@ export default function ModalTask({ task, show, onClose }) {
   };
 
   const handleStartTask = async () => {
-    if (isStarting || hasStarted) return;
+    if (isStarting) return;
     setIsStarting(true);
     setError("");
     try {
       const proofData = await onApplyFunc(task);
       if (!proofData?._id) throw new Error("Invalid proof response");
 
-      const newProof = {
-        ...proofData,
-        task_id: proofData.task_id || task._id,
-        task,
-        title: "",
-        src: null,
-        status: "started",
-        submission_progress: "started",
-      };
-
-      setLocalProofRecord(newProof);
-      setUserData((prev) => ({
-        ...prev,
-        tasks: [...(prev.tasks || []), newProof],
-      }));
-
-      setShowProofForm(true);
+      setLocalProofRecord(proofData);
       showNotification?.(`Started: "${task.title}"`, "success");
+      
+      // Set taskStarted after a brief delay to ensure state update
+      setTimeout(() => {
+        setTaskStarted(true);
+      }, 50);
     } catch (err) {
       const msg =
         err?.response?.data?.message || err.message || "Failed to start task";
@@ -153,15 +137,11 @@ export default function ModalTask({ task, show, onClose }) {
 
   const handleSubmitProof = async (e) => {
     e.preventDefault();
-    if (!proofText.trim()) {
-      setError("Text proof required");
-      return;
-    }
     if (!proofFile && !previewURL) {
       setError("Image proof required");
       return;
     }
-    if (!proofRecord?._id) {
+    if (!localProofRecord?._id) {
       setError("System error. Please refresh.");
       return;
     }
@@ -176,36 +156,8 @@ export default function ModalTask({ task, show, onClose }) {
         if (!res.data?.data?.[0]?.src) throw new Error("Upload failed");
         src = res.data.data[0].src;
       }
-      const submittedTitle = proofText.trim();
 
-      await submitTaskProof(proofRecord._id, { title: submittedTitle, src });
-
-      setUserData((prev) => {
-        const updatedTasks = (prev.tasks || []).map((t) => {
-          const idMatch = (t.task?._id || t.task_id) === task._id;
-          if (idMatch) {
-            return {
-              ...t,
-              title: submittedTitle,
-              src: src,
-              status: "pending",
-              submission_progress: "pending",
-            };
-          }
-          return t;
-        });
-        return { ...prev, tasks: updatedTasks };
-      });
-
-      if (localProofRecord) {
-        setLocalProofRecord((prev) => ({
-          ...prev,
-          title: submittedTitle,
-          src: src,
-          status: "pending",
-          submission_progress: "pending",
-        }));
-      }
+      await submitTaskProof(localProofRecord._id, { src });
 
       setProofFile(null);
       setShowProofForm(false);
@@ -395,55 +347,100 @@ export default function ModalTask({ task, show, onClose }) {
           )}
         {/* Error */}
         {error && <div className="alert alert-light small py-2">{error}</div>}
-        {/* ALIGNED BUTTONS */}
-        {!hasStarted && !showProofForm && (
-          <div className="d-flex gap-2 justify-content-center">
-            {task.task_site && (
-              <a
-                href={task.task_site}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-sm rounded-pill text-white"
-                style={{ backgroundColor: primary, border: "none" }}
-              >
-                Go to Task Site
-              </a>
+        
+        {/* AVAILABLE TASK FLOW */}
+        {isAvailableTask && (
+          <div>
+            {!taskStarted ? (
+              /* Show Start Task Button */
+              <div className="d-flex justify-content-center">
+                <Button
+                  size="sm"
+                  className="rounded-pill px-4"
+                  style={{ backgroundColor: primary, border: "none" }}
+                  onClick={handleStartTask}
+                  disabled={isStarting}
+                >
+                  {isStarting ? (
+                    <>
+                      <Spinner size="sm" /> Starting...
+                    </>
+                  ) : (
+                    "Start Task"
+                  )}
+                </Button>
+              </div>
+            ) : (
+              /* Show Go to Site + Proof Form after starting */
+              <div>
+                {task.task_site && (
+                  <div className="d-flex justify-content-center mb-3">
+                    <a
+                      href={task.task_site}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn btn-sm rounded-pill text-white"
+                      style={{ backgroundColor: primary, border: "none" }}
+                    >
+                      Go to Task Site
+                    </a>
+                  </div>
+                )}
+                
+                <Form onSubmit={handleSubmitProof} className="mt-4">
+                  <h6 className="fw-bold mb-3" style={{ color: primary }}>
+                    Submit Proof (Image Required)
+                  </h6>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Image Proof</Form.Label>
+                    <Form.Control
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      disabled={isSubmitting}
+                      required={!previewURL}
+                    />
+                    {previewURL && (
+                      <div className="mt-2 text-center">
+                        <img
+                          src={previewURL}
+                          alt="Preview"
+                          className="img-fluid rounded"
+                          style={{ maxHeight: 180 }}
+                        />
+                      </div>
+                    )}
+                  </Form.Group>
+                  <div className="d-flex justify-content-end gap-2">
+                    <Button
+                      type="submit"
+                      size="sm"
+                      className="text-white"
+                      style={{ backgroundColor: primary, border: "none" }}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Spinner size="sm" /> Submitting...
+                        </>
+                      ) : (
+                        "Submit Proof"
+                      )}
+                    </Button>
+                  </div>
+                </Form>
+              </div>
             )}
-            <Button
-              size="sm"
-              className="rounded-pill px-4"
-              style={{ backgroundColor: primary, border: "none" }}
-              onClick={handleStartTask}
-              disabled={isStarting}
-            >
-              {isStarting ? (
-                <>
-                  <Spinner size="sm" /> Starting...
-                </>
-              ) : (
-                "Start Task"
-              )}
-            </Button>
           </div>
         )}
-        {/* PROOF FORM */}
-        {showProofForm && (
+        
+        {/* MY TASKS FLOW */}
+        {!isAvailableTask && showProofForm && (
           <Form onSubmit={handleSubmitProof} className="mt-4">
             <h6 className="fw-bold mb-3" style={{ color: primary }}>
-              Submit Proof (Text + Image Required)
+              Submit Proof (Image Required)
             </h6>
-            <Form.Group className="mb-3">
-              <Form.Label>Text Proof</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                value={proofText}
-                onChange={(e) => setProofText(e.target.value)}
-                placeholder="Describe your completion (mention requirements)..."
-                disabled={isSubmitting}
-                required
-              />
-            </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Image Proof</Form.Label>
               <Form.Control
@@ -486,6 +483,7 @@ export default function ModalTask({ task, show, onClose }) {
         )}
         {/* PENDING / APPROVED / BLACKLISTED: SHOW SUBMITTED PROOF */}
         {!showProofForm &&
+          !isAvailableTask &&
           hasStarted &&
           (isPending || isApproved || isBlacklisted) && (
             <div className="mt-4">
@@ -508,22 +506,8 @@ export default function ModalTask({ task, show, onClose }) {
                 {isBlacklisted &&
                   "Blacklisted. This submission has been rejected and blacklisted."}
               </div>
-              <div className="mt-4">
-                <Form.Group className="mb-3">
-                  <Form.Label>Text Proof</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={3}
-                    value={proofText}
-                    readOnly
-                    disabled
-                    style={{
-                      backgroundColor: isDark ? "#2a2a2c" : "#e9ecef",
-                      opacity: 1,
-                    }}
-                  />
-                </Form.Group>
-                {proofRecord?.src && (
+              {proofRecord?.src && (
+                <div className="mt-4">
                   <Form.Group className="mb-3">
                     <Form.Label>Image Proof</Form.Label>
                     <div className="mt-2 text-center">
@@ -535,8 +519,8 @@ export default function ModalTask({ task, show, onClose }) {
                       />
                     </div>
                   </Form.Group>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           )}
       </div>
