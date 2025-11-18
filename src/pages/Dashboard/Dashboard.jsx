@@ -394,7 +394,11 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="dh-earning-card">
+          <div 
+            className="dh-earning-card" 
+            onClick={() => navigate('/dashboard/tasks')}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="dh-earning-header">
               <div className="dh-earning-icon" style={{ background: '#ffa726' }}>
                 <i className="bi bi-clock-history" />
@@ -406,7 +410,11 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="dh-earning-card">
+          <div 
+            className="dh-earning-card" 
+            onClick={() => navigate('/dashboard/tasks')}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="dh-earning-header">
               <div className="dh-earning-icon" style={{ background: '#4caf50' }}>
                 <i className="bi bi-check2-circle" />
