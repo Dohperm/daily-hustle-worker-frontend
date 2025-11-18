@@ -212,10 +212,19 @@ body {
     left: 0;
     top: 0;
     height: 100vh;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
   }
   .dashboard-sidebar.show { transform: translateX(0%); }
   .dashboard-header { left: 0 !important; width: 100vw !important;}
   .dashboard-main { margin-left: 0 !important; margin-top: var(--dh-header-height);}
+  
+  /* Ensure sidebar content can scroll */
+  .sidebar {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    height: 100vh !important;
+  }
 }
 
 /* ============================================================================ 

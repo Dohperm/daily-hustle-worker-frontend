@@ -23,7 +23,7 @@ const LOGO = logo; // EXAMPLE Daily Hustle logo
 export default function Header() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { userData } = useAppData();
+  const { userData, logout } = useAppData();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
@@ -126,7 +126,11 @@ export default function Header() {
             style={{
               backgroundColor: isDark ? "#181a20" : "#fff",
               color: isDark ? "#fff" : "#212529",
-              minWidth: 260,
+              width: "100vw",
+              height: "calc(100vh - 60px)",
+              overflowY: "auto",
+              WebkitOverflowScrolling: "touch",
+              paddingBottom: "2rem",
             }}
           >
             {/* Avatar */}
@@ -197,6 +201,47 @@ export default function Header() {
                   {item.name}
                 </button>
               ))}
+              
+              {/* Theme Toggle */}
+              <button
+                className="nav-link-item w-100 text-start py-2 px-4 mt-2"
+                onClick={handleToggleTheme}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                  border: "none",
+                  background: "transparent",
+                  color: "inherit",
+                  fontWeight: 500,
+                  fontSize: "1.08rem",
+                }}
+              >
+                <i className={`bi ${isDark ? "bi-sun-fill" : "bi-moon-fill"} fs-5`} />
+                {isDark ? "Light Mode" : "Dark Mode"}
+              </button>
+              
+              {/* Logout */}
+              <button
+                className="nav-link-item w-100 text-start py-2 px-4"
+                onClick={() => {
+                  setMenuOpen(false);
+                  logout();
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                  border: "none",
+                  background: "transparent",
+                  color: "inherit",
+                  fontWeight: 500,
+                  fontSize: "1.08rem",
+                }}
+              >
+                <i className="bi bi-box-arrow-left fs-5" />
+                Logout
+              </button>
             </div>
           </nav>
         )}
