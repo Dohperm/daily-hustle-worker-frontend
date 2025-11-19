@@ -204,6 +204,18 @@ export default function AppDataProvider({ children }) {
     showNotification("Logged out successfully", "success");
   }, [showNotification]);
 
+  const refreshUserData = useCallback(async () => {
+    try {
+      await Promise.all([
+        refetchUserData(),
+        fetchAllTasks(),
+        fetchMyTasks()
+      ]);
+    } catch (error) {
+      console.error('Failed to refresh data:', error);
+    }
+  }, [refetchUserData, fetchAllTasks, fetchMyTasks]);
+
   const value = useMemo(
     () => ({
       userLoggedIn,
@@ -211,6 +223,7 @@ export default function AppDataProvider({ children }) {
       userData,
       setUserData,
       refetchUserData,
+      refreshUserData,
       tasks,
       setTasks,
       onApplyFunc,
@@ -230,6 +243,7 @@ export default function AppDataProvider({ children }) {
       fetchMyTasks,
       submitTaskProof,
       refetchUserData,
+      refreshUserData,
       logout,
     ]
   );
