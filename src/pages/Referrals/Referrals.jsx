@@ -16,7 +16,7 @@ export default function Referrals() {
   const [referralData, setReferralData] = useState({ data: [], metadata: {} });
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [stats, setStats] = useState({ total_referrals: 0, total_referral_earnings: 0 });
+  const [stats, setStats] = useState({ total_referrals: 0, total_referral_earnings: 0, total_hustle_points: 0 });
   const [userInfo, setUserInfo] = useState({});
 
   const isDark = theme === "dark";
@@ -180,8 +180,7 @@ export default function Referrals() {
           Referral Program
         </h1>
         <p style={{ color: labelColor }}>
-          Invite your friends and earn ₦{earningsPerReferral.toLocaleString()}{" "}
-          each!
+          Invite your friends and earn 10HP when they successfully complete a task🎉🎉!
         </p>
       </div>
 
@@ -204,8 +203,8 @@ export default function Referrals() {
             <small>Total Earned</small>
           </div>
           <div className="col-md-4 mb-3">
-            <h2 className="fw-bold">0%</h2>
-            <small>Referral Growth</small>
+            <h2 className="fw-bold">{stats.total_hustle_points}</h2>
+            <small>Total HP Earned</small>
           </div>
         </div>
       </div>
@@ -321,6 +320,7 @@ export default function Referrals() {
                     <th style={{ color: textColor }}>Email</th>
                     <th style={{ color: textColor }}>Date</th>
                     <th style={{ color: textColor }}>Earnings</th>
+                    <th style={{ color: textColor }}>HP</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -336,13 +336,17 @@ export default function Referrals() {
                           {new Date(referral.date).toLocaleDateString()}
                         </td>
                         <td className="fw-bold" style={{ color: primary }}>
-                          +{referral.earnings.currency}{referral.earnings.amount.toLocaleString()}
+                          +{referral.earnings?.currency || 'NGN'}{(referral.earnings?.amount || 0).toLocaleString()}
+                        </td>
+                        <td className="fw-bold" style={{ color: referral.hustle_points?.is_rewarded ? '#28a745' : '#ffc107' }}>
+                          {referral.hustle_points?.earned || 0} HP
+                          {referral.hustle_points?.is_rewarded && <i className="bi bi-check-circle-fill ms-1"></i>}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="4" className="text-center p-4" style={{ color: labelColor }}>
+                      <td colSpan="5" className="text-center p-4" style={{ color: labelColor }}>
                         No referrals found
                       </td>
                     </tr>

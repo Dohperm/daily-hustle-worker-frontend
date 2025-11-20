@@ -17,13 +17,13 @@ export const submitTask = (taskId, data) =>
   api.patch(`/task-proof/users/${taskId}`, data);
 
 export const getTaskStats = () => api.get("/task-proof/users/stats");
-export const getReferralStats = () => api.get("/users/me/referrals/stats");
+export const getReferralStats = () => api.get("/referrals/stats");
 export const getReferralHistory = (pageNo = 1, limitNo = 10, fromDate = '', toDate = '', search = '') => {
   const params = new URLSearchParams({ pageNo, limitNo });
   if (fromDate) params.append('fromDate', fromDate);
   if (toDate) params.append('toDate', toDate);
   if (search) params.append('search', search);
-  return api.get(`/users/me/referrals?${params}`);
+  return api.get(`/referrals/history?${params}`);
 };
 
 /* ------------------- TRANSACTIONS ------------------- */
