@@ -117,6 +117,8 @@ export default function Tasks() {
               ? "#e74c3c"
               : userStatus === "APPROVED"
               ? "#2ecc71"
+              : userStatus === "RESUBMIT"
+              ? "#ff6b35"
               : palette.label;
 
           return (
@@ -202,10 +204,10 @@ export default function Tasks() {
                       className="btn fw-bold rounded-pill"
                       style={{
                         backgroundColor: "transparent",
-                        color: userStatus === "APPROVED" ? "#6c757d" : palette.red,
-                        border: `1px solid ${userStatus === "APPROVED" ? "#6c757d" : palette.red}`,
+                        color: (userStatus === "APPROVED" || userStatus === "REJECTED") ? "#6c757d" : palette.red,
+                        border: `1px solid ${(userStatus === "APPROVED" || userStatus === "REJECTED") ? "#6c757d" : palette.red}`,
                         minWidth: "100px",
-                        cursor: userStatus === "APPROVED" ? "not-allowed" : "pointer",
+                        cursor: (userStatus === "APPROVED" || userStatus === "REJECTED") ? "not-allowed" : "pointer",
                       }}
                       onClick={() => {
                         if (userStatus !== "APPROVED") {
@@ -213,7 +215,7 @@ export default function Tasks() {
                           setShowEditModal(true);
                         }
                       }}
-                      disabled={userStatus === "APPROVED"}
+                      disabled={userStatus === "APPROVED" || userStatus === "REJECTED"}
                     >
                       Edit Proof
                     </button>
