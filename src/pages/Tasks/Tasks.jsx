@@ -33,7 +33,11 @@ export default function Tasks() {
   // FILTER TASKS
   useEffect(() => {
     if (activeTab === "available") {
-      setFilteredTasks(tasks || []);
+      const availableTasks = (tasks || []).filter(task => {
+        const isFull = (task.slots?.used ?? 0) >= (task.slots?.max ?? 0);
+        return !isFull;
+      });
+      setFilteredTasks(availableTasks);
     } else {
       setFilteredTasks(userData.tasks || []);
     }
