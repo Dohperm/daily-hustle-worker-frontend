@@ -1,8 +1,49 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
+import { getUnreadCount } from "../../services/services";
 import logo from "../../assets/logo.png";
+
+function NotificationBadge() {
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await getUnreadCount();
+        setUnreadCount(response.data?.data?.count || 0);
+      } catch (error) {
+        console.error('Failed to fetch unread count:', error);
+      }
+    };
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (unreadCount === 0) return null;
+
+  return (
+    <span 
+      className="position-absolute translate-middle badge rounded-pill"
+      style={{
+        backgroundColor: "var(--dh-red)",
+        color: "white",
+        fontSize: "0.6rem",
+        top: "-8px",
+        left: "12px",
+        minWidth: "16px",
+        height: "16px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      {unreadCount > 99 ? "99+" : unreadCount}
+    </span>
+  );
+}
 // Logo image – replace with your actual logo if desired
 const LOGO = logo;
 
@@ -129,25 +170,37 @@ export default function Sidebar() {
 
       {/* Navigation Links */}
       <nav className="nav flex-column">
-        {navLinks.map((link) => (
-          <NavLink
-            to={link.path}
-            className="nav-link-item"
-            key={link.name}
-            end={link.path === "/dashboard"}
-            style={({ isActive }) => ({
-              backgroundColor: isActive ? "#ff4500" : "transparent",
-              color: isActive ? "#fff" : isDark ? "#f8f9fa" : "#212529",
-              borderRadius: "10px",
-              padding: "8px 10px",
-              marginBottom: "4px",
-              transition: "0.3s",
-            })}
-          >
-            <i className={`bi ${link.icon}`} />
-            {!collapsed && <span className="ms-2">{link.name}</span>}
-          </NavLink>
-        ))}
+        {navLinks.map((link) => {
+          const isNotifications = link.name === "Notifications";
+          
+          return (
+            <NavLink
+              to={link.path}
+              className="nav-link-item"
+              key={link.name}
+              end={link.path === "/dashboard"}
+              style={({ isActive }) => ({
+                backgroundColor: isActive ? "#ff4500" : "transparent",
+                color: isActive ? "#fff" : isDark ? "#f8f9fa" : "#212529",
+                borderRadius: "10px",
+                padding: "8px 10px",
+                marginBottom: "4px",
+                transition: "0.3s",
+                position: "relative",
+                display: "flex",
+                alignItems: "center"
+              })}
+            >
+              <div style={{ position: "relative" }}>
+                <i className={`bi ${link.icon}`} />
+                {isNotifications && (
+                  <NotificationBadge />
+                )}
+              </div>
+              {!collapsed && <span className="ms-2">{link.name}</span>}
+            </NavLink>
+          );
+        })}
 
         {/* Logout */}
         <button 

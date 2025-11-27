@@ -62,3 +62,7 @@ export const fileUrlUpdate = async ({ type, fileUrl, user } = {}) => {
   }
   return api.patch("/users/me", body).then((e) => console.log(e));
 };
+
+/* ------------------- NOTIFICATIONS ------------------- */
+export const getNotifications = () => api.get("/notifications/users");
+export const getUnreadCount = () => api.get("/notifications/users/unread-count");

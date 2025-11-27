@@ -3,7 +3,48 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
+import { getUnreadCount } from "../../services/services";
 import logo from "../../../public/assets/logo.png";
+
+function MobileNotificationBadge() {
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await getUnreadCount();
+        setUnreadCount(response.data?.data?.count || 0);
+      } catch (error) {
+        console.error('Failed to fetch unread count:', error);
+      }
+    };
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (unreadCount === 0) return null;
+
+  return (
+    <span 
+      className="position-absolute translate-middle badge rounded-pill"
+      style={{
+        backgroundColor: "var(--dh-red)",
+        color: "white",
+        fontSize: "0.6rem",
+        top: "-2px",
+        left: "18px",
+        minWidth: "18px",
+        height: "18px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      {unreadCount > 99 ? "99+" : unreadCount}
+    </span>
+  );
+}
 const NAV = [
   { name: "Dashboard", path: "/dashboard", icon: "bi-house-door-fill" },
   { name: "Tasks", path: "/dashboard/tasks", icon: "bi-briefcase-fill" },
@@ -181,26 +222,36 @@ export default function Header() {
             </div>
             {/* Navigation Links */}
             <div className="nav-links pt-2">
-              {NAV.map((item) => (
-                <button
-                  key={item.path}
-                  className="nav-link-item w-100 text-start py-2 px-4"
-                  onClick={() => handleNavigate(item.path)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "1rem",
-                    border: "none",
-                    background: "transparent",
-                    color: "inherit",
-                    fontWeight: 500,
-                    fontSize: "1.08rem",
-                  }}
-                >
-                  <i className={`bi ${item.icon} fs-5`} />
-                  {item.name}
-                </button>
-              ))}
+              {NAV.map((item) => {
+                const isNotifications = item.name === "Notifications";
+                
+                return (
+                  <button
+                    key={item.path}
+                    className="nav-link-item w-100 text-start py-2 px-4"
+                    onClick={() => handleNavigate(item.path)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                      border: "none",
+                      background: "transparent",
+                      color: "inherit",
+                      fontWeight: 500,
+                      fontSize: "1.08rem",
+                      position: "relative"
+                    }}
+                  >
+                    <div style={{ position: "relative" }}>
+                      <i className={`bi ${item.icon} fs-5`} />
+                      {isNotifications && (
+                        <MobileNotificationBadge />
+                      )}
+                    </div>
+                    {item.name}
+                  </button>
+                );
+              })}
               
               {/* Theme Toggle */}
               <button
