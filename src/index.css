@@ -487,6 +487,7 @@ body.menu-open { overflow: hidden; }
     z-index: 1060;
   }
   .dashboard-sidebar.show { transform: translateX(0%); }
+  .sidebar.show { transform: translateX(0%) !important; }
   .dashboard-header { left: 0 !important; width: 100vw !important;}
   .dashboard-main { margin-left: 0 !important; margin-top: var(--dh-header-height);}
 }

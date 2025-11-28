@@ -12,7 +12,7 @@ export default function DashboardLayout() {
   const { refreshUserData } = useAppData();
   const isDark = theme === "dark";
   const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+
 
   const toggleSidebar = () => setCollapsed((prev) => !prev);
 
@@ -32,17 +32,12 @@ export default function DashboardLayout() {
     >
       {/* SIDEBAR */}
       <aside className={`dashboard-sidebar${collapsed ? " collapsed" : ""}`}>
-        <Sidebar 
-          collapsed={collapsed} 
-          toggleSidebar={toggleSidebar} 
-          mobileOpen={mobileOpen}
-          setMobileOpen={setMobileOpen}
-        />
+        <Sidebar />
       </aside>
 
       {/* HEADER */}
       <header className="dashboard-header">
-        <Header mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+        <Header />
       </header>
 
       {/* MAIN SECTION */}

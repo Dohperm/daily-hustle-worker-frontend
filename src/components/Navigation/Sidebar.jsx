@@ -44,10 +44,11 @@ function NotificationBadge() {
     </span>
   );
 }
-// Logo image – replace with your actual logo if desired
+
 const LOGO = logo;
 
-export default function Sidebar({ collapsed, toggleSidebar, mobileOpen, setMobileOpen }) {
+export default function Sidebar() {
+  const [collapsed, setCollapsed] = useState(false);
   const [showBalance, setShowBalance] = useState(false);
   const navigate = useNavigate();
 
@@ -56,23 +57,12 @@ export default function Sidebar({ collapsed, toggleSidebar, mobileOpen, setMobil
   const user = userData || {};
   const isDark = theme === "dark";
 
-  const handleWalletClick = useCallback(() => {
-    navigate("/dashboard/wallet");
-    if (setMobileOpen) setMobileOpen(false);
-  }, [navigate, setMobileOpen]);
-  
+  const handleWalletClick = useCallback(() => navigate("/dashboard/wallet"), [navigate]);
   const handleLogout = useCallback(() => {
     logout();
-    if (setMobileOpen) setMobileOpen(false);
-  }, [logout, setMobileOpen]);
+  }, [logout]);
 
-  const handleNavClick = useCallback((path) => {
-    navigate(path);
-    if (setMobileOpen) setMobileOpen(false);
-  }, [navigate, setMobileOpen]);
-
-  const avatar =
-    user.photo || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+  const avatar = user.photo || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
 
   const navLinks = useMemo(
     () => [
@@ -80,7 +70,6 @@ export default function Sidebar({ collapsed, toggleSidebar, mobileOpen, setMobil
       { name: "Tasks", path: "/dashboard/tasks", icon: "bi-briefcase-fill" },
       { name: "Wallet", path: "/dashboard/wallet", icon: "bi-wallet2" },
       { name: "Notifications", path: "/dashboard/notifications", icon: "bi-bell-fill" },
-      // { name: "Transactions", path: "/dashboard/transactions", icon: "bi-list-ul" },
       { name: "Referrals", path: "/dashboard/referrals", icon: "bi-people-fill" },
       { name: "Support", path: "/dashboard/support", icon: "bi-headset" },
       { name: "Settings", path: "/dashboard/settings", icon: "bi-gear-fill" },
@@ -88,38 +77,19 @@ export default function Sidebar({ collapsed, toggleSidebar, mobileOpen, setMobil
     []
   );
 
-  const formattedBalance =
-    user.balance != null ? `₦${user.balance.toLocaleString()}` : "₦0";
+  const formattedBalance = user.balance != null ? `₦${user.balance.toLocaleString()}` : "₦0";
 
   return (
-    <>
-      {/* Mobile Overlay */}
-      {mobileOpen && (
-        <div
-          className="mobile-menu-overlay"
-          onClick={() => setMobileOpen && setMobileOpen(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
-            zIndex: 1055,
-            display: window.innerWidth <= 991 ? 'block' : 'none'
-          }}
-        />
-      )}
-      
-      <div
-        className={`sidebar d-flex flex-column p-3 ${
-          collapsed ? "collapsed" : ""
-        } ${mobileOpen ? "show" : ""}`}
-        style={{
-          width: collapsed ? "80px" : "100%",
-          backgroundColor: isDark ? "#1c1c1e" : "#ffffff",
-          color: isDark ? "#f8f9fa" : "#212529",
-          transition: "all 0.3s ease",
-          minHeight: "100vh",
-        }}
-      >
+    <div
+      className={`sidebar d-flex flex-column p-3 ${collapsed ? "collapsed" : ""}`}
+      style={{
+        width: collapsed ? "80px" : "100%",
+        backgroundColor: isDark ? "#1c1c1e" : "#ffffff",
+        color: isDark ? "#f8f9fa" : "#212529",
+        transition: "all 0.3s ease",
+        minHeight: "100vh",
+      }}
+    >
       {/* Logo */}
       <div className="text-center mb-3">
         <img
@@ -136,8 +106,6 @@ export default function Sidebar({ collapsed, toggleSidebar, mobileOpen, setMobil
           }}
         />
       </div>
-
-
 
       {/* Wallet / Balance */}
       {!collapsed && (
@@ -168,22 +136,22 @@ export default function Sidebar({ collapsed, toggleSidebar, mobileOpen, setMobil
           const isNotifications = link.name === "Notifications";
           
           return (
-            <div
+            <NavLink
+              to={link.path}
               className="nav-link-item"
               key={link.name}
-              onClick={() => handleNavClick(link.path)}
-              style={{
-                backgroundColor: window.location.pathname === link.path ? "#ff5722" : "transparent",
-                color: window.location.pathname === link.path ? "#fff" : isDark ? "#f8f9fa" : "#212529",
+              end={link.path === "/dashboard"}
+              style={({ isActive }) => ({
+                backgroundColor: isActive ? "#ff5722" : "transparent",
+                color: isActive ? "#fff" : isDark ? "#f8f9fa" : "#212529",
                 borderRadius: "10px",
                 padding: "8px 10px",
                 marginBottom: "4px",
                 transition: "0.3s",
                 position: "relative",
                 display: "flex",
-                alignItems: "center",
-                cursor: "pointer"
-              }}
+                alignItems: "center"
+              })}
             >
               <div style={{ position: "relative" }}>
                 <i className={`bi ${link.icon}`} />
@@ -192,10 +160,9 @@ export default function Sidebar({ collapsed, toggleSidebar, mobileOpen, setMobil
                 )}
               </div>
               {!collapsed && <span className="ms-2">{link.name}</span>}
-            </div>
+            </NavLink>
           );
         })}
-
       </nav>
 
       {/* Theme Toggle Container - Admin Style */}
@@ -203,31 +170,18 @@ export default function Sidebar({ collapsed, toggleSidebar, mobileOpen, setMobil
         <div className="theme-toggle-container mt-auto pt-3" style={{ borderTop: `1px solid ${isDark ? '#404040' : '#e5e7eb'}` }}>
           <div className="theme-toggle d-flex align-items-center justify-content-between p-3 mb-2" style={{ color: isDark ? '#ffffff' : '#1f2937', fontSize: '0.9rem' }}>
             <span>Theme</span>
-            <div 
-              className={`theme-switch ${isDark ? 'active' : ''}`} 
+            <button
               onClick={toggleTheme}
               style={{
-                position: 'relative',
-                width: '50px',
-                height: '24px',
-                background: isDark ? '#ff5722' : '#e5e7eb',
-                borderRadius: '12px',
+                background: 'none',
+                border: 'none',
+                color: isDark ? '#ffffff' : '#1f2937',
                 cursor: 'pointer',
-                transition: 'background 0.3s'
+                fontSize: '1.1rem'
               }}
             >
-              <div style={{
-                content: '',
-                position: 'absolute',
-                top: '2px',
-                left: isDark ? '26px' : '2px',
-                width: '20px',
-                height: '20px',
-                background: 'white',
-                borderRadius: '50%',
-                transition: 'left 0.3s'
-              }}></div>
-            </div>
+              <i className={`bi ${isDark ? "bi-sun-fill" : "bi-moon-fill"}`} />
+            </button>
           </div>
           
           {/* Logout - Admin Style */}
@@ -293,7 +247,6 @@ export default function Sidebar({ collapsed, toggleSidebar, mobileOpen, setMobil
           </div>
         </div>
       )}
-      </div>
-    </>
+    </div>
   );
 }

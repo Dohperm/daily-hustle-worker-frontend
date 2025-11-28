@@ -45,6 +45,7 @@ function MobileNotificationBadge() {
     </span>
   );
 }
+
 const NAV = [
   { name: "Dashboard", path: "/dashboard", icon: "bi-house-door-fill" },
   { name: "Tasks", path: "/dashboard/tasks", icon: "bi-briefcase-fill" },
@@ -56,22 +57,18 @@ const NAV = [
   { name: "Settings", path: "/dashboard/settings", icon: "bi-gear" },
 ];
 
-// Provide a logo image; you can replace the src below with your actual logo url
+const LOGO = logo;
 
-// Logo image – replace with your actual logo if desired
-const LOGO = logo; // EXAMPLE Daily Hustle logo
-
-export default function Header({ mobileOpen, setMobileOpen }) {
+export default function Header() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { userData, logout } = useAppData();
 
-  const menuOpen = mobileOpen || false;
+  const [menuOpen, setMenuOpen] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
 
   const isDark = theme === "dark";
-  const avatar =
-    userData.photo || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+  const avatar = userData.photo || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
   const balance = userData.balance ?? 0;
 
   useEffect(() => {
@@ -117,7 +114,7 @@ export default function Header({ mobileOpen, setMobileOpen }) {
       {menuOpen && (
         <div
           className="mobile-menu-overlay"
-          onClick={() => setMobileOpen && setMobileOpen(false)}
+          onClick={() => setMenuOpen(false)}
           aria-label="Close menu overlay"
         />
       )}
@@ -128,7 +125,6 @@ export default function Header({ mobileOpen, setMobileOpen }) {
             className="h5 mb-0 fw-bold d-flex align-items-center"
             style={{ color: "var(--dh-red)" }}
           >
-            {/* LOGO IMAGE */}
             <img
               src={LOGO}
               alt="Daily Hustle Logo"
@@ -143,12 +139,11 @@ export default function Header({ mobileOpen, setMobileOpen }) {
             />
             Daily Hustle
           </span>
-          {/* Controls */}
           <div className="d-flex align-items-center gap-2">
             <button
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               className="btn btn-sm"
-              onClick={() => setMobileOpen && setMobileOpen((prev) => !prev))
+              onClick={() => setMenuOpen((prev) => !prev)}
               style={{
                 width: 40,
                 height: 40,
@@ -200,7 +195,7 @@ export default function Header({ mobileOpen, setMobileOpen }) {
               role="button"
               tabIndex={0}
               style={{ cursor: "pointer" }}
-              onClick={() => handleNavigate("/wallet")}
+              onClick={() => handleNavigate("/dashboard/wallet")}
             >
               <div className="d-flex align-items-center">
                 <i
@@ -230,10 +225,7 @@ export default function Header({ mobileOpen, setMobileOpen }) {
                   <button
                     key={item.path}
                     className="nav-link-item w-100 text-start py-2 px-4"
-                    onClick={() => {
-                      handleNavigate(item.path);
-                      setMobileOpen && setMobileOpen(false);
-                    }}
+                    onClick={() => handleNavigate(item.path)}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -280,7 +272,7 @@ export default function Header({ mobileOpen, setMobileOpen }) {
               <button
                 className="nav-link-item w-100 text-start py-2 px-4"
                 onClick={() => {
-                  setMobileOpen && setMobileOpen(false);
+                  setMenuOpen(false);
                   logout();
                 }}
                 style={{
