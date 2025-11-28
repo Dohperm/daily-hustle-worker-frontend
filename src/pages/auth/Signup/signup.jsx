@@ -153,14 +153,14 @@ export default function QuickSignup() {
           --muted: ${isDark ? "#aaa" : "#666"};
           --border: ${isDark ? "#2a2a2a" : "#e5e7eb"};
           --shadow: 0 8px 24px rgba(0, 0, 0, ${isDark ? "0.4" : "0.08"});
-          --dh-red: #ff4500;
-          --dh-red-hov: #e03e00;
-          --dh-red-light: #ff6a33;
+          --dh-red: #ff5722;
+          --dh-red-hov: #e64a19;
+          --dh-red-light: #ff7043;
 
           background: var(--bg);
           color: var(--text);
           min-height: 100vh;
-          font-family: "Inter", system-ui, sans-serif;
+          font-family: "Poppins", system-ui, sans-serif;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -219,11 +219,12 @@ export default function QuickSignup() {
           transition: all 0.2s;
           outline: none;
           margin-bottom: 1rem;
+          font-family: "Poppins", system-ui, sans-serif;
         }
 
         .dh-input:focus {
           border-color: var(--dh-red);
-          box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+          box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
         }
 
         .dh-input::placeholder {
@@ -252,7 +253,7 @@ export default function QuickSignup() {
 
         .dh-eye-btn:hover {
           color: var(--dh-red);
-          background: rgba(255, 69, 0, 0.1);
+          background: rgba(255, 87, 34, 0.1);
         }
 
         .dh-progress {
@@ -296,7 +297,7 @@ export default function QuickSignup() {
         .dh-submit-btn:hover:not(:disabled) {
           background: linear-gradient(135deg, var(--dh-red-hov), var(--dh-red));
           transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(255, 69, 0, 0.3);
+          box-shadow: 0 8px 20px rgba(255, 87, 34, 0.3);
         }
 
         .dh-submit-btn:disabled {
@@ -358,7 +359,7 @@ export default function QuickSignup() {
 
         .dh-otp-input:focus {
           border-color: var(--dh-red);
-          box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+          box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
         }
 
         .dh-otp-text {

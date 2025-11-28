@@ -61,12 +61,12 @@ const NAV = [
 // Logo image – replace with your actual logo if desired
 const LOGO = logo; // EXAMPLE Daily Hustle logo
 
-export default function Header() {
+export default function Header({ mobileOpen, setMobileOpen }) {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { userData, logout } = useAppData();
 
-  const [menuOpen, setMenuOpen] = useState(false);
+  const menuOpen = mobileOpen || false;
   const [showBalance, setShowBalance] = useState(true);
 
   const isDark = theme === "dark";
@@ -96,11 +96,28 @@ export default function Header() {
 
   return (
     <>
+      {/* Desktop Header */}
+      <div className="d-none d-md-flex align-items-center justify-content-end px-4 py-2 h-100">
+        <img
+          src={avatar}
+          alt="User avatar"
+          className="rounded-circle"
+          style={{
+            width: "40px",
+            height: "40px",
+            objectFit: "cover",
+            cursor: "pointer",
+            border: `2px solid ${isDark ? '#ffffff' : '#ff5722'}`
+          }}
+          onClick={() => navigate('/dashboard/settings')}
+        />
+      </div>
+
       {/* Overlay */}
       {menuOpen && (
         <div
           className="mobile-menu-overlay"
-          onClick={() => setMenuOpen(false)}
+          onClick={() => setMobileOpen && setMobileOpen(false)}
           aria-label="Close menu overlay"
         />
       )}
@@ -129,34 +146,18 @@ export default function Header() {
           {/* Controls */}
           <div className="d-flex align-items-center gap-2">
             <button
-              aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
-              className="btn btn-sm rounded-circle"
-              onClick={handleToggleTheme}
-              style={{
-                width: 40,
-                height: 40,
-                border: `1px solid ${isDark ? "#fff" : "var(--dh-red)"}`,
-                color: isDark ? "#fff" : "var(--dh-red)",
-                background: "none",
-              }}
-            >
-              <i
-                className={`bi ${isDark ? "bi-sun-fill" : "bi-moon-fill"} fs-5`}
-              />
-            </button>
-            <button
               aria-label={menuOpen ? "Close menu" : "Open menu"}
-              className="btn btn-sm rounded-circle"
-              onClick={() => setMenuOpen((prev) => !prev)}
+              className="btn btn-sm"
+              onClick={() => setMobileOpen && setMobileOpen((prev) => !prev))
               style={{
                 width: 40,
                 height: 40,
-                border: `1px solid ${isDark ? "#fff" : "var(--dh-red)"}`,
-                color: isDark ? "#fff" : "var(--dh-red)",
+                border: "none",
+                color: isDark ? "#fff" : "var(--dh-primary)",
                 background: "none",
               }}
             >
-              <i className={`bi ${menuOpen ? "bi-x" : "bi-grid-fill"} fs-5`} />
+              <i className={`bi ${menuOpen ? "bi-x" : "bi-list"} fs-4`} />
             </button>
           </div>
         </div>
@@ -229,7 +230,10 @@ export default function Header() {
                   <button
                     key={item.path}
                     className="nav-link-item w-100 text-start py-2 px-4"
-                    onClick={() => handleNavigate(item.path)}
+                    onClick={() => {
+                      handleNavigate(item.path);
+                      setMobileOpen && setMobileOpen(false);
+                    }}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -276,7 +280,7 @@ export default function Header() {
               <button
                 className="nav-link-item w-100 text-start py-2 px-4"
                 onClick={() => {
-                  setMenuOpen(false);
+                  setMobileOpen && setMobileOpen(false);
                   logout();
                 }}
                 style={{

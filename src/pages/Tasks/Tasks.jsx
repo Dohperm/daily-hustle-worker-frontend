@@ -21,11 +21,11 @@ export default function Tasks() {
 
   const palette = useMemo(
     () => ({
-      bg: isDark ? "#121212" : "#f8f9fa",
-      cardBg: isDark ? "#1c1c1e" : "#fff",
-      text: isDark ? "#f8f9fa" : "#212529",
-      label: isDark ? "#adb5bd" : "#6c757d",
-      red: "var(--dh-red)",
+      bg: "var(--dh-bg-gradient)",
+      cardBg: "var(--dh-card-bg)",
+      text: "var(--dh-text)",
+      label: "var(--dh-muted)",
+      red: "var(--dh-primary)",
     }),
     [isDark]
   );
@@ -49,31 +49,10 @@ export default function Tasks() {
     return filteredTasks.slice((page - 1) * perPage, page * perPage);
   }, [filteredTasks, page, perPage]);
 
-  const paginationStyle = `
-    .pagination .page-item .page-link {
-      color: var(--dh-red);
-      border-radius: 50%;
-      margin: 0 3px;
-      border: 1px solid var(--dh-red);
-    }
-    .pagination .page-item.active .page-link {
-      background-color: var(--dh-red);
-      color: #fff;
-      border-color: var(--dh-red);
-    }
-    .pagination .page-item .page-link:hover {
-      background-color: #c92b2b;
-      color: #fff;
-      border-color: #c92b2b;
-    }
-  `;
+
 
   return (
-    <div
-      className="container-fluid py-4 px-3 min-vh-100"
-      style={{ background: palette.bg, color: palette.text }}
-    >
-      <style>{paginationStyle}</style>
+    <div className="container-fluid py-4 px-3 min-vh-100" style={{ background: palette.bg, color: palette.text }}>
       <h2 className="text-center fw-bold mb-4" style={{ color: palette.red }}>
         Tasks
       </h2>
@@ -124,10 +103,8 @@ export default function Tasks() {
           return (
             <div
               key={index}
-              className="p-3 mb-3 rounded shadow-sm"
+              className="card"
               style={{
-                backgroundColor: palette.cardBg,
-                border: "1px solid rgba(0,0,0,0.05)",
                 opacity: isDisabled ? 0.6 : 1,
               }}
             >
@@ -151,19 +128,29 @@ export default function Tasks() {
                     <span style={{ color: palette.label }}>
                       Slots: {task.slots?.used ?? 0}/{task.slots?.max ?? 0}
                     </span>
-                    {isFull && <Badge bg="danger">Full</Badge>}
+                    {isFull && <span className="badge badge-danger">Full</span>}
                     {task.review_type?.toUpperCase() === "OPEN" && (
-                      <Badge bg="info">Open Review</Badge>
+                      <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6' }}>Open Review</span>
                     )}{" "}
                     {task.review_type?.toUpperCase() === "CLOSED" && (
-                      <Badge bg="info">Closed Review</Badge>
+                      <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6' }}>Closed Review</span>
                     )}
                     {userStatus && (
                       <span
-                        className="fw-semibold"
+                        className={`badge ${
+                          userStatus === "PENDING"
+                            ? "badge-warning"
+                            : userStatus === "REJECTED"
+                            ? "badge-danger"
+                            : userStatus === "APPROVED"
+                            ? "badge-success"
+                            : userStatus === "RESUBMIT"
+                            ? "badge-warning"
+                            : ""
+                        }`}
                         style={{
-                          color: statusColor,
-                          textTransform: "uppercase",
+                          background: userStatus === "RESUBMIT" ? 'rgba(255, 107, 53, 0.2)' : undefined,
+                          color: userStatus === "RESUBMIT" ? '#ff6b35' : undefined
                         }}
                       >
                         {userStatus}
@@ -173,12 +160,12 @@ export default function Tasks() {
                 </div>
                 <div className="d-flex gap-2">
                   <button
-                    className="btn fw-bold rounded-pill text-white"
+                    className={`btn ${isDisabled ? '' : 'btn-primary'} rounded-pill`}
                     style={{
-                      backgroundColor: isDisabled ? "#6c757d" : palette.red,
+                      backgroundColor: isDisabled ? "#6c757d" : undefined,
                       minWidth: "130px",
-                      border: "none",
                       cursor: isDisabled ? "not-allowed" : "pointer",
+                      color: isDisabled ? "#fff" : undefined
                     }}
                     onClick={() => {
                       if (!isDisabled) {
@@ -201,11 +188,11 @@ export default function Tasks() {
                   </button>
                   {activeTab === "myTasks" && (
                     <button
-                      className="btn fw-bold rounded-pill"
+                      className={`btn ${(userStatus === "APPROVED" || userStatus === "REJECTED") ? '' : 'btn-outline'} rounded-pill`}
                       style={{
-                        backgroundColor: "transparent",
-                        color: (userStatus === "APPROVED" || userStatus === "REJECTED") ? "#6c757d" : palette.red,
-                        border: `1px solid ${(userStatus === "APPROVED" || userStatus === "REJECTED") ? "#6c757d" : palette.red}`,
+                        backgroundColor: (userStatus === "APPROVED" || userStatus === "REJECTED") ? "transparent" : undefined,
+                        color: (userStatus === "APPROVED" || userStatus === "REJECTED") ? "#6c757d" : undefined,
+                        border: (userStatus === "APPROVED" || userStatus === "REJECTED") ? "1px solid #6c757d" : undefined,
                         minWidth: "100px",
                         cursor: (userStatus === "APPROVED" || userStatus === "REJECTED") ? "not-allowed" : "pointer",
                       }}

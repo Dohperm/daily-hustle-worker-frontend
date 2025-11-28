@@ -47,8 +47,7 @@ function NotificationBadge() {
 // Logo image – replace with your actual logo if desired
 const LOGO = logo;
 
-export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+export default function Sidebar({ collapsed, toggleSidebar, mobileOpen, setMobileOpen }) {
   const [showBalance, setShowBalance] = useState(false);
   const navigate = useNavigate();
 
@@ -57,10 +56,20 @@ export default function Sidebar() {
   const user = userData || {};
   const isDark = theme === "dark";
 
-  const handleWalletClick = useCallback(() => navigate("/dashboard/wallet"), [navigate]);
+  const handleWalletClick = useCallback(() => {
+    navigate("/dashboard/wallet");
+    if (setMobileOpen) setMobileOpen(false);
+  }, [navigate, setMobileOpen]);
+  
   const handleLogout = useCallback(() => {
     logout();
-  }, [logout]);
+    if (setMobileOpen) setMobileOpen(false);
+  }, [logout, setMobileOpen]);
+
+  const handleNavClick = useCallback((path) => {
+    navigate(path);
+    if (setMobileOpen) setMobileOpen(false);
+  }, [navigate, setMobileOpen]);
 
   const avatar =
     user.photo || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
@@ -83,18 +92,34 @@ export default function Sidebar() {
     user.balance != null ? `₦${user.balance.toLocaleString()}` : "₦0";
 
   return (
-    <div
-      className={`sidebar d-flex flex-column p-3 ${
-        collapsed ? "collapsed" : ""
-      }`}
-      style={{
-        width: collapsed ? "80px" : "100%",
-        backgroundColor: isDark ? "#1c1c1e" : "#ffffff",
-        color: isDark ? "#f8f9fa" : "#212529",
-        transition: "all 0.3s ease",
-        minHeight: "100vh",
-      }}
-    >
+    <>
+      {/* Mobile Overlay */}
+      {mobileOpen && (
+        <div
+          className="mobile-menu-overlay"
+          onClick={() => setMobileOpen && setMobileOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 1055,
+            display: window.innerWidth <= 991 ? 'block' : 'none'
+          }}
+        />
+      )}
+      
+      <div
+        className={`sidebar d-flex flex-column p-3 ${
+          collapsed ? "collapsed" : ""
+        } ${mobileOpen ? "show" : ""}`}
+        style={{
+          width: collapsed ? "80px" : "100%",
+          backgroundColor: isDark ? "#1c1c1e" : "#ffffff",
+          color: isDark ? "#f8f9fa" : "#212529",
+          transition: "all 0.3s ease",
+          minHeight: "100vh",
+        }}
+      >
       {/* Logo */}
       <div className="text-center mb-3">
         <img
@@ -112,43 +137,12 @@ export default function Sidebar() {
         />
       </div>
 
-      {/* Collapse Toggle */}
-      <button
-        className="btn btn-sm mb-3"
-        onClick={() => setCollapsed(!collapsed)}
-        style={{
-          border: `1px solid ${isDark ? '#f8f9fa' : '#ff4500'}`,
-          color: isDark ? '#f8f9fa' : '#ff4500',
-          backgroundColor: 'transparent'
-        }}
-      >
-        <i
-          className={`bi ${
-            collapsed ? "bi-arrow-right-square" : "bi-arrow-left-square"
-          }`}
-        />
-      </button>
 
-      {/* Avatar Section */}
-      <div className="text-center mb-3">
-        <img
-          src={avatar}
-          alt="User avatar"
-          className="rounded-circle mb-2"
-          style={{
-            width: "60px",
-            height: "60px",
-            objectFit: "cover",
-            display: "block",
-            margin: "0 auto",
-          }}
-        />
-      </div>
 
       {/* Wallet / Balance */}
       {!collapsed && (
         <div
-          className="balance-section mb-3 d-flex align-items-center justify-content-between px-2"
+          className="balance-section mb-4 d-flex align-items-center justify-content-between px-2"
           style={{ cursor: "pointer" }}
         >
           <div
@@ -174,22 +168,22 @@ export default function Sidebar() {
           const isNotifications = link.name === "Notifications";
           
           return (
-            <NavLink
-              to={link.path}
+            <div
               className="nav-link-item"
               key={link.name}
-              end={link.path === "/dashboard"}
-              style={({ isActive }) => ({
-                backgroundColor: isActive ? "#ff4500" : "transparent",
-                color: isActive ? "#fff" : isDark ? "#f8f9fa" : "#212529",
+              onClick={() => handleNavClick(link.path)}
+              style={{
+                backgroundColor: window.location.pathname === link.path ? "#ff5722" : "transparent",
+                color: window.location.pathname === link.path ? "#fff" : isDark ? "#f8f9fa" : "#212529",
                 borderRadius: "10px",
                 padding: "8px 10px",
                 marginBottom: "4px",
                 transition: "0.3s",
                 position: "relative",
                 display: "flex",
-                alignItems: "center"
-              })}
+                alignItems: "center",
+                cursor: "pointer"
+              }}
             >
               <div style={{ position: "relative" }}>
                 <i className={`bi ${link.icon}`} />
@@ -198,46 +192,108 @@ export default function Sidebar() {
                 )}
               </div>
               {!collapsed && <span className="ms-2">{link.name}</span>}
-            </NavLink>
+            </div>
           );
         })}
 
-        {/* Logout */}
-        <button 
-          className="btn mt-3" 
-          onClick={handleLogout}
-          style={{
-            border: `1px solid ${isDark ? '#f8f9fa' : '#ff4500'}`,
-            color: isDark ? '#f8f9fa' : '#ff4500',
-            backgroundColor: 'transparent',
-            borderRadius: '8px',
-            padding: '8px 12px',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = isDark ? '#f8f9fa' : '#ff4500';
-            e.target.style.color = isDark ? '#212529' : '#fff';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = 'transparent';
-            e.target.style.color = isDark ? '#f8f9fa' : '#ff4500';
-          }}
-        >
-          <i className="bi bi-box-arrow-left" />
-          {!collapsed && <span className="ms-2">Logout</span>}
-        </button>
-
-        {/* Theme Toggle */}
-        <button
-          className="btn btn-outline-secondary mt-2"
-          onClick={toggleTheme}
-        >
-          <i className={`bi ${isDark ? "bi-sun-fill" : "bi-moon-fill"}`} />
-          {!collapsed && (
-            <span className="ms-2">{isDark ? "Light" : "Dark"} Mode</span>
-          )}
-        </button>
       </nav>
-    </div>
+
+      {/* Theme Toggle Container - Admin Style */}
+      {!collapsed && (
+        <div className="theme-toggle-container mt-auto pt-3" style={{ borderTop: `1px solid ${isDark ? '#404040' : '#e5e7eb'}` }}>
+          <div className="theme-toggle d-flex align-items-center justify-content-between p-3 mb-2" style={{ color: isDark ? '#ffffff' : '#1f2937', fontSize: '0.9rem' }}>
+            <span>Theme</span>
+            <div 
+              className={`theme-switch ${isDark ? 'active' : ''}`} 
+              onClick={toggleTheme}
+              style={{
+                position: 'relative',
+                width: '50px',
+                height: '24px',
+                background: isDark ? '#ff5722' : '#e5e7eb',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                transition: 'background 0.3s'
+              }}
+            >
+              <div style={{
+                content: '',
+                position: 'absolute',
+                top: '2px',
+                left: isDark ? '26px' : '2px',
+                width: '20px',
+                height: '20px',
+                background: 'white',
+                borderRadius: '50%',
+                transition: 'left 0.3s'
+              }}></div>
+            </div>
+          </div>
+          
+          {/* Logout - Admin Style */}
+          <div 
+            className="nav-link-item" 
+            onClick={handleLogout}
+            style={{
+              cursor: 'pointer',
+              backgroundColor: 'transparent',
+              color: isDark ? '#ffffff' : '#1f2937',
+              borderRadius: '8px',
+              padding: '1rem',
+              marginBottom: '0.75rem',
+              transition: 'all 0.3s ease-in-out'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#ff5722';
+              e.target.style.color = '#fff';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = 'transparent';
+              e.target.style.color = isDark ? '#ffffff' : '#1f2937';
+            }}
+          >
+            <i className="bi bi-box-arrow-left" style={{ fontSize: '1.1rem', width: '20px' }} />
+            <span>Log Out</span>
+          </div>
+        </div>
+      )}
+      
+      {/* Collapsed Theme Toggle */}
+      {collapsed && (
+        <div className="mt-auto pt-3">
+          <div 
+            className="nav-link-item text-center" 
+            onClick={toggleTheme}
+            style={{
+              cursor: 'pointer',
+              backgroundColor: 'transparent',
+              color: isDark ? '#ffffff' : '#1f2937',
+              borderRadius: '8px',
+              padding: '1rem',
+              marginBottom: '0.75rem',
+              transition: 'all 0.3s ease-in-out'
+            }}
+          >
+            <i className={`bi ${isDark ? "bi-sun-fill" : "bi-moon-fill"}`} />
+          </div>
+          <div 
+            className="nav-link-item text-center" 
+            onClick={handleLogout}
+            style={{
+              cursor: 'pointer',
+              backgroundColor: 'transparent',
+              color: isDark ? '#ffffff' : '#1f2937',
+              borderRadius: '8px',
+              padding: '1rem',
+              marginBottom: '0.75rem',
+              transition: 'all 0.3s ease-in-out'
+            }}
+          >
+            <i className="bi bi-box-arrow-left" />
+          </div>
+        </div>
+      )}
+      </div>
+    </>
   );
 }

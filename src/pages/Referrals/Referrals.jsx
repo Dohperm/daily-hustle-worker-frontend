@@ -153,26 +153,7 @@ export default function Referrals() {
         minHeight: "100vh",
       }}
     >
-      {/* Breadcrumb */}
-      <nav aria-label="breadcrumb" className="mb-3">
-        <ol
-          className="breadcrumb"
-          style={{ background: "transparent", padding: 0 }}
-        >
-          <li className="breadcrumb-item">
-            <a href="/dashboard" style={{ color: labelColor }}>
-              Dashboard
-            </a>
-          </li>
-          <li
-            className="breadcrumb-item active"
-            aria-current="page"
-            style={{ color: primary }}
-          >
-            Referrals
-          </li>
-        </ol>
-      </nav>
+
 
       {/* Header */}
       <div className="mb-4 text-center">
