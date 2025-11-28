@@ -250,23 +250,32 @@ export default function Header() {
               })}
               
               {/* Theme Toggle */}
-              <button
-                className="nav-link-item w-100 text-start py-2 px-4 mt-2"
-                onClick={handleToggleTheme}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "1rem",
-                  border: "none",
-                  background: "transparent",
-                  color: "inherit",
-                  fontWeight: 500,
-                  fontSize: "1.08rem",
-                }}
-              >
-                <i className={`bi ${isDark ? "bi-sun-fill" : "bi-moon-fill"} fs-5`} />
-                {isDark ? "Light Mode" : "Dark Mode"}
-              </button>
+              <div className="nav-link-item w-100 d-flex justify-content-between align-items-center py-2 px-4 mt-2" style={{ fontWeight: 500, fontSize: "1.08rem" }}>
+                <span>Theme</span>
+                <div 
+                  onClick={handleToggleTheme}
+                  style={{
+                    position: 'relative',
+                    width: '50px',
+                    height: '24px',
+                    background: isDark ? '#ff5722' : '#e5e7eb',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
+                    transition: 'background 0.3s'
+                  }}
+                >
+                  <div style={{
+                    position: 'absolute',
+                    top: '2px',
+                    left: isDark ? '26px' : '2px',
+                    width: '20px',
+                    height: '20px',
+                    background: 'white',
+                    borderRadius: '50%',
+                    transition: 'left 0.3s'
+                  }}></div>
+                </div>
+              </div>
               
               {/* Logout */}
               <button

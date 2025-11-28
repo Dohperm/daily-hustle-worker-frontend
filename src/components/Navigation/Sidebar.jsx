@@ -170,18 +170,29 @@ export default function Sidebar() {
         <div className="theme-toggle-container mt-auto pt-3" style={{ borderTop: `1px solid ${isDark ? '#404040' : '#e5e7eb'}` }}>
           <div className="theme-toggle d-flex align-items-center justify-content-between p-3 mb-2" style={{ color: isDark ? '#ffffff' : '#1f2937', fontSize: '0.9rem' }}>
             <span>Theme</span>
-            <button
+            <div 
               onClick={toggleTheme}
               style={{
-                background: 'none',
-                border: 'none',
-                color: isDark ? '#ffffff' : '#1f2937',
+                position: 'relative',
+                width: '50px',
+                height: '24px',
+                background: isDark ? '#ff5722' : '#e5e7eb',
+                borderRadius: '12px',
                 cursor: 'pointer',
-                fontSize: '1.1rem'
+                transition: 'background 0.3s'
               }}
             >
-              <i className={`bi ${isDark ? "bi-sun-fill" : "bi-moon-fill"}`} />
-            </button>
+              <div style={{
+                position: 'absolute',
+                top: '2px',
+                left: isDark ? '26px' : '2px',
+                width: '20px',
+                height: '20px',
+                background: 'white',
+                borderRadius: '50%',
+                transition: 'left 0.3s'
+              }}></div>
+            </div>
           </div>
           
           {/* Logout - Admin Style */}
