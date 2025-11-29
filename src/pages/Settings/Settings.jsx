@@ -343,54 +343,33 @@ export default function Settings() {
                 <i className="bi bi-shield-check me-2" />
                 KYC Verification
               </h6>
-              <small style={{ color: userData.kyc?.is_approved ? 'var(--dh-green)' : "#ffc107" }}>
-                {userData.kyc?.is_approved ? "Verified" : "Pending Verification"}
+              <small style={{ color: (userData.kyc?.is_approved || userData.kyc?.status === 'verified') ? '#28a745' : "#ffc107" }}>
+                {(userData.kyc?.is_approved || userData.kyc?.status === 'verified') ? "✓ KYC Completed" : "Pending Verification"}
               </small>
             </div>
             <button
               className="btn fw-bold rounded-pill px-4"
               style={{
                 backgroundColor: userData.kyc?.is_approved ? '#28a745' : '#ff5722',
-                color: userData.kyc?.is_approved ? "#fff" : "#fff",
+                color: "#fff",
                 border: 'none'
               }}
               onClick={() => setShowKycForm(true)}
-              disabled={userData.kyc?.is_approved}
+              disabled={userData.kyc?.is_approved || userData.kyc?.status === 'verified'}
             >
-              {userData.kyc?.is_approved ? "Verified" : "Complete KYC"}
+              {(userData.kyc?.is_approved || userData.kyc?.status === 'verified') ? "✓ Completed" : "Complete KYC"}
             </button>
           </div>
           <small className="text-muted">
-            Complete KYC verification to unlock all platform features and verified badges
+            {(userData.kyc?.is_approved || userData.kyc?.status === 'verified')
+              ? "Your KYC verification has been completed and approved. All platform features and verified badges are now unlocked."
+              : "Complete KYC verification to unlock all platform features and verified badges"
+            }
           </small>
         </div>
       </div>
 
-      {/* Worker Badge */}
-      <div className="col-12">
-        <div
-          className="p-4 rounded-4"
-          style={{
-            backgroundColor: isDark ? "#1c1c1e" : "#fff",
-            border: `1px solid ${isDark ? "#333" : "#dee2e6"}`,
-            opacity: userData.kyc?.is_approved ? 1 : 0.6
-          }}
-        >
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <VerificationBadge type="worker" verified={userData.kyc?.is_approved && verifiedWorker} size="lg" />
-            <button
-              className="btn btn-outline-success btn-sm"
-              disabled={!userData.kyc?.is_approved || verifiedWorker}
-              onClick={() => toast.info('Worker badge request submitted!')}
-            >
-              {verifiedWorker ? 'Active' : 'Request'}
-            </button>
-          </div>
-          <small className="text-muted">
-            Verified workers get priority access to premium tasks
-          </small>
-        </div>
-      </div>
+
     </div>
   );
 
