@@ -7,6 +7,8 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
 import { useAppData } from "../../../hooks/AppDataContext";
 import { useTheme } from "../../../hooks/useThemeContext";
+import { signInWithGoogle, signInWithFacebook } from "../../../services/auth";
+import { oauthLogin } from "../../../services/services";
 
 const API_BASE = "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1";
 
@@ -31,6 +33,46 @@ const Login = () => {
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      const { token } = await signInWithGoogle();
+      const res = await oauthLogin({ firebase_token: token });
+      if (res.data?.data?.token) {
+        localStorage.setItem("userToken", res.data.data.token);
+        localStorage.setItem("userLoggedIn", "true");
+        setUserLoggedIn(true);
+        toast.success("Google login successful!");
+        setTimeout(() => navigate("/dashboard"), 1200);
+      }
+    } catch (error) {
+      console.error('Google login error:', error);
+      toast.error('Google login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFacebookLogin = async () => {
+    setLoading(true);
+    try {
+      const { token } = await signInWithFacebook();
+      const res = await oauthLogin({ firebase_token: token });
+      if (res.data?.data?.token) {
+        localStorage.setItem("userToken", res.data.data.token);
+        localStorage.setItem("userLoggedIn", "true");
+        setUserLoggedIn(true);
+        toast.success("Facebook login successful!");
+        setTimeout(() => navigate("/dashboard"), 1200);
+      }
+    } catch (error) {
+      console.error('Facebook login error:', error);
+      toast.error('Facebook login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -265,6 +307,33 @@ const Login = () => {
           color: var(--dh-red);
           transform: translateY(-2px);
         }
+        
+        .dh-social-btn {
+          flex: 1;
+          padding: 0.75rem;
+          border: 2px solid var(--border);
+          background: var(--card);
+          color: var(--text);
+          border-radius: 0.75rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+        
+        .dh-social-btn:hover:not(:disabled) {
+          border-color: var(--dh-red);
+          color: var(--dh-red);
+          transform: translateY(-2px);
+        }
+        
+        .dh-social-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
       `}</style>
 
       <div className="dh-login">
@@ -342,18 +411,43 @@ const Login = () => {
                 "Login"
               )}
             </button>
-            
-            <div className="dh-signup-link">
-              Don't have an account?{" "}
-              <button
-                type="button"
-                className="dh-signup-btn"
-                onClick={() => navigate('/signup')}
-              >
-                Sign up
-              </button>
-            </div>
           </form>
+          
+          <div style={{ textAlign: 'center', margin: '1.5rem 0', color: 'var(--muted)' }}>
+            or continue with
+          </div>
+          
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button
+              type="button"
+              className="dh-social-btn"
+              onClick={handleGoogleLogin}
+              disabled={loading}
+            >
+              <i className="bi bi-google" />
+              Google
+            </button>
+            <button
+              type="button"
+              className="dh-social-btn"
+              onClick={handleFacebookLogin}
+              disabled={loading}
+            >
+              <i className="bi bi-facebook" />
+              Facebook
+            </button>
+          </div>
+          
+          <div className="dh-signup-link">
+            Don't have an account?{" "}
+            <button
+              type="button"
+              className="dh-signup-btn"
+              onClick={() => navigate('/signup')}
+            >
+              Sign up
+            </button>
+          </div>
         </div>
       </div>
     </>

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
 import { getUnreadCount } from "../../services/services";
+import VerificationBadge from "../VerificationBadge";
 import logo from "../../../public/assets/logo.png";
 
 function MobileNotificationBadge() {
@@ -94,7 +95,12 @@ export default function Header() {
   return (
     <>
       {/* Desktop Header */}
-      <div className="d-none d-md-flex align-items-center justify-content-end px-4 py-2 h-100">
+      <div className="d-none d-md-flex align-items-center justify-content-end px-4 py-2 h-100 gap-3">
+        <VerificationBadge 
+          type="worker" 
+          verified={userData.verifiedWorker} 
+          size="sm" 
+        />
         <img
           src={avatar}
           alt="User avatar"
@@ -217,6 +223,14 @@ export default function Header() {
               />
             </div>
             {/* Navigation Links */}
+            {/* Verification Status */}
+            <div className="px-4 py-3 border-bottom">
+              <VerificationBadge 
+                type="worker" 
+                verified={userData.verifiedWorker} 
+                size="md" 
+              />
+            </div>
             <div className="nav-links pt-2">
               {NAV.map((item) => {
                 const isNotifications = item.name === "Notifications";

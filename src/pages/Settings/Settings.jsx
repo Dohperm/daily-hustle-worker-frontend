@@ -9,6 +9,8 @@ import {
   updateUser,
   fileUrlUpdate,
 } from "../../services/services";
+import VerificationBadge from "../../components/VerificationBadge";
+import VerificationModal from "../../components/Modal/VerificationModal";
 
 export default function Settings() {
   const { theme, toggleTheme } = useTheme();
@@ -26,6 +28,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState(userData?.photo || "");
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
   const fileInputRef = useRef(null);
   const previousBlobUrl = useRef(null);
   const isDark = theme === "dark";
@@ -40,12 +43,16 @@ export default function Settings() {
     kyc = {},
     notificationsEnabled = true,
     photo = "",
+    verifiedWorker = false,
+    verifiedAdvertiser = false,
+    identityVerified = false,
   } = userData || {};
 
   const kycVerified = kyc.status === "verified";
 
   const tabs = [
     { id: "profile", icon: "person", title: "Profile" },
+    { id: "verification", icon: "shield-check", title: "Verification" },
     { id: "security", icon: "shield-lock", title: "Security" },
     { id: "notifications", icon: "bell", title: "Notifications" },
     { id: "payments", icon: "credit-card", title: "Payments" },
@@ -318,6 +325,73 @@ export default function Settings() {
     </form>
   );
 
+  const renderVerificationTab = () => (
+    <div className="row g-4">
+      {/* Identity Verification */}
+      <div className="col-12">
+        <div
+          className="p-4 rounded-4"
+          style={{
+            backgroundColor: isDark ? "#1c1c1e" : "#fff",
+            border: `2px solid ${identityVerified ? 'var(--dh-green)' : "#ffc107"}`,
+          }}
+        >
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h6 className="fw-bold mb-1" style={{ color: isDark ? "#f8f9fa" : "#212529" }}>
+                <i className="bi bi-person-vcard me-2" />
+                Identity Verification
+              </h6>
+              <small style={{ color: identityVerified ? 'var(--dh-green)' : "#ffc107" }}>
+                {identityVerified ? "Verified" : "Pending Verification"}
+              </small>
+            </div>
+            <button
+              className="btn fw-bold rounded-pill px-4"
+              style={{
+                backgroundColor: identityVerified ? 'var(--dh-green)' : gradientBg,
+                color: "#fff",
+              }}
+              onClick={() => setShowVerificationModal(true)}
+              disabled={identityVerified}
+            >
+              {identityVerified ? "Verified" : "Verify Identity"}
+            </button>
+          </div>
+          <small className="text-muted">
+            Complete phone, ID document, and selfie verification to unlock verified badges
+          </small>
+        </div>
+      </div>
+
+      {/* Worker Badge */}
+      <div className="col-12">
+        <div
+          className="p-4 rounded-4"
+          style={{
+            backgroundColor: isDark ? "#1c1c1e" : "#fff",
+            border: `1px solid ${isDark ? "#333" : "#dee2e6"}`,
+            opacity: identityVerified ? 1 : 0.6
+          }}
+        >
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <VerificationBadge type="worker" verified={verifiedWorker} size="lg" />
+            <button
+              className="btn btn-outline-success btn-sm"
+              disabled={!identityVerified || verifiedWorker}
+              onClick={() => toast.info('Worker badge request submitted!')}
+            >
+              {verifiedWorker ? 'Active' : 'Request'}
+            </button>
+          </div>
+          <small className="text-muted">
+            Verified workers get priority access to premium tasks
+          </small>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderSecurityTab = () => (
     <div className="row g-4">
       <div className="col-12">
@@ -483,6 +557,7 @@ export default function Settings() {
         style={{ background: isDark ? "#1c1c1e" : "#fff" }}
       >
         {activeTab === "profile" && renderProfileTab()}
+        {activeTab === "verification" && renderVerificationTab()}
         {activeTab === "security" && renderSecurityTab()}
         {activeTab === "notifications" && renderNotificationsTab()}
         {activeTab === "payments" && renderPaymentsTab()}
@@ -493,6 +568,15 @@ export default function Settings() {
           <i className="bi bi-box-arrow-right me-2"></i> Logout
         </button>
       </div>
+      
+      <VerificationModal 
+        show={showVerificationModal}
+        onClose={() => setShowVerificationModal(false)}
+        onSuccess={() => {
+          toast.success('Verification completed!');
+          refetchUserData();
+        }}
+      />
     </div>
   );
 }

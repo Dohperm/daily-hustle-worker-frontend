@@ -20,6 +20,9 @@ const DEFAULT_USER_DATA = {
   tasks: [],
   notifications: [],
   transactions: [],
+  verifiedWorker: true,
+  verifiedAdvertiser: true,
+  identityVerified: true,
 };
 
 export default function AppDataProvider({ children }) {
@@ -232,6 +235,10 @@ export default function AppDataProvider({ children }) {
       fetchMyTasks,
       submitTaskProof,
       logout,
+      updateUserData: setUserData,
+      addNotification: showNotification,
+      recordTaskHistory: () => {},
+      updateUserImageUrl: () => {},
     }),
     [
       userLoggedIn,

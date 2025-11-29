@@ -66,3 +66,15 @@ export const fileUrlUpdate = async ({ type, fileUrl, user } = {}) => {
 /* ------------------- NOTIFICATIONS ------------------- */
 export const getNotifications = () => api.get("/notifications/users");
 export const getUnreadCount = () => api.get("/notifications/users/unread-count");
+
+/* ------------------- VERIFICATION ------------------- */
+export const submitVerification = (data) => api.post("/verification/identity", data);
+export const getVerificationStatus = () => api.get("/verification/status");
+export const sendPhoneVerification = (phone) => api.post("/verification/phone/send", { phone });
+export const verifyPhoneCode = (phone, code) => api.post("/verification/phone/verify", { phone, code });
+export const requestWorkerBadge = () => api.post("/verification/badge/worker");
+export const requestAdvertiserBadge = () => api.post("/verification/badge/advertiser");
+export const getBadgeStatus = () => api.get("/verification/badges");
+
+/* ------------------- SOCIAL AUTH ------------------- */
+export const oauthLogin = (payload) => api.post("/auths/users/oauth-login", payload);

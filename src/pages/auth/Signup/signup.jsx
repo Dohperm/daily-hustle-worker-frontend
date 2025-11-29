@@ -4,6 +4,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useAppData } from "../../../hooks/AppDataContext";
 import { useTheme } from "../../../hooks/useThemeContext";
+import { signInWithGoogle, signInWithFacebook } from "../../../services/auth";
+import { oauthLogin } from "../../../services/services";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -43,6 +45,9 @@ export default function QuickSignup() {
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [otpVerified, setOtpVerified] = useState(false);
+  const [showReferralModal, setShowReferralModal] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
+  const [socialProvider, setSocialProvider] = useState('');
 
   const passwordStrength = getPasswordStrength(formData.password);
   const otpRefs = useRef([...Array(6)].map(() => React.createRef()));
@@ -60,6 +65,41 @@ export default function QuickSignup() {
       setFormData(prev => ({ ...prev, referral_code: referralCode }));
     }
   }, []);
+
+  const handleGoogleSignup = () => {
+    setSocialProvider('google');
+    setShowReferralModal(true);
+  };
+
+  const handleFacebookSignup = () => {
+    setSocialProvider('facebook');
+    setShowReferralModal(true);
+  };
+
+  const proceedWithSocialSignup = async () => {
+    setLoading(true);
+    setShowReferralModal(false);
+    try {
+      const { token } = socialProvider === 'google' ? await signInWithGoogle() : await signInWithFacebook();
+      const payload = { firebase_token: token };
+      if (referralCode?.trim()) payload.referral_code = referralCode.trim();
+      const res = await oauthLogin(payload);
+      if (res.data?.data?.token) {
+        localStorage.setItem("userToken", res.data.data.token);
+        localStorage.setItem("userLoggedIn", "true");
+        setUserLoggedIn(true);
+        toast.success(`${socialProvider} signup successful!`);
+        setTimeout(() => navigate("/dashboard"), 1200);
+      }
+    } catch (error) {
+      console.error(`${socialProvider} signup error:`, error);
+      toast.error(`${socialProvider} signup failed`);
+    } finally {
+      setLoading(false);
+      setReferralCode('');
+      setSocialProvider('');
+    }
+  };
 
   // Registration Step
   const handleRegister = async (e) => {
@@ -382,6 +422,129 @@ export default function QuickSignup() {
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
+        
+        .dh-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.7);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+        
+        .dh-modal {
+          background: var(--card);
+          border-radius: 1rem;
+          width: 90%;
+          max-width: 400px;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+          border: 1px solid var(--border);
+        }
+        
+        .dh-modal-header {
+          padding: 1.5rem 1.5rem 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        
+        .dh-modal-header h3 {
+          margin: 0;
+          color: var(--dh-red);
+          font-weight: 700;
+        }
+        
+        .dh-modal-close {
+          background: none;
+          border: none;
+          color: var(--muted);
+          font-size: 1.5rem;
+          cursor: pointer;
+          padding: 0.25rem;
+          border-radius: 0.25rem;
+          transition: all 0.2s;
+        }
+        
+        .dh-modal-close:hover {
+          color: var(--dh-red);
+          background: rgba(255, 87, 34, 0.1);
+        }
+        
+        .dh-modal-body {
+          padding: 1.5rem;
+        }
+        
+        .dh-modal-body p {
+          margin-bottom: 1rem;
+          color: var(--text);
+          font-weight: 500;
+        }
+        
+        .dh-modal-buttons {
+          display: flex;
+          gap: 0.75rem;
+        }
+        
+        .dh-modal-btn {
+          flex: 1;
+          padding: 0.75rem;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .dh-modal-btn-secondary {
+          background: var(--border);
+          color: var(--muted);
+        }
+        
+        .dh-modal-btn-secondary:hover {
+          background: var(--muted);
+          color: var(--card);
+        }
+        
+        .dh-modal-btn-primary {
+          background: linear-gradient(135deg, var(--dh-red), var(--dh-red-light));
+          color: white;
+        }
+        
+        .dh-modal-btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(255, 87, 34, 0.3);
+        }
+        
+        .dh-social-btn {
+          flex: 1;
+          padding: 0.75rem;
+          border: 2px solid var(--border);
+          background: var(--card);
+          color: var(--text);
+          border-radius: 0.75rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+        
+        .dh-social-btn:hover:not(:disabled) {
+          border-color: var(--dh-red);
+          color: var(--dh-red);
+          transform: translateY(-2px);
+        }
+        
+        .dh-social-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
       `}</style>
 
       <ToastContainer position="top-center" theme={isDark ? "dark" : "light"} autoClose={3000} />
@@ -538,6 +701,31 @@ export default function QuickSignup() {
                   "Create Account"
                 )}
               </button>
+              
+              <div style={{ textAlign: 'center', margin: '1.5rem 0', color: 'var(--muted)' }}>
+                or sign up with
+              </div>
+              
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  className="dh-social-btn"
+                  onClick={handleGoogleSignup}
+                  disabled={loading}
+                >
+                  <i className="bi bi-google" />
+                  Google
+                </button>
+                <button
+                  type="button"
+                  className="dh-social-btn"
+                  onClick={handleFacebookSignup}
+                  disabled={loading}
+                >
+                  <i className="bi bi-facebook" />
+                  Facebook
+                </button>
+              </div>
               <div className="dh-login-link">
                 Already have an account?{" "}
                 <button
@@ -594,6 +782,52 @@ export default function QuickSignup() {
             </div>
           )}
         </div>
+        
+        {/* Referral Code Modal */}
+        {showReferralModal && (
+          <div className="dh-modal-overlay">
+            <div className="dh-modal">
+              <div className="dh-modal-header">
+                <h3>Referral Code</h3>
+                <button 
+                  className="dh-modal-close"
+                  onClick={() => {
+                    setShowReferralModal(false);
+                    setReferralCode('');
+                    setSocialProvider('');
+                  }}
+                >
+                  <i className="bi bi-x" />
+                </button>
+              </div>
+              <div className="dh-modal-body">
+                <p>Do you have a referral code?</p>
+                <input
+                  type="text"
+                  className="dh-input"
+                  placeholder="Enter referral code (optional)"
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value)}
+                  style={{ marginBottom: '1rem' }}
+                />
+                <div className="dh-modal-buttons">
+                  <button 
+                    className="dh-modal-btn dh-modal-btn-secondary"
+                    onClick={proceedWithSocialSignup}
+                  >
+                    Skip
+                  </button>
+                  <button 
+                    className="dh-modal-btn dh-modal-btn-primary"
+                    onClick={proceedWithSocialSignup}
+                  >
+                    Continue with {socialProvider}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
