@@ -78,3 +78,4 @@ export const getBadgeStatus = () => api.get("/verification/badges");
 
 /* ------------------- SOCIAL AUTH ------------------- */
 export const oauthLogin = (payload) => api.post("/auths/users/oauth-login", payload);
+export const verifyUsername = (username) => api.post("/auths/users/verify-username", { username });

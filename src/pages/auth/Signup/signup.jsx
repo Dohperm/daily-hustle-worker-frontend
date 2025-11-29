@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppData } from "../../../hooks/AppDataContext";
 import { useTheme } from "../../../hooks/useThemeContext";
 import { signInWithGoogle, signInWithFacebook } from "../../../services/auth";
-import { oauthLogin } from "../../../services/services";
+import { oauthLogin, verifyUsername } from "../../../services/services";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -45,9 +45,18 @@ export default function QuickSignup() {
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [otpVerified, setOtpVerified] = useState(false);
+  const [normalUsernameStatus, setNormalUsernameStatus] = useState('');
+  const [checkingNormalUsername, setCheckingNormalUsername] = useState(false);
   const [showReferralModal, setShowReferralModal] = useState(false);
   const [referralCode, setReferralCode] = useState('');
   const [socialProvider, setSocialProvider] = useState('');
+  const [socialFormData, setSocialFormData] = useState({
+    username: '',
+    phone: '',
+    country: 'Ghana'
+  });
+  const [usernameStatus, setUsernameStatus] = useState('');
+  const [checkingUsername, setCheckingUsername] = useState(false);
 
   const passwordStrength = getPasswordStrength(formData.password);
   const otpRefs = useRef([...Array(6)].map(() => React.createRef()));
@@ -68,20 +77,67 @@ export default function QuickSignup() {
 
   const handleGoogleSignup = () => {
     setSocialProvider('google');
+    setReferralCode(formData.referral_code || '');
     setShowReferralModal(true);
   };
 
   const handleFacebookSignup = () => {
     setSocialProvider('facebook');
+    setReferralCode(formData.referral_code || '');
     setShowReferralModal(true);
   };
 
+  const checkNormalUsernameAvailability = async (username) => {
+    if (!username || username.length < 3) {
+      setNormalUsernameStatus('');
+      return;
+    }
+    setCheckingNormalUsername(true);
+    try {
+      const res = await verifyUsername(username);
+      setNormalUsernameStatus(res.data?.data?.isAvailable ? 'available' : 'taken');
+    } catch (error) {
+      setNormalUsernameStatus('error');
+    } finally {
+      setCheckingNormalUsername(false);
+    }
+  };
+
+  const checkUsernameAvailability = async (username) => {
+    if (!username || username.length < 3) {
+      setUsernameStatus('');
+      return;
+    }
+    setCheckingUsername(true);
+    try {
+      const res = await verifyUsername(username);
+      setUsernameStatus(res.data?.data?.isAvailable ? 'available' : 'taken');
+    } catch (error) {
+      setUsernameStatus('error');
+    } finally {
+      setCheckingUsername(false);
+    }
+  };
+
   const proceedWithSocialSignup = async () => {
+    if (!socialFormData.username || !socialFormData.phone) {
+      toast.error('Please fill all required fields');
+      return;
+    }
+    if (usernameStatus !== 'available') {
+      toast.error('Please choose an available username');
+      return;
+    }
     setLoading(true);
     setShowReferralModal(false);
     try {
       const { token } = socialProvider === 'google' ? await signInWithGoogle() : await signInWithFacebook();
-      const payload = { firebase_token: token };
+      const payload = { 
+        firebase_token: token,
+        username: socialFormData.username,
+        phone: socialFormData.phone,
+        country: socialFormData.country
+      };
       if (referralCode?.trim()) payload.referral_code = referralCode.trim();
       const res = await oauthLogin(payload);
       if (res.data?.data?.token) {
@@ -98,6 +154,8 @@ export default function QuickSignup() {
       setLoading(false);
       setReferralCode('');
       setSocialProvider('');
+      setSocialFormData({ username: '', phone: '', country: 'Ghana' });
+      setUsernameStatus('');
     }
   };
 
@@ -586,21 +644,26 @@ export default function QuickSignup() {
                   style={{ marginBottom: 0 }}
                 />
               </div>
-              <input
-                type="text"
-                className="dh-input"
-                placeholder="Username"
-                value={formData.username}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    username: e.target.value.replace(/\s/g, "").toLowerCase(),
-                  })
-                }
-                required
-                minLength={3}
-                disabled={loading}
-              />
+              <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                <input
+                  type="text"
+                  className="dh-input"
+                  placeholder="Username"
+                  value={formData.username}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\s/g, "").toLowerCase();
+                    setFormData({ ...formData, username: value });
+                    checkNormalUsernameAvailability(value);
+                  }}
+                  required
+                  minLength={3}
+                  disabled={loading}
+                  style={{ marginBottom: '0.25rem' }}
+                />
+                {checkingNormalUsername && <small style={{ color: 'var(--muted)' }}>Checking...</small>}
+                {normalUsernameStatus === 'available' && <small style={{ color: '#28a745' }}>✓ Available</small>}
+                {normalUsernameStatus === 'taken' && <small style={{ color: '#dc3545' }}>✗ Taken</small>}
+              </div>
               <input
                 type="tel"
                 className="dh-input"
@@ -788,7 +851,7 @@ export default function QuickSignup() {
           <div className="dh-modal-overlay">
             <div className="dh-modal">
               <div className="dh-modal-header">
-                <h3>Referral Code</h3>
+                <h3>Complete Registration</h3>
                 <button 
                   className="dh-modal-close"
                   onClick={() => {
@@ -801,11 +864,47 @@ export default function QuickSignup() {
                 </button>
               </div>
               <div className="dh-modal-body">
-                <p>Do you have a referral code?</p>
+                <p>Please complete your registration details:</p>
+                <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                  <input
+                    type="text"
+                    className="dh-input"
+                    placeholder="Username"
+                    value={socialFormData.username}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\s/g, '').toLowerCase();
+                      setSocialFormData(prev => ({ ...prev, username: value }));
+                      checkUsernameAvailability(value);
+                    }}
+                    style={{ marginBottom: '0.25rem' }}
+                  />
+                  {checkingUsername && <small style={{ color: 'var(--muted)' }}>Checking...</small>}
+                  {usernameStatus === 'available' && <small style={{ color: '#28a745' }}>✓ Available</small>}
+                  {usernameStatus === 'taken' && <small style={{ color: '#dc3545' }}>✗ Taken</small>}
+                </div>
+                <input
+                  type="tel"
+                  className="dh-input"
+                  placeholder="Phone Number"
+                  value={socialFormData.phone}
+                  onChange={(e) => setSocialFormData(prev => ({ ...prev, phone: e.target.value }))}
+                  style={{ marginBottom: '1rem' }}
+                />
+                <select
+                  className="dh-input"
+                  value={socialFormData.country}
+                  onChange={(e) => setSocialFormData(prev => ({ ...prev, country: e.target.value }))}
+                  style={{ marginBottom: '1rem' }}
+                >
+                  <option value="Ghana">Ghana</option>
+                  <option value="Nigeria">Nigeria</option>
+                  <option value="Kenya">Kenya</option>
+                  <option value="USA">USA</option>
+                </select>
                 <input
                   type="text"
                   className="dh-input"
-                  placeholder="Enter referral code (optional)"
+                  placeholder="Referral Code (optional)"
                   value={referralCode}
                   onChange={(e) => setReferralCode(e.target.value)}
                   style={{ marginBottom: '1rem' }}
@@ -820,8 +919,9 @@ export default function QuickSignup() {
                   <button 
                     className="dh-modal-btn dh-modal-btn-primary"
                     onClick={proceedWithSocialSignup}
+                    disabled={!socialFormData.username || !socialFormData.phone || usernameStatus !== 'available'}
                   >
-                    Continue with {socialProvider}
+                    Complete Registration
                   </button>
                 </div>
               </div>
