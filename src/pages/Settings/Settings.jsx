@@ -47,6 +47,10 @@ export default function Settings() {
     photo = "",
     verifiedWorker = false,
     verifiedAdvertiser = false,
+    first_name = "",
+    last_name = "",
+    email = "",
+    country = "Ghana",
   } = userData || {};
 
   const kycVerified = kyc.status === "verified";
@@ -91,16 +95,18 @@ export default function Settings() {
     try {
       const { data } = await uploadImage(file);
       const imageUrl = data?.data[0]?.src;
-      fileUrlUpdate("photo", imageUrl, userData);
 
       if (!imageUrl) {
         toast.error("No image URL returned from server.");
         throw new Error("No image URL returned from server.");
       }
 
+      // Update profile with new photo URL
+      await updateUser({ photo: imageUrl });
       setAvatarPreview(imageUrl);
-      await updateUserImageUrl({ type: "photo", fileUrl: imageUrl });
-      refetchUserData();
+      await refetchUserData();
+      
+      toast.success("Profile picture updated!");
       addNotification({
         title: "Avatar Updated",
         message: "Your profile picture has been changed.",
@@ -127,21 +133,13 @@ export default function Settings() {
   const handleSaveProfile = async (e) => {
     e.preventDefault();
 
-    const normPhone = editPhone.startsWith("+234")
-      ? editPhone.replace("+", "")
-      : editPhone;
-    const phoneRegex = /^(234\d{10}|0\d{10})$/;
-    if (!phoneRegex.test(normPhone)) {
-      toast.error("Phone must be 234XXXXXXXXXX or 0XXXXXXXXXX");
-      return;
-    }
-
     setLoading(true);
     try {
       await updateUser({
-        username: editUsername,
-        phone: normPhone,
-      }).then(() => refetchUserData());
+        first_name: editFirstName,
+        last_name: editLastName,
+      });
+      await refetchUserData();
       toast.success("Profile saved!");
       addNotification({
         title: "Profile Saved",
@@ -153,7 +151,7 @@ export default function Settings() {
         recordTaskHistory(
           "profile",
           "updated",
-          `Saved: ${editUsername}, ${normPhone}`
+          `Saved: ${editFirstName} ${editLastName}`
         );
       }
     } catch (error) {
@@ -204,126 +202,180 @@ export default function Settings() {
     }
   };
 
-  const [editUsername, setEditUsername] = useState(username);
-  const [editPhone, setEditPhone] = useState(phone);
+  const [editFirstName, setEditFirstName] = useState(first_name);
+  const [editLastName, setEditLastName] = useState(last_name);
 
   useEffect(() => {
-    setEditUsername(username);
-    setEditPhone(phone);
-  }, [username, phone]);
+    setEditFirstName(first_name);
+    setEditLastName(last_name);
+  }, [first_name, last_name]);
 
   const renderProfileTab = () => (
-    <form onSubmit={handleSaveProfile}>
-      <div
-        className="text-center mb-4 p-4 rounded-3"
-        style={{ background: isDark ? "#23242d" : "#f7f7fd" }}
-      >
-        <img
-          src={
-            avatarPreview ||
-            photo ||
-            "https://cdn-icons-png.flaticon.com/512/847/847969.png"
-          }
-          alt="Avatar"
-          className="rounded-circle mb-3"
-          style={{
-            width: 90,
-            height: 90,
-            objectFit: "cover",
-            border: `3px solid ${primary}`,
-          }}
-        />
-        <br />
-        <button
-          type="button"
-          onClick={handleAvatarClick}
-          disabled={uploadingAvatar}
-          className="btn btn-outline-light btn-sm"
-        >
-          {uploadingAvatar ? (
-            <>
-              <span className="spinner-border spinner-border-sm me-2"></span>
-              Uploading...
-            </>
-          ) : (
-            <>
-              <i className="bi bi-camera me-1"></i> Change Avatar
-            </>
-          )}
-        </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleAvatarChange}
-          style={{ display: "none" }}
-        />
-      </div>
+    <div>
+      <h5 className="mb-4 fw-bold" style={{ color: isDark ? "#f8f9fa" : "#333" }}>Basic Information - Updated</h5>
+      
+      <form onSubmit={handleSaveProfile}>
+        <div className="row mb-4">
+          <div className="col-md-4">
+            <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>First Name</label>
+            <input
+              type="text"
+              className="form-control"
+              value={editFirstName}
+              onChange={(e) => setEditFirstName(e.target.value)}
+              style={{
+                background: isDark ? "#1c1c1e" : "#fff",
+                border: `1px solid ${isDark ? '#444' : '#ddd'}`,
+                color: isDark ? "#f8f9fa" : "#333"
+              }}
+            />
+          </div>
+          <div className="col-md-4">
+            <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>Last Name</label>
+            <input
+              type="text"
+              className="form-control"
+              value={editLastName}
+              onChange={(e) => setEditLastName(e.target.value)}
+              style={{
+                background: isDark ? "#1c1c1e" : "#fff",
+                border: `1px solid ${isDark ? '#444' : '#ddd'}`,
+                color: isDark ? "#f8f9fa" : "#333"
+              }}
+            />
+          </div>
+          <div className="col-md-4 text-center">
+            <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>Profile Picture</label>
+            <div className="d-flex justify-content-center position-relative">
+              <img
+                src={avatarPreview || photo || "https://cdn-icons-png.flaticon.com/512/847/847969.png"}
+                alt="Profile"
+                className="rounded-circle"
+                style={{
+                  width: 80,
+                  height: 80,
+                  objectFit: "cover",
+                  border: `3px solid #ff5722`
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleAvatarClick}
+                disabled={uploadingAvatar}
+                className="btn btn-sm position-absolute"
+                style={{
+                  bottom: '-5px',
+                  left: '50%',
+                  transform: 'translateX(50%)',
+                  background: '#ff5722',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontSize: '0.75rem',
+                  padding: '2px 8px'
+                }}
+              >
+                {uploadingAvatar ? 'Uploading...' : 'Edit'}
+              </button>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              style={{ display: "none" }}
+            />
+          </div>
+        </div>
 
-      <div
-        className="mb-4 p-3 rounded-3"
-        style={{ background: isDark ? "#2a2a2d" : "#f8f9fa" }}
-      >
-        <label
-          className="form-label fw-bold d-flex align-items-center"
-          style={{ color: isDark ? "#f8f9fa" : "#212529" }}
-        >
-          <i className="bi bi-person me-2"></i> Username
-        </label>
-        <input
-          type="text"
-          className="form-control rounded-3"
-          value={editUsername}
-          placeholder="Your username"
-          onChange={(e) => setEditUsername(e.target.value)}
-          style={{
-            background: isDark ? "#1c1c1e" : "#fff",
-            color: isDark ? "#f8f9fa" : "#212529",
-            borderColor: isDark ? "#333" : "#dee2e6",
-          }}
-        />
-      </div>
-      <div
-        className="mb-4 p-3 rounded-3"
-        style={{ background: isDark ? "#2a2a2d" : "#f8f9fa" }}
-      >
-        <label
-          className="form-label fw-bold d-flex align-items-center"
-          style={{ color: isDark ? "#f8f9fa" : "#212529" }}
-        >
-          <i className="bi bi-telephone me-2"></i> Phone Number
-        </label>
-        <input
-          type="tel"
-          className="form-control rounded-3"
-          value={editPhone}
-          placeholder="234XXXXXXXXXX or 0XXXXXXXXXX"
-          onChange={(e) => setEditPhone(e.target.value)}
-          style={{
-            background: isDark ? "#1c1c1e" : "#fff",
-            color: isDark ? "#f8f9fa" : "#212529",
-            borderColor: isDark ? "#333" : "#dee2e6",
-          }}
-        />
-      </div>
-      <button
-        type="submit"
-        disabled={loading}
-        className="btn w-100 fw-bold py-3 rounded-pill text-white"
-        style={{ background: gradientBg, border: "none" }}
-      >
-        {loading ? (
-          <>
-            <span className="spinner-border spinner-border-sm me-2"></span>{" "}
-            Saving...
-          </>
-        ) : (
-          <>
-            <i className="bi bi-check-circle me-2"></i> Save Profile
-          </>
-        )}
-      </button>
-    </form>
+        <div className="mb-4">
+          <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>Email Address</label>
+          <input
+            type="email"
+            className="form-control"
+            value={email}
+            readOnly
+            style={{
+              background: isDark ? "#2a2a2a" : "#f8f9fa",
+              border: 'none',
+              color: isDark ? "#f8f9fa" : "#333"
+            }}
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>Phone Number</label>
+          <input
+            type="tel"
+            className="form-control"
+            value={phone}
+            readOnly
+            style={{
+              background: isDark ? "#2a2a2a" : "#f8f9fa",
+              border: 'none',
+              color: isDark ? "#f8f9fa" : "#333"
+            }}
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>Username</label>
+          <input
+            type="text"
+            className="form-control"
+            value={username}
+            readOnly
+            style={{
+              background: isDark ? "#2a2a2a" : "#f8f9fa",
+              border: 'none',
+              color: isDark ? "#f8f9fa" : "#333"
+            }}
+          />
+        </div>
+
+        <div className="row mb-4">
+          <div className="col-md-6">
+            <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>Country</label>
+            <input
+              type="text"
+              className="form-control"
+              value={country}
+              readOnly
+              style={{
+                background: isDark ? "#2a2a2a" : "#f8f9fa",
+                border: 'none',
+                color: isDark ? "#f8f9fa" : "#333"
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="d-flex gap-3">
+          <button
+            type="button"
+            className="btn btn-outline-secondary"
+            style={{
+              border: `1px solid ${isDark ? '#666' : '#ccc'}`,
+              color: isDark ? "#ccc" : "#666"
+            }}
+          >
+            Edit
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn"
+            style={{
+              background: '#ff5722',
+              color: 'white',
+              border: 'none'
+            }}
+          >
+            {loading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 
   const renderVerificationTab = () => (
