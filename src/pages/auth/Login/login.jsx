@@ -93,7 +93,7 @@ const Login = () => {
         toast.error(errorMsg);
       }
     } catch (err) {
-      const errorMsg = err.response?.data?.message || "Invalid credentials";
+      const errorMsg = err.response?.data?.message || "Login failed. Please check your credentials or try social login.";
       console.error("Login error:", err);
       setLoginError(errorMsg);
       toast.error(errorMsg);
@@ -391,11 +391,7 @@ const Login = () => {
               </div>
             </div>
             
-            {loginError && (
-              <div className="dh-error">
-                {loginError}
-              </div>
-            )}
+
             
             <button
               type="submit"

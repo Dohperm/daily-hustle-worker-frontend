@@ -64,6 +64,10 @@ export default function Header() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { userData, logout } = useAppData();
+  const [isVerified, setIsVerified] = useState(() => {
+    const stored = localStorage.getItem('userVerified');
+    return stored === 'true';
+  });
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
@@ -71,6 +75,16 @@ export default function Header() {
   const isDark = theme === "dark";
   const avatar = userData.photo || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
   const balance = userData.balance ?? 0;
+
+  useEffect(() => {
+    if (userData && userData.kyc && userData.kyc.is_approved === true) {
+      setIsVerified(true);
+      localStorage.setItem('userVerified', 'true');
+    } else if (userData && userData.kyc && userData.kyc.is_approved === false) {
+      setIsVerified(false);
+      localStorage.setItem('userVerified', 'false');
+    }
+  }, [userData]);
 
   useEffect(() => {
     if (menuOpen) {
@@ -96,11 +110,22 @@ export default function Header() {
     <>
       {/* Desktop Header */}
       <div className="d-none d-md-flex align-items-center justify-content-end px-4 py-2 h-100 gap-3">
-        <VerificationBadge 
-          type="worker" 
-          verified={userData.verifiedWorker} 
-          size="sm" 
-        />
+        {isVerified && (
+          <div style={{
+            background: '#28a745',
+            color: 'white',
+            padding: '4px 8px',
+            borderRadius: '12px',
+            fontSize: '0.75rem',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px'
+          }}>
+            <i className="bi bi-shield-check" style={{ fontSize: '12px' }} />
+            Verified
+          </div>
+        )}
         <img
           src={avatar}
           alt="User avatar"
@@ -227,7 +252,7 @@ export default function Header() {
             <div className="px-4 py-3 border-bottom">
               <VerificationBadge 
                 type="worker" 
-                verified={userData.verifiedWorker} 
+                verified={userData.kyc?.is_approved && userData.verifiedWorker} 
                 size="md" 
               />
             </div>

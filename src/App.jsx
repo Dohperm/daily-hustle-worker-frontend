@@ -18,6 +18,7 @@ import KYCForm from "./pages/auth/Kyc/kyc";
 import ForgotPassword from "./pages/auth/ForgotPassword/forgotPassword";
 import Landing from "./pages/Landing/Landing";
 import { useAppData } from "./hooks/AppDataContext";
+import KycModal from "./components/Modal/KycModal";
 import "react-toastify/dist/ReactToastify.css";
 
 function ProtectedRoute({ children }) {
@@ -26,7 +27,7 @@ function ProtectedRoute({ children }) {
 }
 
 export default function App() {
-  const { userLoggedIn } = useAppData();
+  const { userLoggedIn, showKycModal, setShowKycModal } = useAppData();
 
   return (
     <>
@@ -66,6 +67,10 @@ export default function App() {
       </Routes>
 
       <ToastContainer position="top-right" autoClose={3000} />
+      <KycModal 
+        show={showKycModal} 
+        onClose={() => setShowKycModal(false)} 
+      />
     </>
   );
 }

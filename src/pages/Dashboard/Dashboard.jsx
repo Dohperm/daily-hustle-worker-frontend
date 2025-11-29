@@ -3,6 +3,7 @@ import { useAppData } from "../../hooks/AppDataContext";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useNavigate } from "react-router-dom";
 import { getTaskStats } from "../../services/services";
+import VerificationBadge from "../../components/VerificationBadge";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
 

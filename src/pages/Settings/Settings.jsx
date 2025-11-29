@@ -11,6 +11,7 @@ import {
 } from "../../services/services";
 import VerificationBadge from "../../components/VerificationBadge";
 import VerificationModal from "../../components/Modal/VerificationModal";
+import KycFormContent from "../../components/KycFormContent";
 
 export default function Settings() {
   const { theme, toggleTheme } = useTheme();
@@ -29,6 +30,7 @@ export default function Settings() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState(userData?.photo || "");
   const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [showKycForm, setShowKycForm] = useState(false);
   const fileInputRef = useRef(null);
   const previousBlobUrl = useRef(null);
   const isDark = theme === "dark";
@@ -45,7 +47,6 @@ export default function Settings() {
     photo = "",
     verifiedWorker = false,
     verifiedAdvertiser = false,
-    identityVerified = false,
   } = userData || {};
 
   const kycVerified = kyc.status === "verified";
@@ -327,39 +328,40 @@ export default function Settings() {
 
   const renderVerificationTab = () => (
     <div className="row g-4">
-      {/* Identity Verification */}
+      {/* KYC Verification */}
       <div className="col-12">
         <div
           className="p-4 rounded-4"
           style={{
             backgroundColor: isDark ? "#1c1c1e" : "#fff",
-            border: `2px solid ${identityVerified ? 'var(--dh-green)' : "#ffc107"}`,
+            border: `2px solid ${userData.kyc?.is_approved ? 'var(--dh-green)' : "#ffc107"}`,
           }}
         >
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div>
               <h6 className="fw-bold mb-1" style={{ color: isDark ? "#f8f9fa" : "#212529" }}>
-                <i className="bi bi-person-vcard me-2" />
-                Identity Verification
+                <i className="bi bi-shield-check me-2" />
+                KYC Verification
               </h6>
-              <small style={{ color: identityVerified ? 'var(--dh-green)' : "#ffc107" }}>
-                {identityVerified ? "Verified" : "Pending Verification"}
+              <small style={{ color: userData.kyc?.is_approved ? 'var(--dh-green)' : "#ffc107" }}>
+                {userData.kyc?.is_approved ? "Verified" : "Pending Verification"}
               </small>
             </div>
             <button
               className="btn fw-bold rounded-pill px-4"
               style={{
-                backgroundColor: identityVerified ? 'var(--dh-green)' : gradientBg,
-                color: "#fff",
+                backgroundColor: userData.kyc?.is_approved ? '#28a745' : '#ff5722',
+                color: userData.kyc?.is_approved ? "#fff" : "#fff",
+                border: 'none'
               }}
-              onClick={() => setShowVerificationModal(true)}
-              disabled={identityVerified}
+              onClick={() => setShowKycForm(true)}
+              disabled={userData.kyc?.is_approved}
             >
-              {identityVerified ? "Verified" : "Verify Identity"}
+              {userData.kyc?.is_approved ? "Verified" : "Complete KYC"}
             </button>
           </div>
           <small className="text-muted">
-            Complete phone, ID document, and selfie verification to unlock verified badges
+            Complete KYC verification to unlock all platform features and verified badges
           </small>
         </div>
       </div>
@@ -371,14 +373,14 @@ export default function Settings() {
           style={{
             backgroundColor: isDark ? "#1c1c1e" : "#fff",
             border: `1px solid ${isDark ? "#333" : "#dee2e6"}`,
-            opacity: identityVerified ? 1 : 0.6
+            opacity: userData.kyc?.is_approved ? 1 : 0.6
           }}
         >
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <VerificationBadge type="worker" verified={verifiedWorker} size="lg" />
+            <VerificationBadge type="worker" verified={userData.kyc?.is_approved && verifiedWorker} size="lg" />
             <button
               className="btn btn-outline-success btn-sm"
-              disabled={!identityVerified || verifiedWorker}
+              disabled={!userData.kyc?.is_approved || verifiedWorker}
               onClick={() => toast.info('Worker badge request submitted!')}
             >
               {verifiedWorker ? 'Active' : 'Request'}
@@ -577,6 +579,26 @@ export default function Settings() {
           refetchUserData();
         }}
       />
+      
+      {/* KYC Form Modal */}
+      {showKycForm && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}>
+          <div className="modal-dialog modal-lg modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">KYC Verification</h5>
+                <button 
+                  className="btn-close" 
+                  onClick={() => setShowKycForm(false)}
+                ></button>
+              </div>
+              <div className="modal-body p-0">
+                <KycFormContent onClose={() => setShowKycForm(false)} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -20,9 +20,8 @@ const DEFAULT_USER_DATA = {
   tasks: [],
   notifications: [],
   transactions: [],
-  verifiedWorker: true,
-  verifiedAdvertiser: true,
-  identityVerified: true,
+  verifiedWorker: false,
+  verifiedAdvertiser: false,
 };
 
 export default function AppDataProvider({ children }) {
@@ -35,6 +34,7 @@ export default function AppDataProvider({ children }) {
   const [userLoggedIn, setUserLoggedIn] = useState(
     () => !!JSON.parse(localStorage.getItem("userLoggedIn") || "false")
   );
+  const [showKycModal, setShowKycModal] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("userLoggedIn", JSON.stringify(userLoggedIn));
@@ -79,12 +79,20 @@ export default function AppDataProvider({ children }) {
           balance: bal,
           currency,
           isAuthenticated: true,
-          kyc: newUser.kyc || {
+          kyc: newUser.kyc || userData.kyc || {
             status: "verified",
             date: new Date().toISOString(),
           },
+          verifiedWorker: newUser.verifiedWorker || false,
+          verifiedAdvertiser: newUser.verifiedAdvertiser || false,
         };
         setUserData(merged);
+        
+        // Check KYC status and show modal if not approved
+        if (newUser.kyc && !newUser.kyc.is_approved) {
+          setTimeout(() => setShowKycModal(true), 1000);
+        }
+        
         await fetchMyTasks();
       } catch (e) {
         console.error(e);
@@ -239,6 +247,8 @@ export default function AppDataProvider({ children }) {
       addNotification: showNotification,
       recordTaskHistory: () => {},
       updateUserImageUrl: () => {},
+      showKycModal,
+      setShowKycModal,
     }),
     [
       userLoggedIn,
@@ -252,6 +262,7 @@ export default function AppDataProvider({ children }) {
       refetchUserData,
       refreshUserData,
       logout,
+      showKycModal,
     ]
   );
 
