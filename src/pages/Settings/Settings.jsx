@@ -196,8 +196,13 @@ export default function Settings() {
         recordTaskHistory("session", "logout", "User logged out");
       }
       toast.info("Logged out");
-      localStorage.removeItem("userToken");
-      localStorage.removeItem("userLoggedIn");
+      
+      // Clear all localStorage
+      localStorage.clear();
+      
+      // Clear sessionStorage
+      sessionStorage.clear();
+      
       navigate("/");
     }
   };

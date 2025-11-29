@@ -207,9 +207,10 @@ export default function AppDataProvider({ children }) {
   );
 
   const logout = useCallback(() => {
-    localStorage.removeItem("userToken");
-    localStorage.removeItem("userLoggedIn");
-    localStorage.removeItem("dh_user");
+    // Clear all localStorage and sessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+    
     setUserLoggedIn(false);
     setUserData(DEFAULT_USER_DATA);
     showNotification("Logged out successfully", "success");
