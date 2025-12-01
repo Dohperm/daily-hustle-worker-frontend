@@ -79,3 +79,8 @@ export const getBadgeStatus = () => api.get("/verification/badges");
 /* ------------------- SOCIAL AUTH ------------------- */
 export const oauthLogin = (payload) => api.post("/auths/users/oauth-login", payload);
 export const verifyUsername = (username) => api.post("/auths/users/verify-username", { username });
+
+/* ------------------- BANK DETAILS ------------------- */
+export const getBanks = () => api.get("/users/banks");
+export const verifyAccount = (payload) => api.post("/users/verify-account", payload);
+export const saveBankInfo = (payload) => api.post("/users/me/bank-info", payload);

@@ -8,6 +8,9 @@ import {
   uploadImage,
   updateUser,
   fileUrlUpdate,
+  getBanks,
+  verifyAccount,
+  saveBankInfo,
 } from "../../services/services";
 import VerificationBadge from "../../components/VerificationBadge";
 import VerificationModal from "../../components/Modal/VerificationModal";
@@ -528,9 +531,227 @@ export default function Settings() {
     </div>
   );
 
+  const [banks, setBanks] = useState([]);
+  const [loadingBanks, setLoadingBanks] = useState(false);
+  const [bankDetails, setBankDetails] = useState({
+    bankName: '',
+    bankCode: '',
+    accountNumber: '',
+    accountName: ''
+  });
+  const [savingBankDetails, setSavingBankDetails] = useState(false);
+  const [verifyingAccount, setVerifyingAccount] = useState(false);
+
+  useEffect(() => {
+    fetchBanks();
+  }, []);
+
+  const fetchBanks = async () => {
+    setLoadingBanks(true);
+    try {
+      const { data } = await getBanks();
+      setBanks(Array.isArray(data) ? data : data?.data || []);
+    } catch (error) {
+      toast.error('Failed to load banks');
+    } finally {
+      setLoadingBanks(false);
+    }
+  };
+
+  const handleBankDetailsChange = (field, value) => {
+    setBankDetails(prev => ({ ...prev, [field]: value }));
+    
+    if (field === 'accountNumber' && value.length >= 10 && bankDetails.bankCode) {
+      verifyAccountNumber(value, bankDetails.bankCode);
+    }
+  };
+
+  const handleBankChange = (bankName, bankCode) => {
+    setBankDetails(prev => ({ 
+      ...prev, 
+      bankName, 
+      bankCode,
+      accountName: '' // Reset account name when bank changes
+    }));
+    
+    if (bankDetails.accountNumber.length >= 10) {
+      verifyAccountNumber(bankDetails.accountNumber, bankCode);
+    }
+  };
+
+  const verifyAccountNumber = async (accountNumber, bankCode) => {
+    if (!accountNumber || !bankCode) return;
+    
+    setVerifyingAccount(true);
+    try {
+      const response = await verifyAccount({ account_number: accountNumber, bank_code: bankCode });
+      const accountName = response?.data?.account_name || response?.data?.data?.account_name || '';
+      setBankDetails(prev => ({ ...prev, accountName }));
+    } catch (error) {
+      toast.error('Could not verify account number');
+      setBankDetails(prev => ({ ...prev, accountName: '' }));
+    } finally {
+      setVerifyingAccount(false);
+    }
+  };
+
+  const handleSaveBankDetails = async (e) => {
+    e.preventDefault();
+    if (!bankDetails.bankName || !bankDetails.accountNumber || !bankDetails.accountName || !bankDetails.bankCode) {
+      toast.error('Please fill in all bank details');
+      return;
+    }
+    
+    setSavingBankDetails(true);
+    try {
+      await saveBankInfo({
+        bank_name: bankDetails.bankName,
+        account_number: bankDetails.accountNumber,
+        account_name: bankDetails.accountName,
+        bank_code: bankDetails.bankCode
+      });
+      toast.success('Bank details saved successfully!');
+      addNotification({
+        title: 'Bank Details Updated',
+        message: 'Your payment information has been saved.',
+        type: 'success',
+        category: 'payments'
+      });
+    } catch (error) {
+      toast.error('Failed to save bank details');
+    } finally {
+      setSavingBankDetails(false);
+    }
+  };
+
   const renderPaymentsTab = () => (
-    <div className="p-3">
-      <p>Payment methods coming soon...</p>
+    <div>
+      <div className="mb-4">
+        <h5 className="fw-bold mb-2" style={{ color: isDark ? "#f8f9fa" : "#333" }}>
+          Bank Details for Payments
+        </h5>
+        <p className="text-muted mb-4" style={{ fontSize: '0.9rem' }}>
+          <i className="bi bi-info-circle me-2"></i>
+          Please enter the bank account details where you would like to receive your payments and withdrawals.
+        </p>
+      </div>
+
+      <form onSubmit={handleSaveBankDetails}>
+        <div className="row g-3">
+          <div className="col-md-6">
+            <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>
+              Bank Name *
+            </label>
+            <select
+              className="form-select"
+              value={bankDetails.bankName}
+              onChange={(e) => {
+                const selectedBank = banks.find(bank => bank.name === e.target.value);
+                if (selectedBank) {
+                  handleBankChange(selectedBank.name, selectedBank.code);
+                }
+              }}
+              disabled={loadingBanks}
+              style={{
+                background: isDark ? "#1c1c1e" : "#fff",
+                border: `1px solid ${isDark ? '#444' : '#ddd'}`,
+                color: isDark ? "#f8f9fa" : "#333"
+              }}
+            >
+              <option value="">{loadingBanks ? 'Loading banks...' : 'Select your bank'}</option>
+              {Array.isArray(banks) && banks.map((bank) => (
+                <option key={bank.id} value={bank.name}>
+                  {bank.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="col-md-6">
+            <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>
+              Account Number *
+            </label>
+            <div className="position-relative">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Enter your account number"
+                value={bankDetails.accountNumber}
+                onChange={(e) => handleBankDetailsChange('accountNumber', e.target.value)}
+                style={{
+                  background: isDark ? "#1c1c1e" : "#fff",
+                  border: `1px solid ${isDark ? '#444' : '#ddd'}`,
+                  color: isDark ? "#f8f9fa" : "#333"
+                }}
+              />
+              {verifyingAccount && (
+                <div className="position-absolute top-50 end-0 translate-middle-y me-3">
+                  <div className="spinner-border spinner-border-sm" role="status"></div>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="col-12">
+            <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>
+              Account Name *
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Account name will appear here after verification"
+              value={bankDetails.accountName}
+              readOnly
+              style={{
+                background: isDark ? "#2a2a2a" : "#f8f9fa",
+                border: `1px solid ${isDark ? '#444' : '#ddd'}`,
+                color: isDark ? "#f8f9fa" : "#333"
+              }}
+            />
+            {bankDetails.accountName && (
+              <small className="text-success mt-1 d-block">
+                <i className="bi bi-check-circle me-1"></i>
+                Account verified
+              </small>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <button
+            type="submit"
+            disabled={savingBankDetails}
+            className="btn fw-bold px-4"
+            style={{
+              background: '#ff5722',
+              color: 'white',
+              border: 'none'
+            }}
+          >
+            {savingBankDetails ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                Saving...
+              </>
+            ) : (
+              <>
+                <i className="bi bi-check-circle me-2"></i>
+                Save Bank Details
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+
+      <div className="mt-4 p-3 rounded" style={{ 
+        backgroundColor: isDark ? "#1a1a1a" : "#f8f9fa",
+        border: `1px solid ${isDark ? '#333' : '#e9ecef'}`
+      }}>
+        <small className="text-muted">
+          <i className="bi bi-shield-check me-2" style={{ color: '#28a745' }}></i>
+          Your bank details are encrypted and securely stored. We only use this information to process your payments.
+        </small>
+      </div>
     </div>
   );
   const renderPrivacyTab = () => (

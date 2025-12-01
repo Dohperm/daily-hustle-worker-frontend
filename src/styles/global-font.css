@@ -1,0 +1,12 @@
+/* Global font weight for the entire app */
+body {
+  font-weight: 500;
+}
+
+/* Reset font weight for landing page */
+.landing-page {
+  font-weight: normal;
+}
+.landing-page * {
+  font-weight: inherit;
+}
