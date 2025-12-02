@@ -541,10 +541,23 @@ export default function Settings() {
   });
   const [savingBankDetails, setSavingBankDetails] = useState(false);
   const [verifyingAccount, setVerifyingAccount] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     fetchBanks();
+    loadExistingBankInfo();
   }, []);
+
+  const loadExistingBankInfo = () => {
+    if (userData?.bank_info && !bankDetails.accountName) {
+      setBankDetails({
+        bankName: userData.bank_info.bank_name || '',
+        bankCode: userData.bank_info.bank_code || '',
+        accountNumber: userData.bank_info.account_number || '',
+        accountName: userData.bank_info.account_name || ''
+      });
+    }
+  };
 
   const fetchBanks = async () => {
     setLoadingBanks(true);
@@ -617,6 +630,8 @@ export default function Settings() {
         type: 'success',
         category: 'payments'
       });
+      setIsEditing(false);
+      await refetchUserData();
     } catch (error) {
       toast.error('Failed to save bank details');
     } finally {
@@ -627,9 +642,21 @@ export default function Settings() {
   const renderPaymentsTab = () => (
     <div>
       <div className="mb-4">
-        <h5 className="fw-bold mb-2" style={{ color: isDark ? "#f8f9fa" : "#333" }}>
-          Bank Details for Payments
-        </h5>
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <h5 className="fw-bold mb-0" style={{ color: isDark ? "#f8f9fa" : "#333" }}>
+            Bank Details for Payments
+          </h5>
+          {!isEditing && bankDetails.accountName && (
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="btn btn-outline-primary btn-sm"
+            >
+              <i className="bi bi-pencil me-1"></i>
+              Edit
+            </button>
+          )}
+        </div>
         <p className="text-muted mb-4" style={{ fontSize: '0.9rem' }}>
           <i className="bi bi-info-circle me-2"></i>
           Please enter the bank account details where you would like to receive your payments and withdrawals.
@@ -643,7 +670,7 @@ export default function Settings() {
               Bank Name *
             </label>
             <select
-              className="form-select"
+              className="form-select bank-select"
               value={bankDetails.bankName}
               onChange={(e) => {
                 const selectedBank = banks.find(bank => bank.name === e.target.value);
@@ -651,7 +678,7 @@ export default function Settings() {
                   handleBankChange(selectedBank.name, selectedBank.code);
                 }
               }}
-              disabled={loadingBanks}
+              disabled={loadingBanks || (!isEditing && bankDetails.accountName)}
               style={{
                 background: isDark ? "#1c1c1e" : "#fff",
                 border: `1px solid ${isDark ? '#444' : '#ddd'}`,
@@ -678,6 +705,7 @@ export default function Settings() {
                 placeholder="Enter your account number"
                 value={bankDetails.accountNumber}
                 onChange={(e) => handleBankDetailsChange('accountNumber', e.target.value)}
+                disabled={!isEditing && bankDetails.accountName}
                 style={{
                   background: isDark ? "#1c1c1e" : "#fff",
                   border: `1px solid ${isDark ? '#444' : '#ddd'}`,
@@ -717,30 +745,44 @@ export default function Settings() {
           </div>
         </div>
 
-        <div className="mt-4">
-          <button
-            type="submit"
-            disabled={savingBankDetails}
-            className="btn fw-bold px-4"
-            style={{
-              background: '#ff5722',
-              color: 'white',
-              border: 'none'
-            }}
-          >
-            {savingBankDetails ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                Saving...
-              </>
-            ) : (
-              <>
-                <i className="bi bi-check-circle me-2"></i>
-                Save Bank Details
-              </>
+        {(isEditing || !userData?.bank_info) && (
+          <div className="mt-4 d-flex gap-2">
+            <button
+              type="submit"
+              disabled={savingBankDetails}
+              className="btn fw-bold px-4"
+              style={{
+                background: '#ff5722',
+                color: 'white',
+                border: 'none'
+              }}
+            >
+              {savingBankDetails ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-check-circle me-2"></i>
+                  Save Bank Details
+                </>
+              )}
+            </button>
+            {isEditing && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditing(false);
+                  loadExistingBankInfo();
+                }}
+                className="btn btn-outline-secondary"
+              >
+                Cancel
+              </button>
             )}
-          </button>
-        </div>
+          </div>
+        )}
       </form>
 
       <div className="mt-4 p-3 rounded" style={{ 
@@ -761,15 +803,24 @@ export default function Settings() {
   );
 
   return (
-    <div
-      className="p-4"
-      style={{
-        backgroundColor: isDark ? "#121212" : "#f8f9fa",
-        color: isDark ? "#f8f9fa" : "#212529",
-        minHeight: "100vh",
-      }}
-    >
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <>
+      <style>
+        {`
+          .bank-select option:hover {
+            background-color: #ff5722 !important;
+            color: white !important;
+          }
+        `}
+      </style>
+      <div
+        className="p-4"
+        style={{
+          backgroundColor: isDark ? "#121212" : "#f8f9fa",
+          color: isDark ? "#f8f9fa" : "#212529",
+          minHeight: "100vh",
+        }}
+      >
+        <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h1 className="fw-bold mb-1" style={{ color: primary }}>
             Settings
@@ -856,6 +907,7 @@ export default function Settings() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
