@@ -104,14 +104,7 @@ export default function AppDataProvider({ children }) {
     return () => (mounted = false);
   }, [userLoggedIn]);
 
-  useEffect(() => {
-    if (userData.kyc?.status !== "verified") {
-      setUserData((prev) => ({
-        ...prev,
-        kyc: { status: "verified", date: new Date().toISOString() },
-      }));
-    }
-  }, [userData.kyc]);
+
 
   const showNotification = useCallback((msg, type = "info") => {
     toast[type](msg, {

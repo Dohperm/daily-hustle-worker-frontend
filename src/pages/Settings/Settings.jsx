@@ -1,5 +1,5 @@
 // src/pages/Settings.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
 import { toast } from "react-toastify";
@@ -56,7 +56,9 @@ export default function Settings() {
     country = "Ghana",
   } = userData || {};
 
-  const kycVerified = kyc.status === "verified";
+  const kycVerified = useMemo(() => {
+    return userData?.kyc?.is_approved === true;
+  }, [userData?.kyc?.is_approved]);
 
   const tabs = [
     { id: "profile", icon: "person", title: "Profile" },
@@ -403,8 +405,8 @@ export default function Settings() {
                 <i className="bi bi-shield-check me-2" />
                 KYC Verification
               </h6>
-              <small style={{ color: (userData.kyc?.is_approved || userData.kyc?.status === 'verified') ? '#28a745' : "#ffc107" }}>
-                {(userData.kyc?.is_approved || userData.kyc?.status === 'verified') ? "✓ KYC Completed" : "Pending Verification"}
+              <small style={{ color: userData.kyc?.is_approved ? '#28a745' : "#ffc107" }}>
+                {userData.kyc?.is_approved ? "✓ KYC Completed" : "Pending Verification"}
               </small>
             </div>
             <button
@@ -415,13 +417,13 @@ export default function Settings() {
                 border: 'none'
               }}
               onClick={() => setShowKycForm(true)}
-              disabled={userData.kyc?.is_approved || userData.kyc?.status === 'verified'}
+              disabled={userData.kyc?.is_approved}
             >
-              {(userData.kyc?.is_approved || userData.kyc?.status === 'verified') ? "✓ Completed" : "Complete KYC"}
+              {userData.kyc?.is_approved ? "✓ Completed" : "Complete KYC"}
             </button>
           </div>
           <small className="text-muted">
-            {(userData.kyc?.is_approved || userData.kyc?.status === 'verified')
+            {userData.kyc?.is_approved
               ? "Your KYC verification has been completed and approved. All platform features and verified badges are now unlocked."
               : "Complete KYC verification to unlock all platform features and verified badges"
             }
@@ -565,7 +567,8 @@ export default function Settings() {
       const { data } = await getBanks();
       setBanks(Array.isArray(data) ? data : data?.data || []);
     } catch (error) {
-      toast.error('Failed to load banks');
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to load banks';
+      toast.error(errorMessage);
     } finally {
       setLoadingBanks(false);
     }
@@ -601,7 +604,8 @@ export default function Settings() {
       const accountName = response?.data?.account_name || response?.data?.data?.account_name || '';
       setBankDetails(prev => ({ ...prev, accountName }));
     } catch (error) {
-      toast.error('Could not verify account number');
+      const errorMessage = error?.response?.data?.message || error?.message || 'Could not verify account number';
+      toast.error(errorMessage);
       setBankDetails(prev => ({ ...prev, accountName: '' }));
     } finally {
       setVerifyingAccount(false);
@@ -633,7 +637,8 @@ export default function Settings() {
       setIsEditing(false);
       await refetchUserData();
     } catch (error) {
-      toast.error('Failed to save bank details');
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to save bank details';
+      toast.error(errorMessage);
     } finally {
       setSavingBankDetails(false);
     }
