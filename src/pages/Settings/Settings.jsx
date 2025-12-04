@@ -9,8 +9,10 @@ import {
   updateUser,
   fileUrlUpdate,
   getBanks,
+  getBankAccounts,
   verifyAccount,
   saveBankInfo,
+  removeAccount,
 } from "../../services/services";
 import VerificationBadge from "../../components/VerificationBadge";
 import VerificationModal from "../../components/Modal/VerificationModal";
@@ -28,7 +30,7 @@ export default function Settings() {
   } = useAppData();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState(() => localStorage.getItem("settingsActiveTab") || "profile");
   const [loading, setLoading] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState(userData?.photo || "");
@@ -544,11 +546,65 @@ export default function Settings() {
   const [savingBankDetails, setSavingBankDetails] = useState(false);
   const [verifyingAccount, setVerifyingAccount] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [bankAccounts, setBankAccounts] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [removingAccountId, setRemovingAccountId] = useState(null);
+  const [removePassword, setRemovePassword] = useState('');
 
   useEffect(() => {
     fetchBanks();
-    loadExistingBankInfo();
+    loadExistingBankAccounts();
   }, []);
+
+  const loadExistingBankAccounts = async () => {
+    try {
+      const response = await getBankAccounts();
+      const accounts = response.data?.data || response.data || [];
+      console.log('Fetched bank accounts from API:', accounts);
+      setBankAccounts(Array.isArray(accounts) ? accounts : []);
+    } catch (error) {
+      console.error('Failed to fetch bank accounts:', error);
+      // Fallback to userData if API fails
+      if (userData?.bank_accounts && Array.isArray(userData.bank_accounts)) {
+        setBankAccounts(userData.bank_accounts);
+      } else {
+        setBankAccounts([]);
+      }
+    }
+  };
+
+  const resetBankForm = () => {
+    setBankDetails({
+      bankName: '',
+      bankCode: '',
+      accountNumber: '',
+      accountName: ''
+    });
+  };
+
+  const handleRemoveAccount = async (accountId) => {
+    if (bankAccounts.length <= 1) {
+      toast.error('You must have at least one payment account');
+      return;
+    }
+    
+    if (!removePassword) {
+      toast.error('Please enter your password to remove this account');
+      return;
+    }
+    
+    try {
+      await removeAccount({ accountId, password: removePassword });
+      
+      setRemovingAccountId(null);
+      setRemovePassword('');
+      toast.success('Bank account removed successfully');
+      await loadExistingBankAccounts();
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to remove account';
+      toast.error(errorMessage);
+    }
+  };
 
   const loadExistingBankInfo = () => {
     if (userData?.bank_info && !bankDetails.accountName) {
@@ -635,7 +691,10 @@ export default function Settings() {
         category: 'payments'
       });
       setIsEditing(false);
+      setShowAddForm(false);
+      resetBankForm();
       await refetchUserData();
+      await loadExistingBankAccounts();
     } catch (error) {
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to save bank details';
       toast.error(errorMessage);
@@ -651,106 +710,200 @@ export default function Settings() {
           <h5 className="fw-bold mb-0" style={{ color: isDark ? "#f8f9fa" : "#333" }}>
             Bank Details for Payments
           </h5>
-          {!isEditing && bankDetails.accountName && (
-            <button
-              type="button"
-              onClick={() => setIsEditing(true)}
-              className="btn btn-outline-primary btn-sm"
-            >
-              <i className="bi bi-pencil me-1"></i>
-              Edit
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => {
+              setShowAddForm(true);
+              resetBankForm();
+            }}
+            className="btn btn-outline-primary btn-sm"
+          >
+            <i className="bi bi-plus me-1"></i>
+            Add Bank Account
+          </button>
         </div>
         <p className="text-muted mb-4" style={{ fontSize: '0.9rem' }}>
           <i className="bi bi-info-circle me-2"></i>
-          Please enter the bank account details where you would like to receive your payments and withdrawals.
+          Manage your bank accounts for receiving payments and withdrawals.
         </p>
       </div>
 
-      <form onSubmit={handleSaveBankDetails}>
-        <div className="row g-3">
-          <div className="col-md-6">
-            <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>
-              Bank Name *
-            </label>
-            <select
-              className="form-select bank-select"
-              value={bankDetails.bankName}
-              onChange={(e) => {
-                const selectedBank = banks.find(bank => bank.name === e.target.value);
-                if (selectedBank) {
-                  handleBankChange(selectedBank.name, selectedBank.code);
-                }
-              }}
-              disabled={loadingBanks || (!isEditing && bankDetails.accountName)}
-              style={{
-                background: isDark ? "#1c1c1e" : "#fff",
-                border: `1px solid ${isDark ? '#444' : '#ddd'}`,
-                color: isDark ? "#f8f9fa" : "#333"
-              }}
-            >
-              <option value="">{loadingBanks ? 'Loading banks...' : 'Select your bank'}</option>
-              {Array.isArray(banks) && banks.map((bank) => (
-                <option key={bank.id} value={bank.name}>
-                  {bank.name}
-                </option>
-              ))}
-            </select>
+      {/* Existing Bank Accounts */}
+      {bankAccounts.length > 0 ? (
+        <div className="mb-4">
+          <h6 className="fw-semibold mb-3" style={{ color: isDark ? "#f8f9fa" : "#333" }}>Your Bank Accounts</h6>
+          {bankAccounts.map((account, index) => {
+            const accountId = account._id || account.id || index;
+            console.log('Rendering account:', account, 'with ID:', accountId);
+            return (
+            <div key={accountId} className="card mb-3" style={{
+              backgroundColor: isDark ? "#1c1c1e" : "#fff",
+              border: `1px solid ${isDark ? '#444' : '#ddd'}`,
+            }}>
+              <div className="card-body">
+                <div className="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 className="card-title mb-1" style={{ color: isDark ? "#f8f9fa" : "#333" }}>
+                      {account.bank_name}
+                      {account.is_primary && <span className="badge bg-success ms-2">Primary</span>}
+                    </h6>
+                    <p className="card-text mb-1" style={{ color: isDark ? "#adb5bd" : "#6c757d" }}>
+                      <strong>Account:</strong> {account.account_number}
+                    </p>
+                    <p className="card-text mb-0" style={{ color: isDark ? "#adb5bd" : "#6c757d" }}>
+                      <strong>Name:</strong> {account.account_name}
+                    </p>
+                  </div>
+                  <div className="d-flex gap-2">
+                    {bankAccounts.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setRemovingAccountId(accountId)}
+                        className="btn btn-outline-danger btn-sm"
+                      >
+                        <i className="bi bi-trash"></i>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )})}
+        </div>
+      ) : (
+        <div className="text-center py-5">
+          <i className="bi bi-bank2 fs-1 text-muted mb-3 d-block"></i>
+          <h6 className="text-muted">No Bank Account Found</h6>
+          <p className="text-muted small">You haven't added any bank accounts yet. Click "Add Bank Account" to get started.</p>
+        </div>
+      )}
+
+      {/* Remove Account Modal */}
+      {removingAccountId !== null && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Remove Bank Account</h5>
+                <button className="btn-close" onClick={() => {
+                  setRemovingAccountId(null);
+                  setRemovePassword('');
+                }}></button>
+              </div>
+              <div className="modal-body">
+                <p>Enter your password to confirm removal of this bank account:</p>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="Enter your password"
+                  value={removePassword}
+                  onChange={(e) => setRemovePassword(e.target.value)}
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => {
+                  setRemovingAccountId(null);
+                  setRemovePassword('');
+                }}>Cancel</button>
+                <button 
+                  className="btn btn-danger" 
+                  onClick={() => handleRemoveAccount(removingAccountId)}
+                  disabled={!removePassword}
+                >
+                  Remove Account
+                </button>
+              </div>
+            </div>
           </div>
-          
-          <div className="col-md-6">
-            <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>
-              Account Number *
-            </label>
-            <div className="position-relative">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Enter your account number"
-                value={bankDetails.accountNumber}
-                onChange={(e) => handleBankDetailsChange('accountNumber', e.target.value)}
-                disabled={!isEditing && bankDetails.accountName}
+        </div>
+      )}
+
+      {/* Add New Account Form */}
+      {showAddForm && (
+        <form onSubmit={handleSaveBankDetails}>
+          <h6 className="fw-semibold mb-3" style={{ color: isDark ? "#f8f9fa" : "#333" }}>
+            Add New Bank Account
+          </h6>
+          <div className="row g-3">
+            <div className="col-md-6">
+              <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>
+                Bank Name *
+              </label>
+              <select
+                className="form-select bank-select"
+                value={bankDetails.bankName}
+                onChange={(e) => {
+                  const selectedBank = banks.find(bank => bank.name === e.target.value);
+                  if (selectedBank) {
+                    handleBankChange(selectedBank.name, selectedBank.code);
+                  }
+                }}
+                disabled={loadingBanks}
                 style={{
                   background: isDark ? "#1c1c1e" : "#fff",
                   border: `1px solid ${isDark ? '#444' : '#ddd'}`,
                   color: isDark ? "#f8f9fa" : "#333"
                 }}
+              >
+                <option value="">{loadingBanks ? 'Loading banks...' : 'Select your bank'}</option>
+                {Array.isArray(banks) && banks.map((bank) => (
+                  <option key={bank.id} value={bank.name}>
+                    {bank.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="col-md-6">
+              <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>
+                Account Number *
+              </label>
+              <div className="position-relative">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter your account number"
+                  value={bankDetails.accountNumber}
+                  onChange={(e) => handleBankDetailsChange('accountNumber', e.target.value)}
+                  style={{
+                    background: isDark ? "#1c1c1e" : "#fff",
+                    border: `1px solid ${isDark ? '#444' : '#ddd'}`,
+                    color: isDark ? "#f8f9fa" : "#333"
+                  }}
+                />
+                {verifyingAccount && (
+                  <div className="position-absolute top-50 end-0 translate-middle-y me-3">
+                    <div className="spinner-border spinner-border-sm" role="status"></div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="col-12">
+              <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>
+                Account Name *
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Account name will appear here after verification"
+                value={bankDetails.accountName}
+                readOnly
+                style={{
+                  background: isDark ? "#2a2a2a" : "#f8f9fa",
+                  border: `1px solid ${isDark ? '#444' : '#ddd'}`,
+                  color: isDark ? "#f8f9fa" : "#333"
+                }}
               />
-              {verifyingAccount && (
-                <div className="position-absolute top-50 end-0 translate-middle-y me-3">
-                  <div className="spinner-border spinner-border-sm" role="status"></div>
-                </div>
+              {bankDetails.accountName && (
+                <small className="text-success mt-1 d-block">
+                  <i className="bi bi-check-circle me-1"></i>
+                  Account verified
+                </small>
               )}
             </div>
           </div>
-          
-          <div className="col-12">
-            <label className="form-label fw-semibold" style={{ color: isDark ? "#f8f9fa" : "#666" }}>
-              Account Name *
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Account name will appear here after verification"
-              value={bankDetails.accountName}
-              readOnly
-              style={{
-                background: isDark ? "#2a2a2a" : "#f8f9fa",
-                border: `1px solid ${isDark ? '#444' : '#ddd'}`,
-                color: isDark ? "#f8f9fa" : "#333"
-              }}
-            />
-            {bankDetails.accountName && (
-              <small className="text-success mt-1 d-block">
-                <i className="bi bi-check-circle me-1"></i>
-                Account verified
-              </small>
-            )}
-          </div>
-        </div>
 
-        {(isEditing || !userData?.bank_info) && (
           <div className="mt-4 d-flex gap-2">
             <button
               type="submit"
@@ -774,21 +927,19 @@ export default function Settings() {
                 </>
               )}
             </button>
-            {isEditing && (
-              <button
-                type="button"
-                onClick={() => {
-                  setIsEditing(false);
-                  loadExistingBankInfo();
-                }}
-                className="btn btn-outline-secondary"
-              >
-                Cancel
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                setShowAddForm(false);
+                resetBankForm();
+              }}
+              className="btn btn-outline-secondary"
+            >
+              Cancel
+            </button>
           </div>
-        )}
-      </form>
+        </form>
+      )}
 
       <div className="mt-4 p-3 rounded" style={{ 
         backgroundColor: isDark ? "#1a1a1a" : "#f8f9fa",
@@ -849,7 +1000,10 @@ export default function Settings() {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              setActiveTab(tab.id);
+              localStorage.setItem("settingsActiveTab", tab.id);
+            }}
             className={`btn rounded-pill px-4 py-2 fw-bold ${
               activeTab === tab.id ? "shadow" : ""
             }`}

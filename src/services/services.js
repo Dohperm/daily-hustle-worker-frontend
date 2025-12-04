@@ -82,5 +82,7 @@ export const verifyUsername = (username) => api.post("/auths/users/verify-userna
 
 /* ------------------- BANK DETAILS ------------------- */
 export const getBanks = () => api.get("/users/banks");
+export const getBankAccounts = () => api.get("/users/me/bank-accounts");
 export const verifyAccount = (payload) => api.post("/users/verify-account", payload);
-export const saveBankInfo = (payload) => api.post("/users/me/bank-info", payload);
+export const saveBankInfo = (payload) => api.post("/users/me/bank-accounts", payload);
+export const removeAccount = (payload) => api.post(`/users/me/bank-accounts/${payload.accountId}`, { password: payload.password });

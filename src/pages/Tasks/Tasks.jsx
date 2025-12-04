@@ -9,7 +9,7 @@ export default function Tasks() {
   const { theme } = useTheme();
   const { userData, tasks } = useAppData();
 
-  const [activeTab, setActiveTab] = useState("available");
+  const [activeTab, setActiveTab] = useState(() => localStorage.getItem("tasksActiveTab") || "available");
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -38,8 +38,18 @@ export default function Tasks() {
         return !isFull;
       });
       setFilteredTasks(availableTasks);
-    } else {
-      setFilteredTasks(userData.tasks || []);
+    } else if (activeTab === "ongoing") {
+      const ongoingTasks = (userData.tasks || []).filter(task => {
+        const status = String(task.submission_progress || task.status || "").toUpperCase();
+        return status !== "APPROVED";
+      });
+      setFilteredTasks(ongoingTasks);
+    } else if (activeTab === "completed") {
+      const completedTasks = (userData.tasks || []).filter(task => {
+        const status = String(task.submission_progress || task.status || "").toUpperCase();
+        return status === "APPROVED";
+      });
+      setFilteredTasks(completedTasks);
     }
     setPage(1);
   }, [activeTab, tasks, userData.tasks]);
@@ -58,10 +68,13 @@ export default function Tasks() {
       </h2>
       {/* Tabs */}
       <div className="d-flex justify-content-center mb-4">
-        {["available", "myTasks"].map((tab) => (
+        {["available", "ongoing", "completed"].map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => {
+              setActiveTab(tab);
+              localStorage.setItem("tasksActiveTab", tab);
+            }}
             className={`btn mx-2 rounded-pill ${
               activeTab === tab ? "text-white" : ""
             }`}
@@ -72,7 +85,7 @@ export default function Tasks() {
               transition: "all 0.3s ease",
             }}
           >
-            {tab === "available" ? "Available Tasks" : "My Tasks"}
+            {tab === "available" ? "Available Tasks" : tab === "ongoing" ? "Ongoing Tasks" : "Completed Tasks"}
           </button>
         ))}
       </div>
@@ -81,7 +94,7 @@ export default function Tasks() {
         visible.map((t, index) => {
           const task = activeTab === "available" ? t : t.task || t;
           const userStatus =
-            activeTab === "myTasks"
+            (activeTab === "ongoing" || activeTab === "completed")
               ? String(t.submission_progress || t.status || "").toUpperCase()
               : null;
           if (!task) return null;
@@ -172,7 +185,7 @@ export default function Tasks() {
                         if (activeTab === "available") {
                           setSelectedTask(task);
                         } else {
-                          // For My Tasks, pass the full task proof object
+                          // For Ongoing/Completed Tasks, pass the full task proof object
                           setSelectedTask({ ...task, proofData: t });
                         }
                         setShowModal(true);
@@ -186,7 +199,7 @@ export default function Tasks() {
                         : "View Details"
                       : "View Proof"}
                   </button>
-                  {activeTab === "myTasks" && (
+                  {activeTab === "ongoing" && (
                     <button
                       className={`btn ${(userStatus === "APPROVED" || userStatus === "REJECTED") ? '' : 'btn-outline'} rounded-pill`}
                       style={{
@@ -216,7 +229,9 @@ export default function Tasks() {
         <div className="text-center py-5" style={{ color: palette.label }}>
           {activeTab === "available"
             ? "No available tasks right now. Check back soon!"
-            : "You haven't started any tasks yet."}
+            : activeTab === "ongoing"
+            ? "You have no ongoing tasks."
+            : "You have no completed tasks yet."}
         </div>
       )}
       {/* Pagination */}
