@@ -26,7 +26,7 @@ const jobCategories = [
 export default function Onboarding() {
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const { setUserLoggedIn, userLoggedIn } = useAppData();
+  const { setUserLoggedIn, userLoggedIn, logout } = useAppData();
 
 
   const isDark = theme === "dark";
@@ -54,6 +54,7 @@ export default function Onboarding() {
       const res = await verifyUsername(username);
       setUsernameStatus(res.data?.data?.isAvailable ? 'available' : 'taken');
     } catch (error) {
+      console.error('Username check error:', error);
       setUsernameStatus('error');
     } finally {
       setCheckingUsername(false);
@@ -111,7 +112,8 @@ export default function Onboarding() {
       setTimeout(() => navigate("/dashboard"), 1200);
     } catch (error) {
       console.error("Profile completion error:", error);
-      toast.error("Failed to complete profile. Please try again.");
+      const errorMsg = error.response?.data?.message || error.message || "Failed to complete profile. Please try again.";
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -397,6 +399,31 @@ export default function Onboarding() {
           font-size: 0.9rem;
         }
 
+        .dh-logout-btn {
+          position: absolute;
+          top: 2rem;
+          right: 2rem;
+          background: var(--card);
+          border: 2px solid var(--border);
+          color: var(--text);
+          padding: 0.5rem 1rem;
+          border-radius: 0.75rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.9rem;
+          z-index: 10;
+        }
+
+        .dh-logout-btn:hover {
+          border-color: #dc3545;
+          color: #dc3545;
+          transform: translateY(-2px);
+        }
+
         @media (max-width: 768px) {
           .dh-form-grid {
             grid-template-columns: 1fr;
@@ -409,11 +436,30 @@ export default function Onboarding() {
           .dh-button-group {
             flex-direction: column;
           }
+          
+          .dh-logout-btn {
+            top: 1rem;
+            right: 1rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+          }
         }
       `}</style>
 
 
       <div className="dh-onboarding">
+        <button 
+          className="dh-logout-btn"
+          onClick={() => {
+            logout();
+            navigate('/login');
+          }}
+          title="Logout"
+        >
+          <i className="bi bi-box-arrow-right" />
+          Logout
+        </button>
+        
         <div className="dh-onboarding-card">
           <div className="dh-progress-indicator">
             <div className={`dh-step ${step >= 1 ? 'active' : 'inactive'}`}>1</div>
