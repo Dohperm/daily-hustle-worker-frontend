@@ -14,6 +14,7 @@ import Layout from "./layouts/DashboardLayout";
 import { ToastContainer } from "react-toastify";
 import Login from "./pages/auth/Login/login";
 import Signup from "./pages/auth/Signup/signup";
+import Onboarding from "./pages/auth/Onboarding/onboarding";
 import KYCForm from "./pages/auth/Kyc/kyc";
 import ForgotPassword from "./pages/auth/ForgotPassword/forgotPassword";
 import Landing from "./pages/Landing/Landing";
@@ -25,6 +26,44 @@ function ProtectedRoute({ children }) {
   const { userLoggedIn } = useAppData();
   return userLoggedIn ? children : <Navigate to="/login" replace />;
 }
+
+function OnboardingProtectedRoute({ children }) {
+  const { userLoggedIn } = useAppData();
+  const [user, setUser] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const checkUserProfile = async () => {
+      if (userLoggedIn) {
+        try {
+          const response = await fetch('https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1/users/me', {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('userToken')}`
+            }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setUser(data.data);
+          }
+        } catch (error) {
+          console.error('Error fetching user:', error);
+        }
+      }
+      setLoading(false);
+    };
+    checkUserProfile();
+  }, [userLoggedIn]);
+
+  if (loading) return <div>Loading...</div>;
+  if (!userLoggedIn) return <Navigate to="/login" replace />;
+  
+  const needsOnboarding = !user?.first_name || !user?.username;
+  if (needsOnboarding) return <Navigate to="/onboarding" replace />;
+  
+  return children;
+}
+
+
 
 export default function App() {
   const { userLoggedIn, showKycModal, setShowKycModal } = useAppData();
@@ -39,9 +78,9 @@ export default function App() {
 
         {/* Dashboard Layout Routes - Protected */}
         <Route path="/dashboard" element={
-          <ProtectedRoute>
+          <OnboardingProtectedRoute>
             <Layout />
-          </ProtectedRoute>
+          </OnboardingProtectedRoute>
         }>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
@@ -61,6 +100,9 @@ export default function App() {
         } />
         <Route path="/signup" element={
           userLoggedIn ? <Navigate to="/dashboard" replace /> : <Signup />
+        } />
+        <Route path="/onboarding" element={
+          userLoggedIn ? <Onboarding /> : <Navigate to="/login" replace />
         } />
         <Route path="/kyc" element={<KYCForm />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -96,8 +96,14 @@ export default function AppDataProvider({ children }) {
         await fetchMyTasks();
       } catch (e) {
         console.error(e);
-        toast.error("Failed to load user data");
-        setUserLoggedIn(false);
+        // Don't immediately log out on API failure - could be temporary
+        // Only log out if it's an authentication error (401/403)
+        if (e.response?.status === 401 || e.response?.status === 403) {
+          console.log('Authentication failed, logging out');
+          setUserLoggedIn(false);
+        } else {
+          console.log('API call failed but keeping user logged in');
+        }
       }
     };
     fetch();

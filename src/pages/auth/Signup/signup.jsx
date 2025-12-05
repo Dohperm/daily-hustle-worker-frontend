@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppData } from "../../../hooks/AppDataContext";
 import { useTheme } from "../../../hooks/useThemeContext";
 import { signInWithGoogle, signInWithFacebook } from "../../../services/auth";
-import { oauthLogin, verifyUsername } from "../../../services/services";
+import { oauthLogin } from "../../../services/services";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -33,30 +33,12 @@ export default function QuickSignup() {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    username: "",
-    phone: "",
     email: "",
     password: "",
-    referral_code: "", 
-    country: "Ghana",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [otpVerified, setOtpVerified] = useState(false);
-  const [normalUsernameStatus, setNormalUsernameStatus] = useState('');
-  const [checkingNormalUsername, setCheckingNormalUsername] = useState(false);
-  const [showReferralModal, setShowReferralModal] = useState(false);
-  const [referralCode, setReferralCode] = useState('');
-  const [socialProvider, setSocialProvider] = useState('');
-  const [socialFormData, setSocialFormData] = useState({
-    username: '',
-    phone: '',
-    country: 'Ghana'
-  });
-  const [usernameStatus, setUsernameStatus] = useState('');
-  const [checkingUsername, setCheckingUsername] = useState(false);
 
   const passwordStrength = getPasswordStrength(formData.password);
   const otpRefs = useRef([...Array(6)].map(() => React.createRef()));
@@ -67,102 +49,50 @@ export default function QuickSignup() {
     }
   }, [step]);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const referralCode = urlParams.get('referral_code');
-    if (referralCode) {
-      setFormData(prev => ({ ...prev, referral_code: referralCode }));
-    }
-  }, []);
-
-  const handleGoogleSignup = () => {
-    setSocialProvider('google');
-    setReferralCode(formData.referral_code || '');
-    setShowReferralModal(true);
-  };
-
-  const handleFacebookSignup = () => {
-    setSocialProvider('facebook');
-    setReferralCode(formData.referral_code || '');
-    setShowReferralModal(true);
-  };
-
-  const checkNormalUsernameAvailability = async (username) => {
-    if (!username || username.length < 3) {
-      setNormalUsernameStatus('');
-      return;
-    }
-    setCheckingNormalUsername(true);
-    try {
-      const res = await verifyUsername(username);
-      setNormalUsernameStatus(res.data?.data?.isAvailable ? 'available' : 'taken');
-    } catch (error) {
-      setNormalUsernameStatus('error');
-    } finally {
-      setCheckingNormalUsername(false);
-    }
-  };
-
-  const checkUsernameAvailability = async (username) => {
-    if (!username || username.length < 3) {
-      setUsernameStatus('');
-      return;
-    }
-    setCheckingUsername(true);
-    try {
-      const res = await verifyUsername(username);
-      setUsernameStatus(res.data?.data?.isAvailable ? 'available' : 'taken');
-    } catch (error) {
-      setUsernameStatus('error');
-    } finally {
-      setCheckingUsername(false);
-    }
-  };
-
-  const proceedWithSocialSignup = async () => {
-    if (!socialFormData.username || !socialFormData.phone) {
-      toast.error('Please fill all required fields');
-      return;
-    }
-    if (usernameStatus !== 'available') {
-      toast.error('Please choose an available username');
-      return;
-    }
+  const handleGoogleSignup = async () => {
     setLoading(true);
-    setShowReferralModal(false);
     try {
-      const { token } = socialProvider === 'google' ? await signInWithGoogle() : await signInWithFacebook();
-      const payload = { 
-        firebase_token: token,
-        username: socialFormData.username,
-        phone: socialFormData.phone,
-        country: socialFormData.country
-      };
-      if (referralCode?.trim()) payload.referral_code = referralCode.trim();
-      const res = await oauthLogin(payload);
+      const { token } = await signInWithGoogle();
+      const res = await oauthLogin({ firebase_token: token });
       if (res.data?.data?.token) {
         localStorage.setItem("userToken", res.data.data.token);
         localStorage.setItem("userLoggedIn", "true");
         setUserLoggedIn(true);
-        toast.success(`${socialProvider} signup successful!`);
-        setTimeout(() => navigate("/dashboard"), 1200);
+        toast.success("Google signup successful!");
+        setTimeout(() => navigate("/onboarding"), 1200);
       }
     } catch (error) {
-      console.error(`${socialProvider} signup error:`, error);
-      toast.error(`${socialProvider} signup failed`);
+      console.error('Google signup error:', error);
+      toast.error('Google signup failed');
     } finally {
       setLoading(false);
-      setReferralCode('');
-      setSocialProvider('');
-      setSocialFormData({ username: '', phone: '', country: 'Ghana' });
-      setUsernameStatus('');
+    }
+  };
+
+  const handleFacebookSignup = async () => {
+    setLoading(true);
+    try {
+      const { token } = await signInWithFacebook();
+      const res = await oauthLogin({ firebase_token: token });
+      if (res.data?.data?.token) {
+        localStorage.setItem("userToken", res.data.data.token);
+        localStorage.setItem("userLoggedIn", "true");
+        setUserLoggedIn(true);
+        toast.success("Facebook signup successful!");
+        setTimeout(() => navigate("/onboarding"), 1200);
+      }
+    } catch (error) {
+      console.error('Facebook signup error:', error);
+      toast.error('Facebook signup failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   // Registration Step
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (passwordStrength < 4) {
+    if (passwordStrength < 3) {
       toast.error("Please choose a stronger password.");
       return;
     }
@@ -202,33 +132,24 @@ export default function QuickSignup() {
     }
     setLoading(true);
     try {
-      await axios.post(`${API_BASE}/auths/users/register/validate-token`, {
+      const response = await axios.post(`${API_BASE}/auths/users/register/validate-token`, {
         verification_code: otpCode,
         email: formData.email,
       });
-      toast.success("Account verified! Welcome aboard! 🎉");
-      setOtpVerified(true);
-
-      // Auto-login after verification
-      try {
-        const loginRes = await axios.post(`${API_BASE}/auths/users/login`, {
-          identifier: formData.username || formData.email,
-          password: formData.password,
-        });
+      
+      if (response.data?.data?.token) {
+        localStorage.setItem("userToken", response.data.data.token);
+        localStorage.setItem("userLoggedIn", "true");
+        setUserLoggedIn(true);
         
-        if (loginRes.status === 200 && loginRes.data.data?.token) {
-          // Update app context
-          localStorage.setItem("userToken", loginRes.data.data.token);
-          localStorage.setItem("userLoggedIn", "true");
-          setUserLoggedIn(true);
-          
-          toast.success("Login successful!");
+        toast.success("Account verified! Welcome aboard! 🎉");
+        setOtpVerified(true);
+        
+        if (response.data.data.requires_onboarding) {
+          setTimeout(() => navigate("/onboarding"), 1200);
+        } else {
           setTimeout(() => navigate("/dashboard"), 1200);
         }
-      } catch (loginErr) {
-        console.error("Auto-login error:", loginErr);
-        toast.error("Account created! Please login manually.");
-        setTimeout(() => navigate("/login"), 2000);
       }
     } catch (err) {
       const errorMsg = err.response?.data?.message || "Invalid or expired OTP.";
@@ -481,102 +402,6 @@ export default function QuickSignup() {
           to { transform: rotate(360deg); }
         }
         
-        .dh-modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.7);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-        }
-        
-        .dh-modal {
-          background: var(--card);
-          border-radius: 1rem;
-          width: 90%;
-          max-width: 400px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-          border: 1px solid var(--border);
-        }
-        
-        .dh-modal-header {
-          padding: 1.5rem 1.5rem 0;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        
-        .dh-modal-header h3 {
-          margin: 0;
-          color: var(--dh-red);
-          font-weight: 700;
-        }
-        
-        .dh-modal-close {
-          background: none;
-          border: none;
-          color: var(--muted);
-          font-size: 1.5rem;
-          cursor: pointer;
-          padding: 0.25rem;
-          border-radius: 0.25rem;
-          transition: all 0.2s;
-        }
-        
-        .dh-modal-close:hover {
-          color: var(--dh-red);
-          background: rgba(255, 87, 34, 0.1);
-        }
-        
-        .dh-modal-body {
-          padding: 1.5rem;
-        }
-        
-        .dh-modal-body p {
-          margin-bottom: 1rem;
-          color: var(--text);
-          font-weight: 500;
-        }
-        
-        .dh-modal-buttons {
-          display: flex;
-          gap: 0.75rem;
-        }
-        
-        .dh-modal-btn {
-          flex: 1;
-          padding: 0.75rem;
-          border: none;
-          border-radius: 0.5rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-        
-        .dh-modal-btn-secondary {
-          background: var(--border);
-          color: var(--muted);
-        }
-        
-        .dh-modal-btn-secondary:hover {
-          background: var(--muted);
-          color: var(--card);
-        }
-        
-        .dh-modal-btn-primary {
-          background: linear-gradient(135deg, var(--dh-red), var(--dh-red-light));
-          color: white;
-        }
-        
-        .dh-modal-btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(255, 87, 34, 0.3);
-        }
-        
         .dh-social-btn {
           flex: 1;
           padding: 0.75rem;
@@ -617,159 +442,8 @@ export default function QuickSignup() {
             </h1>
           </div>
           {step === 0 && (
-            <form onSubmit={handleRegister}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-                <input
-                  type="text"
-                  className="dh-input"
-                  placeholder="First Name"
-                  value={formData.first_name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, first_name: e.target.value })
-                  }
-                  required
-                  disabled={loading}
-                  style={{ marginBottom: 0 }}
-                />
-                <input
-                  type="text"
-                  className="dh-input"
-                  placeholder="Last Name"
-                  value={formData.last_name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, last_name: e.target.value })
-                  }
-                  required
-                  disabled={loading}
-                  style={{ marginBottom: 0 }}
-                />
-              </div>
-              <div style={{ position: 'relative', marginBottom: '1rem' }}>
-                <input
-                  type="text"
-                  className="dh-input"
-                  placeholder="Username"
-                  value={formData.username}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\s/g, "").toLowerCase();
-                    setFormData({ ...formData, username: value });
-                    checkNormalUsernameAvailability(value);
-                  }}
-                  required
-                  minLength={3}
-                  disabled={loading}
-                  style={{ marginBottom: '0.25rem' }}
-                />
-                {checkingNormalUsername && <small style={{ color: 'var(--muted)' }}>Checking...</small>}
-                {normalUsernameStatus === 'available' && <small style={{ color: '#28a745' }}>✓ Available</small>}
-                {normalUsernameStatus === 'taken' && <small style={{ color: '#dc3545' }}>✗ Taken</small>}
-              </div>
-              <input
-                type="tel"
-                className="dh-input"
-                placeholder="Phone Number"
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-                required
-                disabled={loading}
-              />
-              <input
-                type="email"
-                className="dh-input"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                required
-                disabled={loading}
-              />
-              <div className="dh-input-wrapper">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="dh-input"
-                  placeholder="Create Password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  required
-                  disabled={loading}
-                  style={{ paddingRight: "3rem", marginBottom: 0 }}
-                />
-                <button
-                  type="button"
-                  className="dh-eye-btn"
-                  onClick={() => setShowPassword((v) => !v)}
-                  tabIndex={-1}
-                  aria-label={showPassword ? "Hide Password" : "Show Password"}
-                >
-                  <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} />
-                </button>
-              </div>
-              <div>
-                <div className="dh-progress">
-                  <div
-                    className="dh-progress-bar"
-                    style={{
-                      background: strengthColors[passwordStrength],
-                      width: `${(passwordStrength / 5) * 100}%`,
-                    }}
-                  />
-                </div>
-                <div
-                  className="dh-strength-label"
-                  style={{ color: strengthColors[passwordStrength] }}
-                >
-                  {strengthLabels[passwordStrength]}
-                </div>
-              </div>
-              <input
-                type="text"
-                className="dh-input"
-                placeholder="Referral Code (Optional)"
-                value={formData.referral_code}
-                onChange={(e) =>
-                  setFormData({ ...formData, referral_code: e.target.value })
-                }
-                disabled={loading}
-              />
-              <select
-                className="dh-input"
-                value={formData.country}
-                onChange={(e) =>
-                  setFormData({ ...formData, country: e.target.value })
-                }
-                disabled={loading}
-                style={{ marginBottom: 0 }}
-              >
-                <option value="Ghana">Ghana</option>
-                <option value="Nigeria">Nigeria</option>
-                <option value="Kenya">Kenya</option>
-                <option value="USA">USA</option>
-              </select>
-              <button
-                type="submit"
-                className="dh-submit-btn"
-                disabled={loading || passwordStrength < 4}
-              >
-                {loading ? (
-                  <>
-                    <div className="dh-spinner" />
-                    Processing...
-                  </>
-                ) : (
-                  "Create Account"
-                )}
-              </button>
-              
-              <div style={{ textAlign: 'center', margin: '1.5rem 0', color: 'var(--muted)' }}>
-                or sign up with
-              </div>
-              
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <>
+              <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem' }}>
                 <button
                   type="button"
                   className="dh-social-btn"
@@ -789,17 +463,90 @@ export default function QuickSignup() {
                   Facebook
                 </button>
               </div>
-              <div className="dh-login-link">
-                Already have an account?{" "}
-                <button
-                  type="button"
-                  className="dh-login-btn"
-                  onClick={() => navigate('/login')}
-                >
-                  Sign In
-                </button>
+              
+              <div style={{ textAlign: 'center', margin: '1.5rem 0', color: 'var(--muted)', position: 'relative' }}>
+                <span style={{ background: 'var(--card)', padding: '0 1rem' }}>or</span>
+                <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: 'var(--border)', zIndex: -1 }}></div>
               </div>
-            </form>
+              
+              <form onSubmit={handleRegister}>
+                <input
+                  type="email"
+                  className="dh-input"
+                  placeholder="Email Address"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  required
+                  disabled={loading}
+                />
+                <div className="dh-input-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="dh-input"
+                    placeholder="Create Password"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    required
+                    disabled={loading}
+                    style={{ paddingRight: "3rem", marginBottom: 0 }}
+                  />
+                  <button
+                    type="button"
+                    className="dh-eye-btn"
+                    onClick={() => setShowPassword((v) => !v)}
+                    tabIndex={-1}
+                    aria-label={showPassword ? "Hide Password" : "Show Password"}
+                  >
+                    <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} />
+                  </button>
+                </div>
+                <div>
+                  <div className="dh-progress">
+                    <div
+                      className="dh-progress-bar"
+                      style={{
+                        background: strengthColors[passwordStrength],
+                        width: `${(passwordStrength / 5) * 100}%`,
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="dh-strength-label"
+                    style={{ color: strengthColors[passwordStrength] }}
+                  >
+                    {strengthLabels[passwordStrength]}
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  className="dh-submit-btn"
+                  disabled={loading || passwordStrength < 3}
+                >
+                  {loading ? (
+                    <>
+                      <div className="dh-spinner" />
+                      Creating Account...
+                    </>
+                  ) : (
+                    "Create Account"
+                  )}
+                </button>
+                <div className="dh-login-link">
+                  Already have an account?{" "}
+                  <button
+                    type="button"
+                    className="dh-login-btn"
+                    onClick={() => navigate('/login')}
+                  >
+                    Sign In
+                  </button>
+                </div>
+              </form>
+            </>
           )}
           {step === 1 && (
             <div>
@@ -845,89 +592,6 @@ export default function QuickSignup() {
             </div>
           )}
         </div>
-        
-        {/* Referral Code Modal */}
-        {showReferralModal && (
-          <div className="dh-modal-overlay">
-            <div className="dh-modal">
-              <div className="dh-modal-header">
-                <h3>Complete Registration</h3>
-                <button 
-                  className="dh-modal-close"
-                  onClick={() => {
-                    setShowReferralModal(false);
-                    setReferralCode('');
-                    setSocialProvider('');
-                  }}
-                >
-                  <i className="bi bi-x" />
-                </button>
-              </div>
-              <div className="dh-modal-body">
-                <p>Please complete your registration details:</p>
-                <div style={{ position: 'relative', marginBottom: '1rem' }}>
-                  <input
-                    type="text"
-                    className="dh-input"
-                    placeholder="Username"
-                    value={socialFormData.username}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\s/g, '').toLowerCase();
-                      setSocialFormData(prev => ({ ...prev, username: value }));
-                      checkUsernameAvailability(value);
-                    }}
-                    style={{ marginBottom: '0.25rem' }}
-                  />
-                  {checkingUsername && <small style={{ color: 'var(--muted)' }}>Checking...</small>}
-                  {usernameStatus === 'available' && <small style={{ color: '#28a745' }}>✓ Available</small>}
-                  {usernameStatus === 'taken' && <small style={{ color: '#dc3545' }}>✗ Taken</small>}
-                </div>
-                <input
-                  type="tel"
-                  className="dh-input"
-                  placeholder="Phone Number"
-                  value={socialFormData.phone}
-                  onChange={(e) => setSocialFormData(prev => ({ ...prev, phone: e.target.value }))}
-                  style={{ marginBottom: '1rem' }}
-                />
-                <select
-                  className="dh-input"
-                  value={socialFormData.country}
-                  onChange={(e) => setSocialFormData(prev => ({ ...prev, country: e.target.value }))}
-                  style={{ marginBottom: '1rem' }}
-                >
-                  <option value="Ghana">Ghana</option>
-                  <option value="Nigeria">Nigeria</option>
-                  <option value="Kenya">Kenya</option>
-                  <option value="USA">USA</option>
-                </select>
-                <input
-                  type="text"
-                  className="dh-input"
-                  placeholder="Referral Code (optional)"
-                  value={referralCode}
-                  onChange={(e) => setReferralCode(e.target.value)}
-                  style={{ marginBottom: '1rem' }}
-                />
-                <div className="dh-modal-buttons">
-                  <button 
-                    className="dh-modal-btn dh-modal-btn-secondary"
-                    onClick={proceedWithSocialSignup}
-                  >
-                    Skip
-                  </button>
-                  <button 
-                    className="dh-modal-btn dh-modal-btn-primary"
-                    onClick={proceedWithSocialSignup}
-                    disabled={!socialFormData.username || !socialFormData.phone || usernameStatus !== 'available'}
-                  >
-                    Complete Registration
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </>
   );

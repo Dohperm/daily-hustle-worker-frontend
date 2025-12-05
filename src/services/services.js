@@ -80,6 +80,9 @@ export const getBadgeStatus = () => api.get("/verification/badges");
 export const oauthLogin = (payload) => api.post("/auths/users/oauth-login", payload);
 export const verifyUsername = (username) => api.post("/auths/users/verify-username", { username });
 
+/* ------------------- ONBOARDING ------------------- */
+export const completeOnboarding = (payload) => api.post("/auths/users/onboarding", payload);
+
 /* ------------------- BANK DETAILS ------------------- */
 export const getBanks = () => api.get("/users/banks");
 export const getBankAccounts = () => api.get("/users/me/bank-accounts");

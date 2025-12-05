@@ -44,7 +44,8 @@ const Login = () => {
         localStorage.setItem("userLoggedIn", "true");
         setUserLoggedIn(true);
         toast.success("Google login successful!");
-        setTimeout(() => navigate("/dashboard"), 1200);
+        const needsOnboarding = !res.data.data.user?.first_name || !res.data.data.user?.username;
+        setTimeout(() => navigate(needsOnboarding ? "/onboarding" : "/dashboard"), 1200);
       }
     } catch (error) {
       console.error('Google login error:', error);
@@ -64,7 +65,8 @@ const Login = () => {
         localStorage.setItem("userLoggedIn", "true");
         setUserLoggedIn(true);
         toast.success("Facebook login successful!");
-        setTimeout(() => navigate("/dashboard"), 1200);
+        const needsOnboarding = !res.data.data.user?.first_name || !res.data.data.user?.username;
+        setTimeout(() => navigate(needsOnboarding ? "/onboarding" : "/dashboard"), 1200);
       }
     } catch (error) {
       console.error('Facebook login error:', error);
