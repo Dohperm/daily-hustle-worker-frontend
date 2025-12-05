@@ -83,17 +83,7 @@ export default function Onboarding() {
     }
   };
 
-  const handleSkip = async () => {
-    setLoading(true);
-    try {
-      toast.success("Welcome! You can complete your profile later in settings.");
-      setTimeout(() => navigate("/dashboard"), 1200);
-    } catch (error) {
-      console.error("Skip error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const handleComplete = async () => {
     if (formData.job_categories.length === 0) {
@@ -337,6 +327,28 @@ export default function Onboarding() {
           gap: 0.5rem;
         }
 
+        .dh-btn-full {
+          width: 100%;
+        }
+
+        .dh-required-notice {
+          background: rgba(255, 87, 34, 0.1);
+          border: 1px solid rgba(255, 87, 34, 0.2);
+          color: var(--dh-red);
+          padding: 0.75rem 1rem;
+          border-radius: 0.75rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 2rem;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .dh-required-notice i {
+          font-size: 1.1rem;
+        }
+
         .dh-btn-primary {
           background: linear-gradient(135deg, var(--dh-red), var(--dh-red-light));
           color: white;
@@ -412,6 +424,10 @@ export default function Onboarding() {
             <>
               <h1 className="dh-title">Complete Your Profile</h1>
               <p className="dh-subtitle">Let's get to know you better</p>
+              <div className="dh-required-notice">
+                <i className="bi bi-info-circle" />
+                <span>Profile completion is required to access your dashboard</span>
+              </div>
 
               <div className="dh-form-grid">
                 <input
@@ -483,14 +499,7 @@ export default function Onboarding() {
 
               <div className="dh-button-group">
                 <button
-                  className="dh-btn dh-btn-secondary"
-                  onClick={handleSkip}
-                  disabled={loading}
-                >
-                  Skip for Now
-                </button>
-                <button
-                  className="dh-btn dh-btn-primary"
+                  className="dh-btn dh-btn-primary dh-btn-full"
                   onClick={handleNext}
                   disabled={loading}
                 >
