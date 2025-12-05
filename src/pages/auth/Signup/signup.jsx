@@ -430,7 +430,7 @@ export default function QuickSignup() {
         }
       `}</style>
 
-      <ToastContainer position="top-center" theme={isDark ? "dark" : "light"} autoClose={3000} />
+
       <div className="dh-signup">
         <div className="dh-signup-card">
           <div className="text-center">

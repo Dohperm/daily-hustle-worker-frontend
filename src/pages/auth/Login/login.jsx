@@ -339,7 +339,7 @@ const Login = () => {
       `}</style>
 
       <div className="dh-login">
-        <ToastContainer position="top-center" theme={isDark ? "dark" : "light"} autoClose={2400} />
+
         
         <button 
           className="dh-home-btn"

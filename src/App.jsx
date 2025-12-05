@@ -1,5 +1,6 @@
 // src/App.jsx
 import React from "react";
+import "react-toastify/dist/ReactToastify.css";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Tasks from "./pages/Tasks/Tasks";
@@ -11,7 +12,7 @@ import Transactions from "./pages/Transactions/Transactions";
 import Support from "./pages/Support/Support";
 import Settings from "./pages/Settings/Settings";
 import Layout from "./layouts/DashboardLayout";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import Login from "./pages/auth/Login/login";
 import Signup from "./pages/auth/Signup/signup";
 import Onboarding from "./pages/auth/Onboarding/onboarding";
@@ -20,7 +21,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword/forgotPassword";
 import Landing from "./pages/Landing/Landing";
 import { useAppData } from "./hooks/AppDataContext";
 import KycModal from "./components/Modal/KycModal";
-import "react-toastify/dist/ReactToastify.css";
+import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
 
 function ProtectedRoute({ children }) {
   const { userLoggedIn } = useAppData();
@@ -54,7 +55,7 @@ function OnboardingProtectedRoute({ children }) {
     checkUserProfile();
   }, [userLoggedIn]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingSpinner fullScreen message="Checking your profile..." variant="pulse" />;
   if (!userLoggedIn) return <Navigate to="/login" replace />;
   
   const needsOnboarding = !user?.first_name || !user?.username;
@@ -108,7 +109,7 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
 
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer />
       <KycModal 
         show={showKycModal} 
         onClose={() => setShowKycModal(false)} 

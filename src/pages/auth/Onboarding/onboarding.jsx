@@ -400,7 +400,7 @@ export default function Onboarding() {
         }
       `}</style>
 
-      <ToastContainer position="top-center" theme={isDark ? "dark" : "light"} autoClose={3000} />
+
       <div className="dh-onboarding">
         <div className="dh-onboarding-card">
           <div className="dh-progress-indicator">
