@@ -11,7 +11,7 @@ const KycModal = ({ show, onClose }) => {
 
   const handleVerifyNow = () => {
     onClose();
-    navigate('/dashboard/settings');
+    navigate('/dashboard/settings?tab=verification');
   };
 
   return (
