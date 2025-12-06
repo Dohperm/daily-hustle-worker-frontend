@@ -118,6 +118,20 @@ export default function QuickSignup() {
     setOtp(newOtp);
     if (value && index < 5) otpRefs.current[index + 1].current?.focus();
   };
+
+  const handleOtpPaste = (e, index) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (pastedData.length > 0) {
+      const newOtp = [...otp];
+      for (let i = 0; i < 6 && i < pastedData.length; i++) {
+        newOtp[i] = pastedData[i] || '';
+      }
+      setOtp(newOtp);
+      const focusIndex = Math.min(pastedData.length, 5);
+      otpRefs.current[focusIndex].current?.focus();
+    }
+  };
   const handleOtpKeyDown = (e, index) => {
     if (e.key === "Backspace" && !otp[index] && index > 0)
       otpRefs.current[index - 1].current?.focus();
@@ -564,6 +578,7 @@ export default function QuickSignup() {
                     value={digit}
                     onChange={(e) => handleOtpChange(e.target.value, idx)}
                     onKeyDown={(e) => handleOtpKeyDown(e, idx)}
+                    onPaste={(e) => handleOtpPaste(e, idx)}
                     className="dh-otp-input"
                     disabled={loading}
                   />
