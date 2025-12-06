@@ -4,24 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useAppData } from "../../../hooks/AppDataContext";
 import { useTheme } from "../../../hooks/useThemeContext";
 import { updateUser, verifyUsername, completeOnboarding } from "../../../services/services";
+import { jobCategories } from "../../../data/jobCategories";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
-
-const jobCategories = [
-  { id: "content-creation", label: "Content Creation", icon: "bi-camera-video" },
-  { id: "social-media", label: "Social Media Marketing", icon: "bi-share" },
-  { id: "data-entry", label: "Data Entry", icon: "bi-keyboard" },
-  { id: "customer-service", label: "Customer Service", icon: "bi-headset" },
-  { id: "graphic-design", label: "Graphic Design", icon: "bi-palette" },
-  { id: "writing", label: "Writing & Translation", icon: "bi-pen" },
-  { id: "web-development", label: "Web Development", icon: "bi-code-slash" },
-  { id: "virtual-assistant", label: "Virtual Assistant", icon: "bi-person-workspace" },
-  { id: "market-research", label: "Market Research", icon: "bi-graph-up" },
-  { id: "testing", label: "App/Website Testing", icon: "bi-bug" },
-  { id: "tutoring", label: "Online Tutoring", icon: "bi-book" },
-  { id: "transcription", label: "Transcription", icon: "bi-mic" }
-];
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -148,10 +134,10 @@ export default function Onboarding() {
         .dh-onboarding-card {
           background: var(--card);
           border-radius: 1.2rem;
-          padding: 3rem;
+          padding: 3.5rem;
           width: 100%;
-          max-width: 450px;
-          min-height: 500px;
+          max-width: 520px;
+          min-height: 580px;
           border: 1px solid var(--border);
           box-shadow: var(--shadow);
           position: relative;
