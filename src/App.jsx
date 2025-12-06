@@ -109,7 +109,59 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
 
-      <ToastContainer />
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastClassName="custom-toast"
+        bodyClassName="custom-toast-body"
+      />
+      
+      <style jsx global>{`
+        .custom-toast {
+          font-family: "Poppins", system-ui, sans-serif !important;
+          border-radius: 12px !important;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .custom-toast-body {
+          font-family: "Poppins", system-ui, sans-serif !important;
+          font-weight: 500;
+        }
+        
+        .Toastify__toast--success {
+          background: #28a745 !important;
+          color: white !important;
+        }
+        
+        .Toastify__toast--error {
+          background: #dc3545 !important;
+          color: white !important;
+        }
+        
+        .Toastify__toast--success .Toastify__progress-bar {
+          background: rgba(255, 255, 255, 0.3) !important;
+        }
+        
+        .Toastify__toast--error .Toastify__progress-bar {
+          background: rgba(255, 255, 255, 0.3) !important;
+        }
+        
+        .Toastify__close-button {
+          color: white !important;
+          opacity: 0.8;
+        }
+        
+        .Toastify__close-button:hover {
+          opacity: 1;
+        }
+      `}</style>
       <KycModal 
         show={showKycModal} 
         onClose={() => setShowKycModal(false)} 
