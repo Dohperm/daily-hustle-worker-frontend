@@ -451,40 +451,6 @@ export default function Settings() {
 
   const renderSecurityTab = () => (
     <div className="row g-4">
-      <div className="col-12">
-        <div
-          className="p-4 rounded-4"
-          style={{
-            backgroundColor: isDark ? "#1c1c1e" : "#fff",
-            border: `2px solid ${kycVerified ? primary : "#ff4500"}`,
-          }}
-        >
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <h6
-                className="fw-bold mb-1"
-                style={{ color: isDark ? "#f8f9fa" : "#212529" }}
-              >
-                KYC Verification
-              </h6>
-              <small style={{ color: kycVerified ? primary : "#ff4500" }}>
-                {kycVerified ? "Verified" : "Not Verified"}
-              </small>
-            </div>
-            <button
-              className="btn fw-bold rounded-pill px-4"
-              style={{
-                backgroundColor: kycVerified ? primary : gradientBg,
-                color: "#fff",
-              }}
-              onClick={verifyKYC}
-              disabled={kycVerified}
-            >
-              {kycVerified ? "Verified" : "Verify Now"}
-            </button>
-          </div>
-        </div>
-      </div>
       <div className="col-md-6">
         <div
           className="p-4 rounded-4 cursor-pointer"
