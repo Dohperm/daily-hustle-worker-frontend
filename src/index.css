@@ -88,6 +88,12 @@ input, button, select, textarea, table, th, td {
   z-index: 1030;
   overflow-y: auto;
   transition: width 0.3s, background 0.3s;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dashboard-sidebar::-webkit-scrollbar {
+  display: none;
 }
 .dashboard-sidebar.collapsed { width: var(--dh-sidebar-collapsed); }
 
@@ -115,7 +121,7 @@ input, button, select, textarea, table, th, td {
   flex-direction: column;
   min-height: calc(100vh - var(--dh-header-height));
   transition: margin-left 0.3s, margin-top 0.3s;
-  background: transparent;
+  background: linear-gradient(90deg, var(--dh-sidebar-bg) 0%, var(--dh-bg-gradient) 10%, var(--dh-bg-gradient) 100%);
   position: relative;
 }
 .dashboard-sidebar.collapsed ~ .dashboard-main {
@@ -174,7 +180,7 @@ input, button, select, textarea, table, th, td {
   background: var(--dh-card-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  border: 1px solid var(--dh-border);
+  border: none;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   transition: transform 0.2s, box-shadow 0.2s;
