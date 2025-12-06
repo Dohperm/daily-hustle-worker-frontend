@@ -24,7 +24,7 @@
   --dh-yellow: #f59e0b;
 
   --dh-bg-gradient: #f8f9fa;
-  --dh-sidebar-bg: #ffffff;
+  --dh-sidebar-bg: #f0f0f0;
   --dh-card-bg: #ffffff;
   --dh-text: #1f2937;
   --dh-text-light: #ffffff;
@@ -37,7 +37,7 @@
 /* Dark mode */
 body.dark, body.dh-dark, .dark-mode {
   --dh-bg-gradient: #1a1a1a;
-  --dh-sidebar-bg: #2d2d2d;
+  --dh-sidebar-bg: #0f0f0f;
   --dh-card-bg: #2d2d2d;
   --dh-text: #ffffff;
   --dh-border: #404040;
@@ -99,11 +99,11 @@ input, button, select, textarea, table, th, td {
 
 .dashboard-header {
   position: fixed;
-  left: var(--dh-sidebar-width);
-  top: 0;
-  width: calc(100% - var(--dh-sidebar-width));
-  height: var(--dh-header-height);
-  background: var(--dh-card-bg);
+  right: 2rem;
+  top: 1rem;
+  width: auto;
+  height: auto;
+  background: transparent;
   box-shadow: none;
   z-index: 1040;
   transition: background 0.3s, left 0.3s, width 0.3s;
@@ -115,11 +115,11 @@ input, button, select, textarea, table, th, td {
 
 .dashboard-main {
   margin-left: var(--dh-sidebar-width);
-  margin-top: var(--dh-header-height);
+  margin-top: 0;
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - var(--dh-header-height));
+  min-height: 100vh;
   transition: margin-left 0.3s, margin-top 0.3s;
   background: linear-gradient(90deg, var(--dh-sidebar-bg) 0%, var(--dh-bg-gradient) 10%, var(--dh-bg-gradient) 100%);
   position: relative;
@@ -130,8 +130,9 @@ input, button, select, textarea, table, th, td {
 
 .dashboard-content {
   flex: 1;
-  min-height: calc(100vh - var(--dh-header-height));
-  padding: 0.75rem 1.5rem;
+  min-height: 100vh;
+  padding: 1rem 1.5rem;
+  padding-top: 4rem;
   overflow-x: hidden;
   animation: fadeIn 0.4s ease;
 }
