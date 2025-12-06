@@ -161,6 +161,16 @@ export default function App() {
         .Toastify__close-button:hover {
           opacity: 1;
         }
+        
+        .Toastify__toast--error .Toastify__toast-icon svg,
+        .Toastify__toast--error .Toastify__toast-icon path {
+          fill: white !important;
+        }
+        
+        .Toastify__toast--success .Toastify__toast-icon svg,
+        .Toastify__toast--success .Toastify__toast-icon path {
+          fill: white !important;
+        }
       `}</style>
       <KycModal 
         show={showKycModal} 
