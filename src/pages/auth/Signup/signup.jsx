@@ -11,17 +11,17 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
 
 const getPasswordStrength = (pw) => {
-  let score = 0;
   if (!pw) return 0;
+  let score = 0;
   if (pw.length >= 8) score++;
   if (/[A-Z]/.test(pw)) score++;
   if (/[a-z]/.test(pw)) score++;
   if (/\d/.test(pw)) score++;
   if (/[!@#$%^&*(),.?":{}|<>]/.test(pw)) score++;
-  return Math.min(score, 5);
+  return score;
 };
-const strengthLabels = ["Too Short", "Weak", "Fair", "Good", "Strong"];
-const strengthColors = ["#ff4500", "#ffc107", "#1ab7ea", "#198754", "#28a745"];
+const strengthLabels = ["Too Weak", "Weak", "Fair", "Good", "Strong"];
+const strengthColors = ["#dc3545", "#fd7e14", "#ffc107", "#198754", "#28a745"];
 
 const API_BASE = "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1";
 
@@ -519,21 +519,25 @@ export default function QuickSignup() {
                   </button>
                 </div>
                 <div>
-                  <div className="dh-progress">
-                    <div
-                      className="dh-progress-bar"
-                      style={{
-                        background: strengthColors[passwordStrength],
-                        width: `${(passwordStrength / 5) * 100}%`,
-                      }}
-                    />
-                  </div>
-                  <div
-                    className="dh-strength-label"
-                    style={{ color: strengthColors[passwordStrength] }}
-                  >
-                    {strengthLabels[passwordStrength]}
-                  </div>
+                  {formData.password && (
+                    <>
+                      <div className="dh-progress">
+                        <div
+                          className="dh-progress-bar"
+                          style={{
+                            background: strengthColors[passwordStrength],
+                            width: `${(passwordStrength / 5) * 100}%`,
+                          }}
+                        />
+                      </div>
+                      <div
+                        className="dh-strength-label"
+                        style={{ color: strengthColors[passwordStrength] }}
+                      >
+                        {strengthLabels[passwordStrength]}
+                      </div>
+                    </>
+                  )}
                 </div>
                 <button
                   type="submit"
