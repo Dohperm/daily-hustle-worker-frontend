@@ -131,9 +131,10 @@ const Login = () => {
         .dh-login-card {
           background: var(--card);
           border-radius: 1.2rem;
-          padding: 2rem;
+          padding: 3.5rem;
           width: 100%;
-          max-width: 400px;
+          max-width: 520px;
+          min-height: 580px;
           border: 1px solid var(--border);
           box-shadow: var(--shadow);
           position: relative;

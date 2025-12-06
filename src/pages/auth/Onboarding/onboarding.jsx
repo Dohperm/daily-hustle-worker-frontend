@@ -148,9 +148,10 @@ export default function Onboarding() {
         .dh-onboarding-card {
           background: var(--card);
           border-radius: 1.2rem;
-          padding: 2.5rem;
+          padding: 3rem;
           width: 100%;
-          max-width: 600px;
+          max-width: 450px;
+          min-height: 500px;
           border: 1px solid var(--border);
           box-shadow: var(--shadow);
           position: relative;

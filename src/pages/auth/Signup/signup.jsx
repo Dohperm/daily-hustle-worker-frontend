@@ -203,9 +203,10 @@ export default function QuickSignup() {
         .dh-signup-card {
           background: var(--card);
           border-radius: 1.2rem;
-          padding: 2rem;
+          padding: 3.5rem;
           width: 100%;
-          max-width: 430px;
+          max-width: 520px;
+          min-height: 580px;
           border: 1px solid var(--border);
           box-shadow: var(--shadow);
           position: relative;
@@ -262,6 +263,18 @@ export default function QuickSignup() {
 
         .dh-input::placeholder {
           color: var(--muted);
+        }
+
+        .dh-form-group {
+          margin-bottom: 1rem;
+        }
+
+        .dh-label {
+          display: block;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          color: var(--text);
+          font-size: 0.9rem;
         }
 
         .dh-input-wrapper {
@@ -324,7 +337,7 @@ export default function QuickSignup() {
           align-items: center;
           justify-content: center;
           gap: 0.5rem;
-          margin-top: 1.5rem;
+          margin-top: 1rem;
         }
 
         .dh-submit-btn:hover:not(:disabled) {
@@ -457,57 +470,36 @@ export default function QuickSignup() {
           </div>
           {step === 0 && (
             <>
-              <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem' }}>
-                <button
-                  type="button"
-                  className="dh-social-btn"
-                  onClick={handleGoogleSignup}
-                  disabled={loading}
-                >
-                  <i className="bi bi-google" />
-                  Google
-                </button>
-                <button
-                  type="button"
-                  className="dh-social-btn"
-                  onClick={handleFacebookSignup}
-                  disabled={loading}
-                >
-                  <i className="bi bi-facebook" />
-                  Facebook
-                </button>
-              </div>
-              
-              <div style={{ textAlign: 'center', margin: '1.5rem 0', color: 'var(--muted)', position: 'relative' }}>
-                <span style={{ background: 'var(--card)', padding: '0 1rem' }}>or</span>
-                <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: 'var(--border)', zIndex: -1 }}></div>
-              </div>
-              
               <form onSubmit={handleRegister}>
-                <input
-                  type="email"
-                  className="dh-input"
-                  placeholder="Email Address"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  required
-                  disabled={loading}
-                />
-                <div className="dh-input-wrapper">
+                <div className="dh-form-group">
+                  <label className="dh-label">Email Address</label>
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type="email"
                     className="dh-input"
-                    placeholder="Create Password"
-                    value={formData.password}
+                    placeholder="Enter your email address"
+                    value={formData.email}
                     onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
+                      setFormData({ ...formData, email: e.target.value })
                     }
                     required
                     disabled={loading}
-                    style={{ paddingRight: "3rem", marginBottom: 0 }}
                   />
+                </div>
+                <div className="dh-form-group">
+                  <label className="dh-label">Password</label>
+                  <div className="dh-input-wrapper">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      className="dh-input"
+                      placeholder="Create your password"
+                      value={formData.password}
+                      onChange={(e) =>
+                        setFormData({ ...formData, password: e.target.value })
+                      }
+                      required
+                      disabled={loading}
+                      style={{ paddingRight: "3rem", marginBottom: 0 }}
+                    />
                   <button
                     type="button"
                     className="dh-eye-btn"
@@ -539,6 +531,7 @@ export default function QuickSignup() {
                     </>
                   )}
                 </div>
+                </div>
                 <button
                   type="submit"
                   className="dh-submit-btn"
@@ -553,17 +546,44 @@ export default function QuickSignup() {
                     "Create Account"
                   )}
                 </button>
-                <div className="dh-login-link">
-                  Already have an account?{" "}
-                  <button
-                    type="button"
-                    className="dh-login-btn"
-                    onClick={() => navigate('/login')}
-                  >
-                    Sign In
-                  </button>
-                </div>
               </form>
+              
+              <div style={{ textAlign: 'center', margin: '1.5rem 0', color: 'var(--muted)', position: 'relative' }}>
+                <span style={{ background: 'var(--card)', padding: '0 1rem' }}>or continue with</span>
+                <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: 'var(--border)', zIndex: -1 }}></div>
+              </div>
+              
+              <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                <button
+                  type="button"
+                  className="dh-social-btn"
+                  onClick={handleGoogleSignup}
+                  disabled={loading}
+                >
+                  <i className="bi bi-google" />
+                  Google
+                </button>
+                <button
+                  type="button"
+                  className="dh-social-btn"
+                  onClick={handleFacebookSignup}
+                  disabled={loading}
+                >
+                  <i className="bi bi-facebook" />
+                  Facebook
+                </button>
+              </div>
+              
+              <div className="dh-login-link">
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  className="dh-login-btn"
+                  onClick={() => navigate('/login')}
+                >
+                  Sign In
+                </button>
+              </div>
             </>
           )}
           {step === 1 && (
