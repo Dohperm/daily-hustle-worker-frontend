@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   uploadImage,
   updateUser,
@@ -30,7 +30,11 @@ export default function Settings() {
   } = useAppData();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState(() => localStorage.getItem("settingsActiveTab") || "profile");
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(() => {
+    const urlTab = searchParams.get('tab');
+    return urlTab || localStorage.getItem("settingsActiveTab") || "profile";
+  });
   const [loading, setLoading] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState(userData?.photo || "");
@@ -70,6 +74,14 @@ export default function Settings() {
     { id: "payments", icon: "credit-card", title: "Payments" },
     { id: "privacy", icon: "eye-slash", title: "Privacy" },
   ];
+
+  useEffect(() => {
+    const urlTab = searchParams.get('tab');
+    if (urlTab && urlTab !== activeTab) {
+      setActiveTab(urlTab);
+      localStorage.setItem("settingsActiveTab", urlTab);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     return () => {
@@ -1032,11 +1044,7 @@ export default function Settings() {
         {activeTab === "payments" && renderPaymentsTab()}
         {activeTab === "privacy" && renderPrivacyTab()}
       </div>
-      <div className="text-center mt-4">
-        <button onClick={logout} className="btn btn-link text-light">
-          <i className="bi bi-box-arrow-right me-2"></i> Logout
-        </button>
-      </div>
+
       
       <VerificationModal 
         show={showVerificationModal}
