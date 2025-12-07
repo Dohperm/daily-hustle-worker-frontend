@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
+import { uploadFile } from "../../services/services";
 
 export default function TaskDetails() {
   const { theme } = useTheme();
   const { taskId } = useParams();
   const navigate = useNavigate();
-  const { tasks, userData, onApplyFunc, showNotification } = useAppData();
+  const { tasks, userData, onApplyFunc, showNotification, submitTaskProof } = useAppData();
   const [task, setTask] = useState(null);
-  const [isStarting, setIsStarting] = useState(false);
+  const [proofFile, setProofFile] = useState(null);
+  const [previewURL, setPreviewURL] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [taskProofId, setTaskProofId] = useState(null);
+  const fileInputRef = useRef();
 
   const isDark = theme === "dark";
   const bg = "var(--dh-bg-gradient)";
@@ -22,17 +27,56 @@ export default function TaskDetails() {
     setTask(foundTask);
   }, [taskId, tasks]);
 
-  const handleStartJob = async () => {
-    if (isStarting) return;
-    setIsStarting(true);
+  const handleStartJob = () => {
+    if (task.task_site) {
+      window.open(task.task_site, "_blank");
+    }
+    setTaskProofId(true);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      setProofFile(null);
+      setPreviewURL(null);
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      showNotification?.("Only image files allowed", "error");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showNotification?.("Image must be under 5MB", "error");
+      return;
+    }
+    setProofFile(file);
+    setPreviewURL(URL.createObjectURL(file));
+  };
+
+  const handleSubmitProof = async (e) => {
+    e.preventDefault();
+    if (!proofFile) {
+      showNotification?.("Please upload proof image", "error");
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      await onApplyFunc(task);
-      showNotification?.(`Started: "${task.title}"`, "success");
+      const proofData = await onApplyFunc(task);
+      const proofId = proofData?._id;
+      if (!proofId) throw new Error("Failed to start task");
+
+      const res = await uploadFile(proofFile);
+      const src = res.data?.data?.[0]?.src;
+      if (!src) throw new Error("Upload failed");
+
+      await submitTaskProof(proofId, { src });
+      showNotification?.("Proof submitted successfully!", "success");
       navigate("/dashboard/tasks");
     } catch (err) {
-      showNotification?.(err.message || "Failed to start task", "error");
+      showNotification?.(err.message || "Submission failed", "error");
     } finally {
-      setIsStarting(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -92,9 +136,8 @@ export default function TaskDetails() {
               <button 
                 className="btn btn-dark fw-bold px-4 py-2"
                 onClick={handleStartJob}
-                disabled={isStarting}
               >
-                {isStarting ? "STARTING..." : "START JOB"}
+                START JOB
               </button>
             </div>
 
@@ -124,7 +167,38 @@ export default function TaskDetails() {
               <div className="col-md-6 mb-3">
                 <strong>Approval Mode:</strong> {task.approval?.mode || "Self"}
               </div>
+              <div className="col-md-6 mb-3">
+                <strong>Duration:</strong> {task.min_duration ?? "N/A"}
+              </div>
+              <div className="col-md-6 mb-3">
+                <strong>Complexity:</strong> {task.complexity || "N/A"}
+              </div>
             </div>
+
+            {taskProofId && (
+              <form onSubmit={handleSubmitProof} className="mt-4 p-4" style={{ background: isDark ? "#2a2a2d" : "#f8f9fa", borderRadius: "8px" }}>
+                <h6 className="fw-bold mb-3" style={{ color: primary }}>Submit Your Proof</h6>
+                <div className="mb-3">
+                  <label className="form-label">Upload Screenshot</label>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="form-control"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    required
+                  />
+                  {previewURL && (
+                    <div className="mt-3 text-center">
+                      <img src={previewURL} alt="Preview" className="img-fluid rounded" style={{ maxHeight: "200px" }} />
+                    </div>
+                  )}
+                </div>
+                <button type="submit" className="btn fw-bold px-4 py-2" style={{ background: primary, color: "#fff" }} disabled={isSubmitting}>
+                  {isSubmitting ? "SUBMITTING..." : "SUBMIT PROOF"}
+                </button>
+              </form>
+            )}
           </div>
         </div>
 

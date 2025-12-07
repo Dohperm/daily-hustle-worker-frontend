@@ -32,29 +32,14 @@ export default function Tasks() {
     [isDark]
   );
 
-  // FILTER TASKS
   useEffect(() => {
     if (activeTab === "available") {
-      const availableTasks = (tasks || []).filter(task => {
-        const isFull = (task.slots?.used ?? 0) >= (task.slots?.max ?? 0);
-        return !isFull;
-      });
-      setFilteredTasks(availableTasks);
-    } else if (activeTab === "ongoing") {
-      const ongoingTasks = (userData.tasks || []).filter(task => {
-        const status = String(task.submission_progress || task.status || "").toUpperCase();
-        return status !== "APPROVED";
-      });
-      setFilteredTasks(ongoingTasks);
-    } else if (activeTab === "completed") {
-      const completedTasks = (userData.tasks || []).filter(task => {
-        const status = String(task.submission_progress || task.status || "").toUpperCase();
-        return status === "APPROVED";
-      });
-      setFilteredTasks(completedTasks);
+      setFilteredTasks(tasks || []);
+    } else {
+      setFilteredTasks([]);
     }
     setPage(1);
-  }, [activeTab, tasks, userData.tasks]);
+  }, [activeTab, tasks]);
 
   const totalPages = Math.ceil(filteredTasks.length / perPage);
   const visible = useMemo(() => {
@@ -101,30 +86,10 @@ export default function Tasks() {
               : null;
           if (!task) return null;
 
-          const isFull = (task.slots?.used ?? 0) >= (task.slots?.max ?? 0);
-          const isDisabled = activeTab === "available" && isFull;
-
-          const statusColor =
-            userStatus === "PENDING"
-              ? "#ffc107"
-              : userStatus === "REJECTED"
-              ? "#e74c3c"
-              : userStatus === "APPROVED"
-              ? "#2ecc71"
-              : userStatus === "RESUBMIT"
-              ? "#ff6b35"
-              : palette.label;
-
           return (
-            <div
-              key={index}
-              className="card"
-              style={{
-                opacity: isDisabled ? 0.6 : 1,
-              }}
-            >
-              <div className="d-flex justify-content-between align-items-center flex-wrap">
-                <div className="flex-grow-1">
+            <div key={index} className="card">
+              <div className="d-flex justify-content-between align-items-start align-items-md-center flex-wrap gap-3">
+                <div className="flex-grow-1" style={{ minWidth: "250px" }}>
                   <h6 className="fw-bold mb-1">{task.title}</h6>
                   <p
                     className="small text-uppercase mb-1"
@@ -140,10 +105,22 @@ export default function Tasks() {
                         ? task.reward.amount_per_worker.toLocaleString()
                         : (task.reward?.amount || 0).toLocaleString()}
                     </span>
-                    <span style={{ color: palette.label }}>
-                      Slots: {task.slots?.used ?? 0}/{task.slots?.max ?? 0}
-                    </span>
-                    {isFull && <span className="badge badge-danger">Full</span>}
+                    <div style={{ minWidth: "150px" }}>
+                      <div className="d-flex justify-content-between small mb-1">
+                        <span>Slots</span>
+                        <span>{task.slots?.used ?? 0}/{task.slots?.max ?? 0}</span>
+                      </div>
+                      <div className="progress" style={{ height: "6px" }}>
+                        <div 
+                          className="progress-bar" 
+                          style={{ 
+                            width: `${((task.slots?.used ?? 0) / (task.slots?.max || 1)) * 100}%`,
+                            backgroundColor: palette.red
+                          }}
+                        />
+                      </div>
+                    </div>
+
                     {task.review_type?.toUpperCase() === "OPEN" && (
                       <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6' }}>Open Review</span>
                     )}{" "}
@@ -173,32 +150,20 @@ export default function Tasks() {
                     )}
                   </div>
                 </div>
-                <div className="d-flex gap-2">
+                <div className="d-flex gap-2 flex-wrap">
                   <button
-                    className={`btn ${isDisabled ? '' : 'btn-primary'} rounded-pill`}
-                    style={{
-                      backgroundColor: isDisabled ? "#6c757d" : undefined,
-                      minWidth: "130px",
-                      cursor: isDisabled ? "not-allowed" : "pointer",
-                      color: isDisabled ? "#fff" : undefined
-                    }}
+                    className="btn btn-primary rounded-pill"
+                    style={{ minWidth: "100px", flex: "1" }}
                     onClick={() => {
-                      if (!isDisabled) {
-                        if (activeTab === "available") {
-                          navigate(`/dashboard/tasks/${task._id}`);
-                        } else {
-                          setSelectedTask({ ...task, proofData: t });
-                          setShowModal(true);
-                        }
+                      if (activeTab === "available") {
+                        navigate(`/dashboard/tasks/${task._id}`);
+                      } else {
+                        setSelectedTask({ ...task, proofData: t });
+                        setShowModal(true);
                       }
                     }}
-                    disabled={isDisabled}
                   >
-                    {activeTab === "available"
-                      ? isFull
-                        ? "Full"
-                        : "Apply"
-                      : "View Proof"}
+                    {activeTab === "available" ? "Apply" : "View Proof"}
                   </button>
                   {activeTab === "ongoing" && (
                     <button
