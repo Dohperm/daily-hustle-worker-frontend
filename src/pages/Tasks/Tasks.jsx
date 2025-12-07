@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Pagination, Badge } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { useAppData } from "../../hooks/AppDataContext";
 import { useTheme } from "../../hooks/useThemeContext";
 import ModalTask from "../../components/Modal/ModalTask";
@@ -8,6 +9,7 @@ import EditProofModal from "../../components/Modal/EditProofModal";
 export default function Tasks() {
   const { theme } = useTheme();
   const { userData, tasks } = useAppData();
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem("tasksActiveTab") || "available");
   const [filteredTasks, setFilteredTasks] = useState([]);
@@ -183,12 +185,11 @@ export default function Tasks() {
                     onClick={() => {
                       if (!isDisabled) {
                         if (activeTab === "available") {
-                          setSelectedTask(task);
+                          navigate(`/dashboard/tasks/${task._id}`);
                         } else {
-                          // For Ongoing/Completed Tasks, pass the full task proof object
                           setSelectedTask({ ...task, proofData: t });
+                          setShowModal(true);
                         }
-                        setShowModal(true);
                       }
                     }}
                     disabled={isDisabled}
@@ -196,7 +197,7 @@ export default function Tasks() {
                     {activeTab === "available"
                       ? isFull
                         ? "Full"
-                        : "View Details"
+                        : "Apply"
                       : "View Proof"}
                   </button>
                   {activeTab === "ongoing" && (

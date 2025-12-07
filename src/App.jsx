@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Tasks from "./pages/Tasks/Tasks";
+import TaskDetails from "./pages/Tasks/TaskDetails";
 import Wallet from "./pages/Wallet/Wallet";
 import Referrals from "./pages/Referrals/Referrals";
 import Leaderboard from "./pages/Leaderboard/Leaderboard";
@@ -86,6 +87,7 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="tasks" element={<Tasks />} />
+          <Route path="tasks/:taskId" element={<TaskDetails />} />
           <Route path="wallet" element={<Wallet />} />
           <Route path="referrals" element={<Referrals />} />
           <Route path="notifications" element={<Notifications />} />
