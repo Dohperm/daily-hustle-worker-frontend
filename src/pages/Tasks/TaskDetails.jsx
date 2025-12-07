@@ -62,15 +62,21 @@ export default function TaskDetails() {
 
     setIsSubmitting(true);
     try {
-      const proofData = await onApplyFunc(task);
-      const proofId = proofData?._id;
-      if (!proofId) throw new Error("Failed to start task");
-
       const res = await uploadFile(proofFile);
       const src = res.data?.data?.[0]?.src;
       if (!src) throw new Error("Upload failed");
 
-      await submitTaskProof(proofId, { src });
+      const token = localStorage.getItem("userToken");
+      const baseURL = import.meta.env.VITE_API_BASE_URL || "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1";
+      await fetch(`${baseURL}/tasks/start`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ task_id: task._id, src })
+      });
+
       showNotification?.("Proof submitted successfully!", "success");
       navigate("/dashboard/tasks");
     } catch (err) {

@@ -3,6 +3,7 @@ import { Pagination, Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAppData } from "../../hooks/AppDataContext";
 import { useTheme } from "../../hooks/useThemeContext";
+import axios from "axios";
 import ModalTask from "../../components/Modal/ModalTask";
 import EditProofModal from "../../components/Modal/EditProofModal";
 
@@ -17,6 +18,7 @@ export default function Tasks() {
   const [selectedTask, setSelectedTask] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
   const perPage = 6;
 
   const isDark = theme === "dark";
@@ -33,13 +35,25 @@ export default function Tasks() {
   );
 
   useEffect(() => {
-    if (activeTab === "available") {
-      setFilteredTasks(tasks || []);
-    } else {
-      setFilteredTasks([]);
-    }
+    const fetchTasks = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("userToken");
+        const baseURL = import.meta.env.VITE_API_BASE_URL || "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1";
+        const res = await axios.get(`${baseURL}/tasks/users?type=${activeTab}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setFilteredTasks(res.data?.data?.data || []);
+      } catch (error) {
+        console.error("Failed to fetch tasks", error);
+        setFilteredTasks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTasks();
     setPage(1);
-  }, [activeTab, tasks]);
+  }, [activeTab]);
 
   const totalPages = Math.ceil(filteredTasks.length / perPage);
   const visible = useMemo(() => {
@@ -77,7 +91,13 @@ export default function Tasks() {
         ))}
       </div>
       {/* Task List */}
-      {visible.length > 0 ? (
+      {loading ? (
+        <div className="text-center py-5">
+          <div className="spinner-border" style={{ color: palette.red }} role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      ) : visible.length > 0 ? (
         visible.map((t, index) => {
           const task = activeTab === "available" ? t : t.task || t;
           const userStatus =

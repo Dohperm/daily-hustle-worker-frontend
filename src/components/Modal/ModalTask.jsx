@@ -29,7 +29,7 @@ export default function ModalTask({ task, show, onClose, isAvailableTask = false
     userData?.tasks?.find((t) => (t.task?._id || t.task_id) === task._id) ||
     null;
 
-  const userStatus = (
+  const userStatus = String(
     proofRecord?.approval_status ||
     proofRecord?.status ||
     proofRecord?.submission_progress ||
