@@ -17,6 +17,7 @@ export default function TaskDetails() {
   const [loading, setLoading] = useState(true);
   const [confirmChecked, setConfirmChecked] = useState(false);
   const [reviewText, setReviewText] = useState("");
+  const [hasStarted, setHasStarted] = useState(false);
   const fileInputRef = useRef();
 
   const isDark = theme === "dark";
@@ -35,7 +36,15 @@ export default function TaskDetails() {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
-        setTask(data?.data || null);
+        const taskData = data?.data || null;
+        setTask(taskData);
+        
+        // Check if user has already started this task
+        const userTask = userData?.tasks?.find(t => t.task?._id === taskId || t.task_id === taskId);
+        if (userTask) {
+          setHasStarted(true);
+          setTaskProofId(userTask._id);
+        }
       } catch (error) {
         console.error("Failed to fetch task", error);
         showNotification?.("Failed to load task details", "error");
@@ -69,7 +78,9 @@ export default function TaskDetails() {
     if (task.task_site) {
       window.open(task.task_site, "_blank");
     }
-    setTaskProofId(true);
+    if (!hasStarted) {
+      setTaskProofId(true);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -238,14 +249,16 @@ export default function TaskDetails() {
               </div>
             )}
 
-            <div className="mb-4 mt-4">
-              <button 
-                className="btn btn-dark fw-bold px-4 py-2"
-                onClick={handleStartJob}
-              >
-                START JOB
-              </button>
-            </div>
+            {!hasStarted && (
+              <div className="mb-4 mt-4">
+                <button 
+                  className="btn btn-dark fw-bold px-4 py-2"
+                  onClick={handleStartJob}
+                >
+                  START JOB
+                </button>
+              </div>
+            )}
 
             <div className="mb-4">
               <h4 className="fw-bold mb-3" style={{ color: primary }}>
@@ -301,34 +314,9 @@ export default function TaskDetails() {
                 onClick={handleSubmitProof}
                 disabled={isSubmitting || !proofFile || !confirmChecked}
               >
-                {isSubmitting ? "SUBMITTING..." : "SUBMIT PROOF"}
+                {isSubmitting ? (hasStarted ? "UPDATING..." : "SUBMITTING...") : (hasStarted ? "UPDATE PROOF" : "SUBMIT PROOF")}
               </button>
             </div>
-
-            {taskProofId && (
-              <form onSubmit={handleSubmitProof} className="mt-4 p-4" style={{ background: isDark ? "#2a2a2d" : "#f8f9fa", borderRadius: "8px" }}>
-                <h6 className="fw-bold mb-3" style={{ color: primary }}>Submit Your Proof</h6>
-                <div className="mb-3">
-                  <label className="form-label">Upload Screenshot</label>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    className="form-control"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    required
-                  />
-                  {previewURL && (
-                    <div className="mt-3 text-center">
-                      <img src={previewURL} alt="Preview" className="img-fluid rounded" style={{ maxHeight: "200px" }} />
-                    </div>
-                  )}
-                </div>
-                <button type="submit" className="btn fw-bold px-4 py-2" style={{ background: primary, color: "#fff" }} disabled={isSubmitting}>
-                  {isSubmitting ? "SUBMITTING..." : "SUBMIT PROOF"}
-                </button>
-              </form>
-            )}
           </div>
         </div>
       </div>

@@ -102,7 +102,7 @@ export default function Tasks() {
           const task = activeTab === "available" ? t : t.task || t;
           const userStatus =
             (activeTab === "ongoing" || activeTab === "completed")
-              ? String(t.submission_progress || t.status || "").toUpperCase()
+              ? String(t.approval_status || "").toUpperCase()
               : null;
           if (!task) return null;
 
@@ -119,12 +119,14 @@ export default function Tasks() {
                   </p>
                   {/* <p className="small mb-2">{task.description}</p> */}
                   <div className="d-flex flex-wrap align-items-center gap-3 small">
-                    <span>
-                      <b>Reward:</b> {task.reward?.currency}{" "}
-                      {typeof task.reward?.amount_per_worker !== "undefined"
-                        ? task.reward.amount_per_worker.toLocaleString()
-                        : (task.reward?.amount || 0).toLocaleString()}
-                    </span>
+                    <div>
+                      <div className="mb-1">
+                        <b>Reward:</b> {task.reward?.currency}{task.reward?.amount_per_worker?.toLocaleString() || 0}
+                      </div>
+                      <div>
+                        <b>Review:</b> {task.review_type || "N/A"}
+                      </div>
+                    </div>
                     <div style={{ minWidth: "150px" }}>
                       <div className="d-flex justify-content-between small mb-1">
                         <span>Slots</span>
@@ -140,47 +142,39 @@ export default function Tasks() {
                         />
                       </div>
                     </div>
-
-                    {task.review_type?.toUpperCase() === "OPEN" && (
-                      <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6' }}>Open Review</span>
-                    )}{" "}
-                    {task.review_type?.toUpperCase() === "CLOSED" && (
-                      <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6' }}>Closed Review</span>
-                    )}
-                    {userStatus && (
-                      <span
-                        className={`badge ${
-                          userStatus === "PENDING"
-                            ? "badge-warning"
-                            : userStatus === "REJECTED"
-                            ? "badge-danger"
-                            : userStatus === "APPROVED"
-                            ? "badge-success"
-                            : userStatus === "RESUBMIT"
-                            ? "badge-warning"
-                            : ""
-                        }`}
-                        style={{
-                          background: userStatus === "RESUBMIT" ? 'rgba(255, 107, 53, 0.2)' : undefined,
-                          color: userStatus === "RESUBMIT" ? '#ff6b35' : undefined
-                        }}
-                      >
-                        {userStatus}
-                      </span>
-                    )}
                   </div>
+                </div>
+                {userStatus && (
+                  <div className="text-center mt-2">
+                    <span
+                      className={`badge fs-6 ${
+                        userStatus === "PENDING"
+                          ? "badge-warning"
+                          : userStatus === "REJECTED"
+                          ? "badge-danger"
+                          : userStatus === "APPROVED"
+                          ? "badge-success"
+                          : userStatus === "RESUBMIT"
+                          ? "badge-warning"
+                          : ""
+                      }`}
+                      style={{
+                        background: userStatus === "RESUBMIT" ? '#ff6b35' : undefined,
+                        padding: "0.5rem 1rem"
+                      }}
+                    >
+                      {userStatus}
+                    </span>
+                  </div>
+                )}
+                <div className="d-flex gap-2 flex-wrap mt-2">
                 </div>
                 <div className="d-flex gap-2 flex-wrap">
                   <button
                     className="btn btn-primary rounded-pill"
                     style={{ minWidth: "100px", flex: "1" }}
                     onClick={() => {
-                      if (activeTab === "available") {
-                        navigate(`/dashboard/tasks/${task._id}`);
-                      } else {
-                        setSelectedTask({ ...task, proofData: t });
-                        setShowModal(true);
-                      }
+                      navigate(`/dashboard/tasks/${task._id}`);
                     }}
                   >
                     {activeTab === "available" ? "Apply" : "View Proof"}

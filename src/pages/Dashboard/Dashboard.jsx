@@ -26,9 +26,18 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchTaskStats = async () => {
       try {
-        const response = await getTaskStats();
-        if (response.data?.data) {
-          setTaskStats(response.data.data);
+        const token = localStorage.getItem("userToken");
+        const baseURL = import.meta.env.VITE_API_BASE_URL || "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1";
+        const res = await fetch(`${baseURL}/tasks/stats/users`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data?.data) {
+          setTaskStats({
+            completedJobs: data.data.completed_jobs || 0,
+            pendingJobs: data.data.pending_jobs || 0,
+            availableJobs: data.data.available_jobs || 0
+          });
         }
       } catch (error) {
         console.error('Failed to fetch task stats:', error);
@@ -383,7 +392,14 @@ export default function Dashboard() {
 
         {/* Task Cards */}
         <div className="dh-earnings" style={{ marginBottom: '2rem' }}>
-          <div className="dh-earning-card">
+          <div 
+            className="dh-earning-card"
+            onClick={() => {
+              localStorage.setItem("tasksActiveTab", "completed");
+              navigate('/dashboard/tasks');
+            }}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="dh-earning-header">
               <div className="dh-earning-icon tasks">
                 <i className="bi bi-check2-all" />
@@ -397,7 +413,10 @@ export default function Dashboard() {
 
           <div 
             className="dh-earning-card" 
-            onClick={() => navigate('/dashboard/tasks')}
+            onClick={() => {
+              localStorage.setItem("tasksActiveTab", "ongoing");
+              navigate('/dashboard/tasks');
+            }}
             style={{ cursor: 'pointer' }}
           >
             <div className="dh-earning-header">
@@ -413,7 +432,10 @@ export default function Dashboard() {
 
           <div 
             className="dh-earning-card" 
-            onClick={() => navigate('/dashboard/tasks')}
+            onClick={() => {
+              localStorage.setItem("tasksActiveTab", "available");
+              navigate('/dashboard/tasks');
+            }}
             style={{ cursor: 'pointer' }}
           >
             <div className="dh-earning-header">
