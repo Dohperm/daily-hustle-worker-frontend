@@ -14,6 +14,9 @@ export default function TaskDetails() {
   const [previewURL, setPreviewURL] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [taskProofId, setTaskProofId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [confirmChecked, setConfirmChecked] = useState(false);
+  const [reviewText, setReviewText] = useState("");
   const fileInputRef = useRef();
 
   const isDark = theme === "dark";
@@ -23,9 +26,44 @@ export default function TaskDetails() {
   const primary = "var(--dh-primary)";
 
   useEffect(() => {
-    const foundTask = tasks?.find(t => t._id === taskId);
-    setTask(foundTask);
-  }, [taskId, tasks]);
+    const fetchTask = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("userToken");
+        const baseURL = import.meta.env.VITE_API_BASE_URL || "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1";
+        const res = await fetch(`${baseURL}/tasks/${taskId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        setTask(data?.data || null);
+      } catch (error) {
+        console.error("Failed to fetch task", error);
+        showNotification?.("Failed to load task details", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTask();
+  }, [taskId, showNotification]);
+
+  useEffect(() => {
+    if (task?.review_type?.toUpperCase() === "CLOSED") {
+      const fetchReviewText = async () => {
+        try {
+          const token = localStorage.getItem("userToken");
+          const baseURL = import.meta.env.VITE_API_BASE_URL || "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1";
+          const res = await fetch(`${baseURL}/tasks/${taskId}/closed-review-option`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await res.json();
+          setReviewText(data?.data?.closed_review_option || "");
+        } catch (error) {
+          console.error("Failed to fetch review text", error);
+        }
+      };
+      fetchReviewText();
+    }
+  }, [task, taskId]);
 
   const handleStartJob = () => {
     if (task.task_site) {
@@ -86,10 +124,22 @@ export default function TaskDetails() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="container-fluid py-4 min-vh-100" style={{ background: bg, color: text }}>
+        <div className="text-center py-5">
+          <div className="spinner-border" style={{ color: primary }} role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!task) {
     return (
       <div className="container-fluid py-4 min-vh-100" style={{ background: bg, color: text }}>
-        <div className="text-center py-5">Loading task details...</div>
+        <div className="text-center py-5">Task not found</div>
       </div>
     );
   }
@@ -103,7 +153,7 @@ export default function TaskDetails() {
       </div>
 
       <div className="row">
-        <div className="col-lg-8">
+        <div className="col-12">
           <div className="card p-4 mb-4" style={{ background: cardBg, border: "none", borderRadius: "12px" }}>
             <h4 className="fw-bold mb-3" style={{ color: primary }}>
               Read The Job Instruction Carefully, Only Submit Proof After Completion
@@ -112,7 +162,7 @@ export default function TaskDetails() {
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h5 className="fw-bold mb-0">Sign Up Job</h5>
               <h3 className="fw-bold mb-0" style={{ color: primary }}>
-                {task.reward?.currency}{task.reward?.amount_per_worker || task.reward?.amount || 0}
+                {task.reward?.currency}{task.reward?.amount_per_worker || 0}
               </h3>
             </div>
 
@@ -132,38 +182,20 @@ export default function TaskDetails() {
             </div>
 
             <div className="mb-4">
-              <h6 className="fw-bold mb-2" style={{ color: primary }}>Click Start Job</h6>
-              <ul className="mb-3">
-                <li>Open the provided website.</li>
-                <li>Sign up using your <strong>real email address</strong>.</li>
-                <li>Submit a screenshot showing your email was accepted or account dashboard.</li>
-              </ul>
-              <p className="small text-muted">Do not use fake emails or create accounts you won't be able to access again.</p>
-              <button 
-                className="btn btn-dark fw-bold px-4 py-2"
-                onClick={handleStartJob}
-              >
-                START JOB
-              </button>
-            </div>
-
-            <div className="mb-4">
-              <h6 className="fw-bold mb-2" style={{ color: primary }}>
-                🚨 Read Carefully & Submit
-              </h6>
+              <h6 className="fw-bold mb-2">Instructions</h6>
               <div className="p-3" style={{ background: isDark ? "#2a2a2d" : "#fff9e6", borderRadius: "8px", border: "1px solid #ffc107" }}>
                 <div dangerouslySetInnerHTML={{ __html: task.instructions || "No instructions provided" }} />
               </div>
             </div>
 
             {task.description && (
-              <div className="mb-4">
+              <div className="mb-2">
                 <h6 className="fw-bold mb-2">Description</h6>
                 <div dangerouslySetInnerHTML={{ __html: task.description }} />
               </div>
             )}
 
-            <div className="row">
+            <div className="row mb-2">
               <div className="col-md-6 mb-3">
                 <strong>Category:</strong> {task.category}
               </div>
@@ -177,8 +209,100 @@ export default function TaskDetails() {
                 <strong>Duration:</strong> {task.min_duration ?? "N/A"}
               </div>
               <div className="col-md-6 mb-3">
-                <strong>Complexity:</strong> {task.complexity || "N/A"}
+                <strong>Complexity:</strong> {task.complexity_rating || "N/A"}
               </div>
+            </div>
+
+            {task.review_type?.toUpperCase() === "CLOSED" && reviewText && (
+              <div className="mb-4 p-3" style={{ background: isDark ? "#2a2a2d" : "#f8f9fa", borderRadius: "8px", border: "1px solid #ddd" }}>
+                <h6 className="fw-bold mb-2" style={{ color: primary }}>⚠️ Review Text</h6>
+                <p className="small mb-2">Paste the text as it is on the job site.</p>
+                <div className="d-flex gap-2 align-items-center">
+                  <input 
+                    type="text" 
+                    className="form-control" 
+                    value={reviewText} 
+                    readOnly 
+                  />
+                  <button 
+                    className="btn btn-sm" 
+                    style={{ background: primary, color: "#fff", whiteSpace: "nowrap" }}
+                    onClick={() => {
+                      navigator.clipboard.writeText(reviewText);
+                      showNotification?.("Review text copied!", "success");
+                    }}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="mb-4 mt-4">
+              <button 
+                className="btn btn-dark fw-bold px-4 py-2"
+                onClick={handleStartJob}
+              >
+                START JOB
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <h4 className="fw-bold mb-3" style={{ color: primary }}>
+                🚨 Read Carefully & Submit
+              </h4>
+              <p className="small mb-3">Please kindly send the appropriate Screenshot of your submission and nice comment</p>
+              
+              <h6 className="fw-bold mb-3">Submit Details To Proceed</h6>
+              <p className="small text-danger mb-2">⚠️ Incomplete Submission = No Payment</p>
+              
+              <div className="mb-3">
+                <label className="form-label fw-bold">Upload Real Screenshot (No Inspect)</label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="form-control"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                {previewURL && (
+                  <div className="mt-3 text-center">
+                    <img src={previewURL} alt="Preview" className="img-fluid rounded" style={{ maxHeight: "200px" }} />
+                  </div>
+                )}
+              </div>
+              
+              <div className="small text-muted mb-3">
+                <p>Complete only the job exactly as described. Do not add extra tasks.</p>
+                <p>After completing the work, submit the required proof immediately. Employers have 5 days to approve or reject your submission.</p>
+                <p>If they do not respond within 5 days, the job will be automatically approved. Incorrect submissions will result in blacklisting and loss of access to future jobs.</p>
+                <p>If your proof is rejected, use the "Choose File" button to resubmit promptly. Repeated rejections may lead to account suspension.</p>
+                <p>For questions, issues, or to report requests that go beyond the listed task, contact support immediately.</p>
+                <p>We review all disputes fairly. For urgent help or to report violations, email support at <strong>info@dailyhustle.com</strong> and include the job ID.</p>
+                <p>Thank you for your cooperation and attention to detail.</p>
+              </div>
+              
+              <div className="form-check mb-3">
+                <input 
+                  className="form-check-input" 
+                  type="checkbox" 
+                  id="confirmCheck"
+                  checked={confirmChecked}
+                  onChange={(e) => setConfirmChecked(e.target.checked)}
+                />
+                <label className="form-check-label small" htmlFor="confirmCheck">
+                  ⚠️ By ticking this box, you confirm you've completed the job correctly as instructed. Otuside, check your submission before submitting. Submitting "Done" without completing all work will result in rejection and potential account suspension.
+                </label>
+              </div>
+              
+              <button 
+                className="btn fw-bold px-4 py-2" 
+                style={{ background: primary, color: "#fff" }}
+                onClick={handleSubmitProof}
+                disabled={isSubmitting || !proofFile || !confirmChecked}
+              >
+                {isSubmitting ? "SUBMITTING..." : "SUBMIT PROOF"}
+              </button>
             </div>
 
             {taskProofId && (
@@ -205,56 +329,6 @@ export default function TaskDetails() {
                 </button>
               </form>
             )}
-          </div>
-        </div>
-
-        <div className="col-lg-4">
-          <div className="card p-4 text-center" style={{ background: cardBg, border: "none", borderRadius: "12px" }}>
-            <div className="mb-3">
-              <div className="rounded-circle mx-auto d-flex align-items-center justify-content-center" 
-                   style={{ width: "100px", height: "100px", background: primary }}>
-                <span className="fs-1 fw-bold text-white">{userData?.username?.charAt(0)?.toUpperCase() || "U"}</span>
-              </div>
-            </div>
-            <button className="btn btn-sm mb-2" style={{ background: primary, color: "#fff" }}>CHANGE AVATAR</button>
-            <div className="fw-bold mb-3">@{userData?.username || "user"}</div>
-            <div className="small mb-3" style={{ color: "var(--dh-muted)" }}>
-              Members Access ({userData?.membership_days || 0} days left)
-            </div>
-            <h3 className="fw-bold mb-3" style={{ color: primary }}>₦{userData?.wallet?.balance || 0}</h3>
-            <div className="fw-bold mb-2">CREDITS: {userData?.credits || 0}</div>
-            
-            <div className="d-flex justify-content-around mb-3">
-              <div className="text-center">
-                <div className="fw-bold fs-4">0</div>
-                <div className="small" style={{ color: "var(--dh-muted)" }}>Following</div>
-              </div>
-              <div className="text-center">
-                <div className="fw-bold fs-4">0</div>
-                <div className="small" style={{ color: "var(--dh-muted)" }}>Followers</div>
-              </div>
-              <div className="text-center">
-                <div className="fw-bold fs-4">0</div>
-                <div className="small" style={{ color: "var(--dh-muted)" }}>Topics</div>
-              </div>
-            </div>
-
-            <div className="d-flex gap-2 mb-3">
-              <button className="btn flex-fill" style={{ background: "#28a745", color: "#fff" }}>1 👍</button>
-              <button className="btn flex-fill" style={{ background: "#dc3545", color: "#fff" }}>👎 0</button>
-            </div>
-
-            <div className="mt-4">
-              <h6 className="fw-bold mb-3">STATS</h6>
-              <div className="d-flex justify-content-between mb-2">
-                <span>Invites</span>
-                <span className="fw-bold">0</span>
-              </div>
-              <div className="d-flex justify-content-between">
-                <span>Posted Jobs</span>
-                <span className="fw-bold">{userData?.tasks?.length || 0}</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
