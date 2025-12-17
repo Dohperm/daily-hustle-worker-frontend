@@ -13,7 +13,7 @@ export default function Wallet() {
 
   const [showModal, setShowModal] = useState(false);
   const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState("bank");
+  const [selectedBank, setSelectedBank] = useState("");
   const [loading, setLoading] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
   const [transactions, setTransactions] = useState([]);
@@ -27,9 +27,10 @@ export default function Wallet() {
   const border = isDark ? "#333" : "#dee2e6";
   const primary = "var(--dh-red)";
 
-  const { balance = 0, kyc = {} } = userData;
+  const { balance = 0, kyc = {}, bank_accounts = [] } = userData;
   const kycVerified = kyc.status === "verified";
-  const minWithdraw = 1000;
+  const minWithdraw = 2000;
+  const maxWithdraw = 10000;
   const canWithdraw = balance >= minWithdraw && kycVerified;
 
   // Fetch recent transactions
@@ -52,28 +53,53 @@ export default function Wallet() {
     fetchTransactions();
   }, []);
 
-  const handleWithdraw = (e) => {
+  const handleWithdraw = async (e) => {
     e.preventDefault();
     const amt = parseFloat(amount);
 
-    if (!kycVerified) return toast.error("❌ Complete your KYC first!");
-    if (isNaN(amt) || amt < minWithdraw)
-      return toast.error(`❌ Minimum withdrawal ₦${minWithdraw}`);
+    if (isNaN(amt) || amt <= 0)
+      return toast.error(`❌ Please enter a valid amount`);
+    // if (amt < minWithdraw)
+    //   return toast.error(`❌ Minimum withdrawal ₦${minWithdraw}`);
+    // if (amt > maxWithdraw)
+    //   return toast.error(`❌ Maximum withdrawal ₦${maxWithdraw}`);
     if (amt > balance) return toast.error("❌ Insufficient funds!");
+    if (!selectedBank) return toast.error("❌ Please select a bank account!");
 
     setLoading(true);
-    setTimeout(() => {
-      updateUserWallet(-amt);
-      recordTaskHistory(
-        "wallet",
-        "withdrawal",
-        `₦${amt.toLocaleString()} requested via ${method}`
-      );
-      toast.success("✅ Withdrawal processing (within 24 hours)");
-      setShowModal(false);
+    try {
+      const token = localStorage.getItem("userToken");
+      const baseURL = import.meta.env.VITE_API_BASE_URL || "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1";
+      
+      const response = await fetch(`${baseURL}/users/me/withdrawal`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          amount: amt,
+          account_id: selectedBank
+        })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast.success("✅ Withdrawal Processing");
+        setShowModal(false);
+        setAmount("");
+        setSelectedBank("");
+        fetchTransactions(); // Refresh transactions
+      } else {
+        toast.error(data.message || "❌ Withdrawal failed");
+      }
+    } catch (error) {
+      console.error("Withdrawal error:", error);
+      toast.error("❌ Network error. Please try again.");
+    } finally {
       setLoading(false);
-      setAmount("");
-    }, 1500);
+    }
   };
 
   return (
@@ -107,7 +133,6 @@ export default function Wallet() {
           <button
             className="btn rounded-pill fw-bold text-white px-4"
             style={{ background: primary }}
-            disabled={!canWithdraw}
             onClick={() => setShowModal(true)}
           >
             <i className="bi bi-arrow-down-circle me-1"></i>Withdraw
@@ -136,7 +161,7 @@ export default function Wallet() {
             View All
           </button>
         </div>
-        
+
         {transactionsLoading ? (
           <div className="text-center py-3">
             <div className="spinner-border spinner-border-sm" style={{ color: primary }}>
@@ -239,16 +264,38 @@ export default function Wallet() {
                     className="form-control mb-3"
                     style={{ background: bg, border: `1px solid ${border}` }}
                   />
-                  <label className="fw-semibold mb-2">Method</label>
-                  <select
-                    value={method}
-                    onChange={(e) => setMethod(e.target.value)}
-                    className="form-select"
-                    style={{ background: bg, border: `1px solid ${border}` }}
-                  >
-                    <option value="bank">🏦 Bank Transfer</option>
-                    <option value="mobile">📱 Mobile Money</option>
-                  </select>
+                  <label className="fw-semibold mb-2">Select Bank</label>
+                  {bank_accounts.length > 0 ? (
+                    <select
+                      value={selectedBank}
+                      onChange={(e) => setSelectedBank(e.target.value)}
+                      className="form-select"
+                      style={{ background: bg, border: `1px solid ${border}` }}
+                      required
+                    >
+                      <option value="">Choose a bank account</option>
+                      {bank_accounts.map((bank) => (
+                        <option key={bank._id} value={bank._id}>
+                          {bank.bank_name} - {bank.account_number}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="text-center py-3">
+                      <p className="mb-3" style={{ color: label }}>No bank account found</p>
+                      <button
+                        type="button"
+                        className="btn rounded-pill fw-bold px-4"
+                        style={{ background: primary, color: "white" }}
+                        onClick={() => {
+                          setShowModal(false);
+                          navigate("/dashboard/settings");
+                        }}
+                      >
+                        Add Bank Account
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div className="modal-footer border-0">
                   <button
