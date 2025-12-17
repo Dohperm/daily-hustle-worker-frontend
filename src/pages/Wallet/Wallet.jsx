@@ -132,8 +132,13 @@ export default function Wallet() {
         <div className="d-flex gap-2 flex-wrap">
           <button
             className="btn rounded-pill fw-bold text-white px-4"
-            style={{ background: primary }}
-            onClick={() => setShowModal(true)}
+            style={{ 
+              background: primary, 
+              filter: "blur(2px)", 
+              cursor: "not-allowed",
+              opacity: 0.6
+            }}
+            disabled
           >
             <i className="bi bi-arrow-down-circle me-1"></i>Withdraw
           </button>
