@@ -375,9 +375,7 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-          <button className="dh-btn" onClick={go("/dashboard/wallet")}>
-            Withdraw
-          </button>
+
         </div>
 
 

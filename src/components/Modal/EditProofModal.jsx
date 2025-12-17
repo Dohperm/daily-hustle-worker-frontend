@@ -76,9 +76,25 @@ export default function EditProofModal({ taskProof, show, onClose }) {
         src = res.data.data[0].src;
       }
 
-      await api.patch(`/task-proof/users/${taskProof._id}`, {
-        src: src
+      const token = localStorage.getItem("userToken");
+      const baseURL = import.meta.env.VITE_API_BASE_URL || "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1";
+      
+      const response = await fetch(`${baseURL}/tasks/resubmit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          task_id: taskProof._id,
+          src: src
+        })
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Resubmit failed");
+      }
 
       await fetchMyTasks();
       showNotification("Proof updated successfully!", "success");

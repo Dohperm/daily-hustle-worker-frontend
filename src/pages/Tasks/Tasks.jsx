@@ -170,36 +170,18 @@ export default function Tasks() {
                 <div className="d-flex gap-2 flex-wrap mt-2">
                 </div>
                 <div className="d-flex gap-2 flex-wrap">
-                  <button
-                    className="btn btn-primary rounded-pill"
-                    style={{ minWidth: "100px", flex: "1" }}
-                    onClick={() => {
-                      navigate(`/dashboard/tasks/${task._id}`);
-                    }}
-                  >
-                    {activeTab === "available" ? "Apply" : "View Proof"}
-                  </button>
-                  {activeTab === "ongoing" && (
+                  {activeTab !== "completed" && (
                     <button
-                      className={`btn ${(userStatus === "APPROVED" || userStatus === "REJECTED") ? '' : 'btn-outline'} rounded-pill`}
-                      style={{
-                        backgroundColor: (userStatus === "APPROVED" || userStatus === "REJECTED") ? "transparent" : undefined,
-                        color: (userStatus === "APPROVED" || userStatus === "REJECTED") ? "#6c757d" : undefined,
-                        border: (userStatus === "APPROVED" || userStatus === "REJECTED") ? "1px solid #6c757d" : undefined,
-                        minWidth: "100px",
-                        cursor: (userStatus === "APPROVED" || userStatus === "REJECTED") ? "not-allowed" : "pointer",
-                      }}
+                      className="btn btn-primary rounded-pill"
+                      style={{ minWidth: "100px", flex: "1" }}
                       onClick={() => {
-                        if (userStatus !== "APPROVED") {
-                          setSelectedTask(t);
-                          setShowEditModal(true);
-                        }
+                        navigate(`/dashboard/tasks/${task._id}`);
                       }}
-                      disabled={userStatus === "APPROVED" || userStatus === "REJECTED"}
                     >
-                      Edit Proof
+                      {activeTab === "available" ? "Apply" : "View Proof"}
                     </button>
                   )}
+
                 </div>
               </div>
             </div>
