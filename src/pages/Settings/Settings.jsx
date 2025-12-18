@@ -72,7 +72,7 @@ export default function Settings() {
     { id: "security", icon: "shield-lock", title: "Security" },
     { id: "notifications", icon: "bell", title: "Notifications" },
     { id: "payments", icon: "credit-card", title: "Payments" },
-    { id: "privacy", icon: "eye-slash", title: "Privacy" },
+    // { id: "privacy", icon: "eye-slash", title: "Privacy" },
   ];
 
   useEffect(() => {
@@ -930,11 +930,11 @@ export default function Settings() {
       </div>
     </div>
   );
-  const renderPrivacyTab = () => (
-    <div className="p-3">
-      <p>Privacy settings...</p>
-    </div>
-  );
+  // const renderPrivacyTab = () => (
+  //   <div className="p-3">
+  //     <p>Privacy settings...</p>
+  //   </div>
+  // );
 
   return (
     <>
@@ -1008,7 +1008,7 @@ export default function Settings() {
         {activeTab === "security" && renderSecurityTab()}
         {activeTab === "notifications" && renderNotificationsTab()}
         {activeTab === "payments" && renderPaymentsTab()}
-        {activeTab === "privacy" && renderPrivacyTab()}
+        {/* {activeTab === "privacy" && renderPrivacyTab()} */}
       </div>
 
       
