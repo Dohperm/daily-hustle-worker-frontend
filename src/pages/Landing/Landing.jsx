@@ -182,6 +182,7 @@ const Landing = () => {
           transform: translateY(-2px);
         }
 
+        /* PLANS SECTION - COMMENTED OUT
         .dh-plans {
           margin: 4rem 0;
         }
@@ -291,6 +292,7 @@ const Landing = () => {
           font-weight: 600;
           margin-top: 2rem;
         }
+        END PLANS SECTION */
 
         @media (max-width: 768px) {
           .dh-logo {
@@ -358,6 +360,7 @@ const Landing = () => {
             </div>
           </div>
 
+          {/* PLANS SECTION - COMMENTED OUT
           <div className="dh-plans">
             <h2 className="dh-plans-title">Choose Your Plan</h2>
             <p className="dh-plans-subtitle">📱 Worker Plans</p>
@@ -407,6 +410,7 @@ const Landing = () => {
               Coming Soon: All subscription plans will be available in the next 30 days. Sign up now to get notified!
             </div>
           </div>
+          END PLANS SECTION */}
 
           <div className="dh-cta">
             <h2 className="dh-cta-title">Ready to Start Working?</h2>

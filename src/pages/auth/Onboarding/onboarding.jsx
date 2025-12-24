@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useAppData } from "../../../hooks/AppDataContext";
 import { useTheme } from "../../../hooks/useThemeContext";
+import { useOAuth } from "../../../hooks/useOAuth";
 import { updateUser, verifyUsername, completeOnboarding } from "../../../services/services";
 import { jobCategories } from "../../../data/jobCategories";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -13,11 +14,12 @@ export default function Onboarding() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { setUserLoggedIn, userLoggedIn, logout } = useAppData();
-
+  const { getCurrentUser, getAuthProvider } = useOAuth();
 
   const isDark = theme === "dark";
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
+  const [isOAuthUser, setIsOAuthUser] = useState(false);
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -29,6 +31,28 @@ export default function Onboarding() {
   });
   const [usernameStatus, setUsernameStatus] = useState('');
   const [checkingUsername, setCheckingUsername] = useState(false);
+
+  // Check if user is from OAuth and pre-fill name fields
+  useEffect(() => {
+    const currentUser = getCurrentUser();
+    const provider = getAuthProvider();
+    
+    if (currentUser.isAuthenticated && provider && (provider === 'Google' || provider === 'Facebook')) {
+      setIsOAuthUser(true);
+      
+      // Extract first and last name from displayName
+      const displayName = currentUser.displayName || '';
+      const nameParts = displayName.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
+      setFormData(prev => ({
+        ...prev,
+        first_name: firstName,
+        last_name: lastName
+      }));
+    }
+  }, [getCurrentUser, getAuthProvider]);
 
   const checkUsernameAvailability = async (username) => {
     if (!username || username.length < 3) {
@@ -329,12 +353,30 @@ export default function Onboarding() {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          margin-bottom: 2rem;
+          margin-bottom: 1rem;
           font-size: 0.9rem;
           font-weight: 500;
         }
 
         .dh-required-notice i {
+          font-size: 1.1rem;
+        }
+
+        .dh-oauth-notice {
+          background: rgba(40, 167, 69, 0.1);
+          border: 1px solid rgba(40, 167, 69, 0.2);
+          color: var(--success);
+          padding: 0.75rem 1rem;
+          border-radius: 0.75rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 2rem;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .dh-oauth-notice i {
           font-size: 1.1rem;
         }
 
@@ -469,7 +511,8 @@ export default function Onboarding() {
                   placeholder="First Name"
                   value={formData.first_name}
                   onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
-                  disabled={loading}
+                  disabled={loading || isOAuthUser}
+                  style={isOAuthUser ? { backgroundColor: 'var(--border)', cursor: 'not-allowed' } : {}}
                 />
                 <input
                   type="text"
@@ -477,7 +520,8 @@ export default function Onboarding() {
                   placeholder="Last Name"
                   value={formData.last_name}
                   onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
-                  disabled={loading}
+                  disabled={loading || isOAuthUser}
+                  style={isOAuthUser ? { backgroundColor: 'var(--border)', cursor: 'not-allowed' } : {}}
                 />
                 <div className="dh-username-wrapper">
                   <input

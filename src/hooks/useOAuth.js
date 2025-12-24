@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { handleRedirectResult } from '../services/auth';
-import { oauthLogin } from '../services/services';
+import { oauthLogin, getUser } from '../services/services';
 import { useAppData } from './AppDataContext';
 import { toast } from 'react-toastify';
 
@@ -49,9 +49,17 @@ export const useOAuth = () => {
       
       if (response.data?.data?.token) {
         // Store backend token
-        localStorage.setItem('userToken', response.data.data.token);
+        const backendToken = response.data.data.token;
+        localStorage.setItem('userToken', backendToken);
         localStorage.setItem('userLoggedIn', 'true');
         setUserLoggedIn(true);
+        
+        // Small delay to ensure token is set
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Check onboarding status from profile
+        const profileResponse = await getUser();
+        const accountStatus = profileResponse.data?.data?.account_status;
         
         // Show success message
         const isNewUser = additionalUserInfo?.isNewUser;
@@ -66,8 +74,8 @@ export const useOAuth = () => {
         return {
           success: true,
           isNewUser,
-          needsOnboarding: !response.data.data.user?.first_name || !response.data.data.user?.username,
-          user: response.data.data.user
+          needsOnboarding: accountStatus === 'INCOMPLETE',
+          user: profileResponse.data?.data
         };
       } else {
         throw new Error('No backend token received');
