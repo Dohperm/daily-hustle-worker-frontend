@@ -123,9 +123,11 @@ export default function Tasks() {
                       <div className="mb-1">
                         <b>Reward:</b> {task.reward?.currency}{task.reward?.amount_per_worker?.toLocaleString() || 0}
                       </div>
-                      <div>
-                        <b>Review:</b> {task.review_type || "N/A"}
-                      </div>
+                      {task.review_type && (
+                        <div>
+                          <b>Review:</b> {task.review_type}
+                        </div>
+                      )}
                     </div>
                     <div style={{ minWidth: "150px" }}>
                       <div className="d-flex justify-content-between small mb-1">

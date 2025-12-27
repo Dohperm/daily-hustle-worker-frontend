@@ -66,6 +66,10 @@ export default function Settings() {
     return userData?.kyc?.is_approved === true;
   }, [userData?.kyc?.is_approved]);
 
+  const kycSubmitted = useMemo(() => {
+    return userData?.kyc?.status === 'submitted';
+  }, [userData?.kyc?.status]);
+
   const tabs = [
     { id: "profile", icon: "person", title: "Profile" },
     { id: "verification", icon: "shield-check", title: "Verification" },
@@ -419,8 +423,8 @@ export default function Settings() {
                 <i className="bi bi-shield-check me-2" />
                 KYC Verification
               </h6>
-              <small style={{ color: userData.kyc?.is_approved ? '#28a745' : "#ffc107" }}>
-                {userData.kyc?.is_approved ? "✓ KYC Completed" : "Pending Verification"}
+              <small style={{ color: userData.kyc?.is_approved ? '#28a745' : kycSubmitted ? "#ffc107" : "#ffc107" }}>
+                {userData.kyc?.is_approved ? "✓ KYC Completed" : kycSubmitted ? "KYC Under Review" : "Pending Verification"}
               </small>
             </div>
             <button
@@ -428,17 +432,21 @@ export default function Settings() {
               style={{
                 backgroundColor: userData.kyc?.is_approved ? '#28a745' : '#ff5722',
                 color: "#fff",
-                border: 'none'
+                border: 'none',
+                filter: kycSubmitted && !kycVerified ? 'blur(2px)' : 'none',
+                opacity: kycSubmitted && !kycVerified ? 0.7 : 1
               }}
               onClick={() => setShowKycForm(true)}
-              disabled={userData.kyc?.is_approved}
+              disabled={userData.kyc?.is_approved || kycSubmitted}
             >
-              {userData.kyc?.is_approved ? "✓ Completed" : "Complete KYC"}
+              {userData.kyc?.is_approved ? "✓ Completed" : kycSubmitted ? "Pending Review" : "Complete KYC"}
             </button>
           </div>
           <small className="text-muted">
             {userData.kyc?.is_approved
               ? "Your KYC verification has been completed and approved. All platform features and verified badges are now unlocked."
+              : kycSubmitted
+              ? "Your KYC documents have been submitted and are currently under review. You will be notified once the verification is complete."
               : "Complete KYC verification to unlock all platform features and verified badges"
             }
           </small>

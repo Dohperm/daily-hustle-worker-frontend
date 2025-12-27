@@ -117,7 +117,7 @@ export default function TaskDetails() {
 
       const token = localStorage.getItem("userToken");
       const baseURL = import.meta.env.VITE_API_BASE_URL || "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1";
-      await fetch(`${baseURL}/tasks/start`, {
+      const response = await fetch(`${baseURL}/tasks/start`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,8 +126,15 @@ export default function TaskDetails() {
         body: JSON.stringify({ task_id: task._id, src })
       });
 
-      showNotification?.("Proof submitted successfully!", "success");
-      navigate("/dashboard/tasks");
+      const result = await response.json();
+      
+      if (response.ok) {
+        const message = result?.message || "Proof submitted successfully!";
+        showNotification?.(message, "success");
+        navigate("/dashboard/tasks");
+      } else {
+        throw new Error(result?.message || "Submission failed");
+      }
     } catch (err) {
       showNotification?.(err.message || "Submission failed", "error");
     } finally {
@@ -210,17 +217,16 @@ export default function TaskDetails() {
               <div className="col-md-6 mb-3">
                 <strong>Category:</strong> {task.category}
               </div>
-              <div className="col-md-6 mb-3">
-                <strong>Review Type:</strong> {task.review_type || "N/A"}
-              </div>
+              {task.review_type && (
+                <div className="col-md-6 mb-3">
+                  <strong>Review Type:</strong> {task.review_type}
+                </div>
+              )}
               <div className="col-md-6 mb-3">
                 <strong>Approval Mode:</strong> {task.approval?.mode || "Self"}
               </div>
               <div className="col-md-6 mb-3">
                 <strong>Duration:</strong> {task.min_duration ?? "N/A"}
-              </div>
-              <div className="col-md-6 mb-3">
-                <strong>Complexity:</strong> {task.complexity_rating || "N/A"}
               </div>
             </div>
 
