@@ -95,6 +95,10 @@ export default function Sidebar() {
         <img
           src={LOGO}
           alt="Daily Hustle Logo"
+          onClick={() => {
+            logout();
+            window.location.href = "/";
+          }}
           style={{
             width: collapsed ? "38px" : "54px",
             height: collapsed ? "38px" : "54px",
@@ -103,6 +107,7 @@ export default function Sidebar() {
             margin: "0 auto",
             background: "transparent",
             transition: "width 0.3s,height 0.3s",
+            cursor: "pointer",
           }}
         />
       </div>
