@@ -108,10 +108,6 @@ export default function Support() {
         recordTaskHistory("support", "contact_email", "Opened support email");
         window.location.href = `mailto:support@dailyhustle.com?subject=Help Needed&body=Hi, I'm ${username}`;
         break;
-      case "call":
-        recordTaskHistory("support", "contact_call", "Viewed call info");
-        toast.info("📞 Call: +234 800 000 0000 (Mon-Fri, 9AM–6PM)");
-        break;
       default:
         toast.info("Coming soon!");
     }
@@ -295,15 +291,8 @@ export default function Support() {
           desc: "Reach us anytime",
           color: primary,
         },
-        {
-          method: "call",
-          icon: "telephone",
-          title: "Call Center",
-          desc: "Available Weekdays 9AM–6PM",
-          color: "#ff4500",
-        },
       ].map((item, i) => (
-        <div className="col-md-4" key={i}>
+        <div className="col-md-6" key={i}>
           <div
             className="p-4 text-center rounded-4 shadow-sm cursor-pointer"
             style={{

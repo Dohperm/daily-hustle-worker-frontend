@@ -44,7 +44,7 @@ const Login = () => {
         localStorage.setItem("userLoggedIn", "true");
         setUserLoggedIn(true);
         toast.success("Google login successful!");
-        const needsOnboarding = !res.data.data.user?.first_name || !res.data.data.user?.username;
+        const needsOnboarding = res.data.data.user?.account_status === 'INCOMPLETE';
         setTimeout(() => navigate(needsOnboarding ? "/onboarding" : "/dashboard"), 1200);
       }
     } catch (error) {
@@ -65,7 +65,7 @@ const Login = () => {
         localStorage.setItem("userLoggedIn", "true");
         setUserLoggedIn(true);
         toast.success("Facebook login successful!");
-        const needsOnboarding = !res.data.data.user?.first_name || !res.data.data.user?.username;
+        const needsOnboarding = res.data.data.user?.account_status === 'INCOMPLETE';
         setTimeout(() => navigate(needsOnboarding ? "/onboarding" : "/dashboard"), 1200);
       }
     } catch (error) {

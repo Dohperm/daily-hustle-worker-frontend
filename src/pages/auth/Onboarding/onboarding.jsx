@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppData } from "../../../hooks/AppDataContext";
 import { useTheme } from "../../../hooks/useThemeContext";
 import { useOAuth } from "../../../hooks/useOAuth";
-import { updateUser, verifyUsername, completeOnboarding } from "../../../services/services";
+import { updateUser, verifyUsername, completeOnboarding, getUser } from "../../../services/services";
 import { jobCategories } from "../../../data/jobCategories";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -20,12 +20,13 @@ export default function Onboarding() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [isOAuthUser, setIsOAuthUser] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     username: "",
     phone: "",
-    country: "Ghana",
+    country: "Nigeria",
     referral_code: "",
     job_categories: []
   });
@@ -34,25 +35,27 @@ export default function Onboarding() {
 
   // Check if user is from OAuth and pre-fill name fields
   useEffect(() => {
-    const currentUser = getCurrentUser();
-    const provider = getAuthProvider();
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getUser();
+        const profile = response.data?.data;
+        setUserProfile(profile);
+        
+        if (profile?.auth_provider && (profile.auth_provider === 'google' || profile.auth_provider === 'facebook')) {
+          setIsOAuthUser(true);
+          setFormData(prev => ({
+            ...prev,
+            first_name: profile.first_name || '',
+            last_name: profile.last_name || ''
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
     
-    if (currentUser.isAuthenticated && provider && (provider === 'Google' || provider === 'Facebook')) {
-      setIsOAuthUser(true);
-      
-      // Extract first and last name from displayName
-      const displayName = currentUser.displayName || '';
-      const nameParts = displayName.trim().split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
-      
-      setFormData(prev => ({
-        ...prev,
-        first_name: firstName,
-        last_name: lastName
-      }));
-    }
-  }, [getCurrentUser, getAuthProvider]);
+    fetchUserProfile();
+  }, []);
 
   const checkUsernameAvailability = async (username) => {
     if (!username || username.length < 3) {
