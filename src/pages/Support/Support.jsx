@@ -31,7 +31,6 @@ export default function Support() {
   const tabs = [
     { id: "faq", icon: "question-circle", title: "FAQ" },
     { id: "tickets", icon: "ticket-detailed", title: "Support Tickets" },
-    { id: "chat", icon: "chat-dots", title: "Live Chat" },
     { id: "contact", icon: "telephone", title: "Contact" },
   ];
 
@@ -367,7 +366,6 @@ export default function Support() {
       <div className="rounded-4 p-4 shadow-sm" style={{ backgroundColor: cardBg }}>
         {activeTab === "faq" && renderFAQTab()}
         {activeTab === "tickets" && renderTicketsTab()}
-        {activeTab === "chat" && renderChatTab()}
         {activeTab === "contact" && renderContactTab()}
       </div>
     </div>

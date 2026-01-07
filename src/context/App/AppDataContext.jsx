@@ -88,11 +88,6 @@ export default function AppDataProvider({ children }) {
         };
         setUserData(merged);
         
-        // Check KYC status and show modal if not approved
-        if (newUser.kyc && !newUser.kyc.is_approved) {
-          setTimeout(() => setShowKycModal(true), 1000);
-        }
-        
         await fetchMyTasks();
       } catch (e) {
         console.error(e);
