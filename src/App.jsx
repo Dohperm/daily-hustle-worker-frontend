@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -23,6 +22,7 @@ import Landing from "./pages/Landing/Landing";
 import { useAppData } from "./hooks/AppDataContext";
 import KycModal from "./components/Modal/KycModal";
 import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
+import { useTheme } from "./hooks/useThemeContext";
 
 function ProtectedRoute({ children }) {
   const { userLoggedIn } = useAppData();
@@ -69,6 +69,11 @@ function OnboardingProtectedRoute({ children }) {
 
 export default function App() {
   const { userLoggedIn, showKycModal, setShowKycModal } = useAppData();
+  const { theme } = useTheme();
+
+  const handleLiveChat = () => {
+    window.open("https://wa.me/2348000000000?text=Hi Daily Hustle Team!");
+  };
 
   return (
     <>
@@ -178,6 +183,33 @@ export default function App() {
         show={showKycModal} 
         onClose={() => setShowKycModal(false)} 
       />
+      
+      {/* Floating Live Chat Button */}
+      {userLoggedIn && (
+        <button
+          onClick={handleLiveChat}
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            background: 'var(--dh-red)',
+            border: 'none',
+            color: 'white',
+            fontSize: '24px',
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+            zIndex: 1000,
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
+          onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+        >
+          <i className="bi bi-chat-dots"></i>
+        </button>
+      )}
     </>
   );
 }
