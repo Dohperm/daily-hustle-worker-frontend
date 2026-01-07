@@ -101,7 +101,7 @@ export default function Support() {
     switch (method) {
       case "whatsapp":
         recordTaskHistory("support", "contact_whatsapp", "Opened WhatsApp chat");
-        window.open("https://wa.me/2348000000000?text=Hi Daily Hustle Team!");
+        window.open("https://wa.me/2347035802057?text=Hi Daily Hustle Team!");
         break;
       case "email":
         recordTaskHistory("support", "contact_email", "Opened support email");

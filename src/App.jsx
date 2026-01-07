@@ -23,6 +23,7 @@ import { useAppData } from "./hooks/AppDataContext";
 import KycModal from "./components/Modal/KycModal";
 import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
 import { useTheme } from "./hooks/useThemeContext";
+import AiChat from "./components/AiChat/AiChat";
 
 function ProtectedRoute({ children }) {
   const { userLoggedIn } = useAppData();
@@ -68,11 +69,12 @@ function OnboardingProtectedRoute({ children }) {
 
 
 export default function App() {
-  const { userLoggedIn, showKycModal, setShowKycModal } = useAppData();
+  const { userLoggedIn } = useAppData();
   const { theme } = useTheme();
+  const [showAiChat, setShowAiChat] = React.useState(false);
 
   const handleLiveChat = () => {
-    window.open("https://wa.me/2348000000000?text=Hi Daily Hustle Team!");
+    setShowAiChat(true);
   };
 
   return (
@@ -179,9 +181,10 @@ export default function App() {
           fill: white !important;
         }
       `}</style>
-      <KycModal 
-        show={showKycModal} 
-        onClose={() => setShowKycModal(false)} 
+      {/* AI Chat Component */}
+      <AiChat 
+        isOpen={showAiChat} 
+        onClose={() => setShowAiChat(false)} 
       />
       
       {/* Floating Live Chat Button */}
